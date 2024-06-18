@@ -13,8 +13,9 @@ class PetRegistrationProvider with ChangeNotifier {
   String? _petName;
   String? _breed;
   String? _age;
-  String? _weight;
+  int? _weight;
   String? _gender;
+  String? _aboutPet;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -31,8 +32,9 @@ class PetRegistrationProvider with ChangeNotifier {
   String? get petName => _petName;
   String? get breed => _breed;
   String? get age => _age;
-  String? get weight => _weight;
+  int? get weight => _weight;
   String? get gender => _gender;
+  String? get aboutPet => _aboutPet;
 
   bool get friendlyWithChildren => _friendlyWithChildren;
   bool get friendlyWithOtherPets => _friendlyWithOtherPets;
@@ -58,11 +60,6 @@ class PetRegistrationProvider with ChangeNotifier {
     _age = age;
     notifyListeners();
   }
-
-  /* void setWeight(String age) {
-    _weight = weight;
-    notifyListeners();
-  }*/
 
   void setGender(String gender) {
     _gender = gender;
@@ -109,6 +106,16 @@ class PetRegistrationProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setPetweight(int weight) {
+    _weight = weight;
+    notifyListeners();
+  }
+
+  void setAboutPet(String aboutPet) {
+    _aboutPet = aboutPet;
+    notifyListeners();
+  }
+
   Future<void> pickImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -121,12 +128,15 @@ class PetRegistrationProvider with ChangeNotifier {
 
   Future<void> registerPet(BuildContext context) async {
     setLoading(true);
- await Provider.of<OwnerDetailsGetterProvider>(context,listen: false).loadUserProfile();
-  var ownerEmail = Provider.of<OwnerDetailsGetterProvider>(context, listen: false).email;
-final selectedPetType = Provider.of<PetsProvider>(context, listen: false).selectedPetType;
+    await Provider.of<OwnerDetailsGetterProvider>(context, listen: false)
+        .loadUserProfile();
+    var ownerEmail =
+        Provider.of<OwnerDetailsGetterProvider>(context, listen: false).email;
+    final selectedPetType =
+        Provider.of<PetsProvider>(context, listen: false).selectedPetType;
 
-print('Owner Email: $ownerEmail');
-print('Selected Pet Type: $selectedPetType');
+    print('Owner Email: $ownerEmail');
+    print('Selected Pet Type: $selectedPetType');
 
     if (_petName != null &&
         _breed != null &&
@@ -149,29 +159,32 @@ print('Selected Pet Type: $selectedPetType');
 
         // Save the pet details
         await _fireStoreService.savePetDetails(
-          ownerEmail: ownerEmail,
-          petName: _petName!,
-          breed: _breed!,
-          age: _age!,
-          gender: _gender!,
-          imagePath: _image!.path,
-          friendlyWithChildren: _friendlyWithChildren,
-          friendlyWithOtherPets: _friendlyWithOtherPets,
-          houseTrained: _houseTrained,
-          walksPerDay: _walksPerDay,
-          energyLevel: _energyLevel,
-          feedingSchedule: _feedingSchedule ?? '',
-          canBeLeftAlone: _canBeLeftAlone,
-          selectedPetType: selectedPetType ?? '',
-        );
+            ownerEmail: ownerEmail,
+            petName: _petName!,
+            breed: _breed!,
+            age: _age!,
+            gender: _gender!,
+            imagePath: _image!.path,
+            friendlyWithChildren: _friendlyWithChildren,
+            friendlyWithOtherPets: _friendlyWithOtherPets,
+            houseTrained: _houseTrained,
+            walksPerDay: _walksPerDay,
+            energyLevel: _energyLevel,
+            feedingSchedule: _feedingSchedule ?? '',
+            canBeLeftAlone: _canBeLeftAlone,
+            selectedPetType: selectedPetType ?? '',
+            aboutPet: _aboutPet ?? '',
+            weight: _weight);
 
-         final petsDetailsProvider =
-          Provider.of<PetsDetailsGetterProvider>(context, listen: false);
-      await petsDetailsProvider.loadPets();
+        print("weight is $_weight");
+        print("About pet $_aboutPet");
+
+        final petsDetailsProvider =
+            Provider.of<PetsDetailsGetterProvider>(context, listen: false);
+        await petsDetailsProvider.loadPets();
 
         showSnackBar(context, "Pet Registration Successful");
         navigateToOwnerDashboard(context);
-         
       } catch (e) {
         showSnackBar(context, "Error! Something went wrong!");
         print(

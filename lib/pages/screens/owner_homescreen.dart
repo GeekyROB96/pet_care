@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pet_care/constants/theme/light_colors.dart';
 import 'package:pet_care/pages/screens/reminder_screen.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
@@ -109,53 +110,68 @@ class OwnerDashboard extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-            Consumer<OwnerDashboardProvider>(
+             Consumer<OwnerDashboardProvider>(
               builder: (context, ownerDashboardProvider, child) {
                 if (petsDetailsProvider.isDataLoaded &&
                     petsDetailsProvider.pets.isNotEmpty) {
                   final pet = petsDetailsProvider
                       .pets[ownerDashboardProvider.selectedPetIndex];
 
-                  return Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.black),
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 40,
-                          backgroundImage: pet['imagePath'] != null
-                              ? FileImage(File(pet['imagePath']))
-                              : AssetImage('assets/images/cat.png')
-                                  as ImageProvider<Object>,
-                        ),
-                        SizedBox(width: 20),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Name: ${pet['petName']}',
-                                style: TextStyle(
-                                    fontSize: 18, color: Colors.black),
-                              ),
-                              Text(
-                                'Breed: ${pet['breed']}',
-                                style: TextStyle(
-                                    fontSize: 18, color: Colors.black),
-                              ),
-                              Text(
-                                'Age: ${pet['age']}',
-                                style: TextStyle(
-                                    fontSize: 18, color: Colors.black),
-                              ),
-                            ],
+                  return GestureDetector(
+                    onTap: () async {
+                      
+                      await petsDetailsProvider.navigateAndgetPetByName(
+                        pet['petName'],
+                        pet['ownerEmail'],
+                        context
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: Colors.black),
+                      ),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 40,
+                            backgroundImage: pet['imagePath'] != null
+                                ? FileImage(File(pet['imagePath']))
+                                : AssetImage('assets/images/cat.png') as ImageProvider,
                           ),
-                        ),
-                      ],
+                          SizedBox(width: 20),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Name: ${pet['petName']}',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                Text(
+                                  'Breed: ${pet['breed']}',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                Text(
+                                  'Age: ${pet['age']}',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 } else {
@@ -236,7 +252,6 @@ class OwnerDashboard extends StatelessWidget {
                               icon: Image.asset('assets/icons/pet-care.png',
                                   width: 30, height: 30),
                               onPressed: () {
-
                                 Navigator.pushNamed(context, '/petSitters');
                               },
                             ),

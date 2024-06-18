@@ -37,6 +37,9 @@ class FireStoreService {
     required String feedingSchedule,
     required bool canBeLeftAlone,
     required String selectedPetType,
+    String? aboutPet, 
+    int? weight
+
   }) async {
     try {
       await _fireStore
@@ -57,7 +60,9 @@ class FireStoreService {
         'energyLevel': energyLevel,
         'feedingSchedule': feedingSchedule,
         'canBeLeftAlone': canBeLeftAlone,
-        'selectedPetType': selectedPetType
+        'selectedPetType': selectedPetType,
+        'aboutPet' : aboutPet,
+        'weight' : weight
       });
     } catch (e) {
       print('Error saving pet details: $e');
@@ -90,6 +95,28 @@ class FireStoreService {
           .add(petData);
     } catch (e) {
       print('Error adding pet: $e');
+    }
+  }
+
+
+   Future<Map<String, dynamic>?> getPetDetailsByName(String ownerEmail, String petName) async {
+    try {
+      QuerySnapshot query = await _fireStore
+          .collection('pets')
+          .doc(ownerEmail)
+          .collection('pets')
+          .where('petName', isEqualTo: petName)
+          .limit(1)
+          .get();
+
+      if (query.docs.isNotEmpty) {
+        return query.docs.first.data() as Map<String, dynamic>;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching pet details by name: $e');
+      return null;
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:pet_care/initial_screen.dart';
 import 'package:pet_care/pages/owner&pet/owner_editprofile.dart';
 import 'package:pet_care/pages/owner&pet/owner_login.dart';
 import 'package:pet_care/pages/owner&pet/owner_signup.dart';
+import 'package:pet_care/pages/owner&pet/pet_profile.dart';
 import 'package:pet_care/pages/owner&pet/pet_register.dart';
 import 'package:pet_care/pages/owner&pet/pet_register2.dart';
 import 'package:pet_care/pages/pets_page/pets.dart';
@@ -104,7 +105,8 @@ class MyApp extends StatelessWidget {
         '/petRegistration2': (context) => PetRegistration2(),
         '/ownerEditProfile':(context) => OwnerEditProfilePage(),
         '/volunteerEditProfile' :(context) => VolunteerEditProfilePage(),
-        '/petSitters' : (context) => PetSitters()
+        '/petSitters' : (context) => PetSitters(),
+        '/petProfile' :(context) => PetProfile()
       },
     );
   }

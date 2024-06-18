@@ -114,6 +114,22 @@ class PetRegistration extends StatelessWidget {
                                   TextStyle(color: LightColors.textColor),
                               fillColor: LightColors.backgroundColor,
                             ),
+                             SizedBox(height: 15),
+                            MyTextField(
+                              hintText: 'Weight (kgs)',
+                              obsText: false,
+                              controller: _weightController,
+                              margin: EdgeInsets.only(bottom: 20),
+                              padding: EdgeInsets.zero,
+                              textStyle:
+                                  TextStyle(color: LightColors.textColor),
+                              fillColor: LightColors.backgroundColor,
+                              onChanged: (value) {
+                                if (value.isNotEmpty) {
+                                  provider.setPetweight(int.parse(value));
+                                }
+                              },
+                            ),
                             DropdownButton<String>(
                               hint: Text("Select Gender"),
                               value: provider.gender,
@@ -127,7 +143,9 @@ class PetRegistration extends StatelessWidget {
                                 provider.setGender(newValue!);
                               },
                             ),
+                           
                             SizedBox(height: 20),
+
                             CustomTextButton(
                               onPressed: () {
                                 provider.setPetName(_nameController.text);

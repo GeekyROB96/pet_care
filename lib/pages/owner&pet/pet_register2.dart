@@ -9,6 +9,7 @@ import '../../widgets/components/text_button.dart';
 class PetRegistration2 extends StatelessWidget {
   final TextEditingController _feedingScheduleController =
       TextEditingController();
+  final TextEditingController _aboutPetController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -212,6 +213,24 @@ class PetRegistration2 extends StatelessWidget {
                                     },
                                   ),
                                 ],
+                              ),
+                              SizedBox(height:  15,),
+
+                              TextFormField(
+                                // minLines: 3,
+                                
+                                autofocus: true,
+                                  controller: _aboutPetController,
+                                  decoration: InputDecoration(
+                                    hintText: "About your pet",
+                                    border: OutlineInputBorder(
+                                    borderRadius:
+                                    BorderRadius.all(new Radius.circular(20.0))),
+                                    
+
+                                  ),
+                                  onChanged: (_aboutPetController) => provider.setAboutPet(_aboutPetController),
+
                               ),
                               SizedBox(height: 20),
                               Center(

@@ -7,7 +7,10 @@ class PetsDetailsGetterProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   bool _isDataLoaded = false;
+  bool _isSinglePetLoaded = false;
   bool get isDataLoaded => _isDataLoaded;
+  bool get isSinglePetLoaded => _isSinglePetLoaded;
+  var petData;
 
   List<Map<String, dynamic>> _pets = [];
 
@@ -22,7 +25,6 @@ class PetsDetailsGetterProvider extends ChangeNotifier {
 
     if (user != null) {
       try {
-        // Clear previous data when loading pets for a new user
         _pets.clear();
 
         _pets = await _fireStoreService.getPets(user.email!);
@@ -36,6 +38,24 @@ class PetsDetailsGetterProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> navigateAndgetPetByName(
+      String petName, String ownermail, BuildContext context) async {
+     _isSinglePetLoaded = false;
+    notifyListeners();
+
+    navigateToPetProfile(context);
+
+    try {
+      petData = await _fireStoreService.getPetDetailsByName(ownermail, petName);
+      _isSinglePetLoaded = true;
+      notifyListeners();
+      print("Pet Data: $petData");
+    } catch (e) {
+      print("Error fetching pet data: $e");
+      _isSinglePetLoaded = true; // Ensure to set back to true on error to avoid infinite loading state
+      notifyListeners();
+    }
+  }
   Future<void> addPet(Map<String, dynamic> petData) async {
     User? user = _auth.currentUser;
     print("User is $user");
@@ -57,5 +77,9 @@ class PetsDetailsGetterProvider extends ChangeNotifier {
     _pets = [];
     _isDataLoaded = false;
     notifyListeners();
+  }
+
+  void navigateToPetProfile(BuildContext context) {
+    Navigator.pushNamed(context, '/petProfile');
   }
 }

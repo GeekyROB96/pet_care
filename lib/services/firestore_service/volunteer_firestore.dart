@@ -48,7 +48,7 @@ class FireStoreService {
         'providesDogWalking': providesDogWalking,
         'providesHouseSitting': providesHouseSitting,
         'role': role,
-        'profileImageUrl': profileImageUrl,
+          'profileImageUrl': profileImageUrl,
           'minPrice': minPrice, 
         'maxPrice': maxPrice, 
         'locationCity' :locationCity
