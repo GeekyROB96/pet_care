@@ -81,7 +81,7 @@ class FireStoreService {
     }
   }
 
- Future<void> updateProfileImage({
+  Future<void> updateProfileImage({
     required String ownerEmail,
     required String petName,
     required String imageUrl,

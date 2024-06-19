@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pet_care/constants/snackbar.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
@@ -32,7 +32,7 @@ class OwnerEditProfileProvider extends ChangeNotifier {
   String? get age => _age;
   String? get occupation => _occupation;
 
- OwnerEditProfileProvider() {
+  OwnerEditProfileProvider() {
     loadUserProfile(); // Load user profile details when initialized
   }
 
@@ -46,7 +46,8 @@ class OwnerEditProfileProvider extends ChangeNotifier {
             await _fireStoreService.getUserDetails(user.uid);
 
         if (userDetails != null) {
-          _name = userDetails['name'] ?? ''; // Use ?? '' to provide default value
+          _name =
+              userDetails['name'] ?? ''; // Use ?? '' to provide default value
           _email = userDetails['email'] ?? '';
           _phoneNo = userDetails['phoneNo'] ?? '';
           _profileImageUrl = userDetails['profileImageUrl'];
@@ -112,7 +113,8 @@ class OwnerEditProfileProvider extends ChangeNotifier {
             name: _name,
             email: _email,
             phoneNo: _phoneNo,
-            age: _age!,  //added age, occupation to prevent it from being overwritten
+            age:
+                _age!, //added age, occupation to prevent it from being overwritten
             occupation: _occupation!,
             role: 'owner');
         showSnackBar(context, "Profile details saved successfully!");
@@ -132,8 +134,10 @@ class OwnerEditProfileProvider extends ChangeNotifier {
       await Provider.of<OwnerLoginProvider>(context, listen: false)
           .ownerLogout(context);
 
-      Provider.of<PetsDetailsGetterProvider>(context, listen: false).clearData();
-  Provider.of<OwnerDetailsGetterProvider>(context, listen: false).clearData();
+      Provider.of<PetsDetailsGetterProvider>(context, listen: false)
+          .clearData();
+      Provider.of<OwnerDetailsGetterProvider>(context, listen: false)
+          .clearData();
       showSnackBar(context, "User logged out successfully.");
       print("User logged out successfully.");
     } catch (e) {
@@ -141,4 +145,6 @@ class OwnerEditProfileProvider extends ChangeNotifier {
       print("Error logging out: $e");
     }
   }
+
+  setName(String value) {}
 }

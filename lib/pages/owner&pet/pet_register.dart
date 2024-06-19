@@ -114,7 +114,7 @@ class PetRegistration extends StatelessWidget {
                                   TextStyle(color: LightColors.textColor),
                               fillColor: LightColors.backgroundColor,
                             ),
-                             SizedBox(height: 15),
+                            SizedBox(height: 15),
                             MyTextField(
                               hintText: 'Weight (kgs)',
                               obsText: false,
@@ -143,9 +143,7 @@ class PetRegistration extends StatelessWidget {
                                 provider.setGender(newValue!);
                               },
                             ),
-                           
                             SizedBox(height: 20),
-
                             CustomTextButton(
                               onPressed: () {
                                 provider.setPetName(_nameController.text);

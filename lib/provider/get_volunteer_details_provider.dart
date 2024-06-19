@@ -1,5 +1,5 @@
-import 'dart:ffi';
 import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -93,6 +93,11 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
     }
   }
 
+  void setName(String name) {
+    _name = name;
+    notifyListeners();
+  }
+
   void setMinPrice(int minPrice) {
     _minPrice = minPrice;
     notifyListeners();
@@ -110,7 +115,7 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setaboutMe(String aboutMe) {
+  void setAboutMe(String aboutMe) {
     _aboutMe = aboutMe;
     notifyListeners();
   }
@@ -154,11 +159,11 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
 
         await _fireStoreService.saveVolunteerDetails(
             userId: user.uid,
-            name: volunteerData?['name'] ?? '',
-            email: volunteerData?['email'] ?? '',
+            name: _name,
+            email: _email,
             phoneNo: _phoneNo,
-            age: volunteerData?['age'] ?? '', // Add age here if needed
-            occupation: volunteerData?['occupation'] ?? '',
+            age: _age ?? '', // Add age here if needed
+            occupation: _occupation ?? '',
             aboutMe: _aboutMe,
             prefersCat: _preferCat,
             prefersDog: _preferDog,
@@ -173,7 +178,6 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
             minPrice: _minPrice,
             maxPrice: _maxPrice,
             locationCity: _locationCity
-
             // Save the profile image URL
             );
 

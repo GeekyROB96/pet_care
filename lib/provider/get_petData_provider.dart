@@ -28,8 +28,8 @@ class PetsDetailsGetterProvider extends ChangeNotifier {
         _pets.clear();
 
         _pets = await _fireStoreService.getPets(user.email!);
-        _isDataLoaded = true; 
-        notifyListeners(); 
+        _isDataLoaded = true;
+        notifyListeners();
       } catch (e) {
         print("Error loading pets data: $e");
       }
@@ -40,7 +40,7 @@ class PetsDetailsGetterProvider extends ChangeNotifier {
 
   Future<void> navigateAndgetPetByName(
       String petName, String ownermail, BuildContext context) async {
-     _isSinglePetLoaded = false;
+    _isSinglePetLoaded = false;
     notifyListeners();
 
     navigateToPetProfile(context);
@@ -52,11 +52,11 @@ class PetsDetailsGetterProvider extends ChangeNotifier {
       print("Pet Data: $petData");
     } catch (e) {
       print("Error fetching pet data: $e");
-      _isSinglePetLoaded = true; // Ensure to set back to true on error to avoid infinite loading state
+      _isSinglePetLoaded =
+          true; // Ensure to set back to true on error to avoid infinite loading state
       notifyListeners();
     }
   }
-
 
   void clearData() {
     _pets = [];

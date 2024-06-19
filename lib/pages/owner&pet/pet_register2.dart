@@ -54,7 +54,7 @@ class PetRegistration2 extends StatelessWidget {
                                   ),
                                   CustomToolTip(
                                     message: 'Hello Information',
-                                    additionalInfo: 'Additional Information',
+                                    // additionalInfo: 'Additional Information',
                                   ),
                                 ],
                               ),
@@ -214,23 +214,23 @@ class PetRegistration2 extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              SizedBox(height:  15,),
+                              SizedBox(
+                                height: 15,
+                              ),
 
                               TextFormField(
                                 // minLines: 3,
-                                
+
                                 autofocus: true,
-                                  controller: _aboutPetController,
-                                  decoration: InputDecoration(
-                                    hintText: "About your pet",
-                                    border: OutlineInputBorder(
-                                    borderRadius:
-                                    BorderRadius.all(new Radius.circular(20.0))),
-                                    
-
-                                  ),
-                                  onChanged: (_aboutPetController) => provider.setAboutPet(_aboutPetController),
-
+                                controller: _aboutPetController,
+                                decoration: InputDecoration(
+                                  hintText: "About your pet",
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          new Radius.circular(20.0))),
+                                ),
+                                onChanged: (_aboutPetController) =>
+                                    provider.setAboutPet(_aboutPetController),
                               ),
                               SizedBox(height: 20),
                               Center(

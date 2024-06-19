@@ -12,8 +12,8 @@ import 'package:pet_care/pages/owner&pet/pet_register2.dart';
 import 'package:pet_care/pages/pets_page/pets.dart';
 import 'package:pet_care/pages/screens/owner_homescreen.dart';
 import 'package:pet_care/pages/screens/pet_sitters.dart';
-import 'package:pet_care/pages/screens/volunteer_editProfile.dart';
 import 'package:pet_care/pages/screens/volunteer_homescreen.dart';
+import 'package:pet_care/pages/volunteer/volunteer_editProfile.dart';
 import 'package:pet_care/pages/volunteer/volunteer_login_page.dart';
 import 'package:pet_care/pages/volunteer/volunteer_reg.dart';
 import 'package:pet_care/pages/volunteer/volunter_reg2.dart';
@@ -33,7 +33,7 @@ import 'package:pet_care/provider/reminder_provider.dart';
 import 'package:pet_care/provider/volunteer_login_provider.dart';
 import 'package:pet_care/provider/volunteer_reg_provider.dart';
 import 'package:pet_care/shared_pref_service.dart';
- import 'package:pet_care/widgets/forgot_screen.dart';
+import 'package:pet_care/widgets/forgot_screen.dart';
 import 'package:pet_care/widgets/splash_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -47,33 +47,35 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => OwnerRegistrationProvider()),
+        ChangeNotifierProvider(
+            create: (context) => OwnerRegistrationProvider()),
 
         ChangeNotifierProvider(create: (context) => OwnerLoginProvider()),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => RegisterProvider()),
-       
-        ChangeNotifierProvider(create: (context) => VolunteerRegistrationProvider()),
+
+        ChangeNotifierProvider(
+            create: (context) => VolunteerRegistrationProvider()),
         ChangeNotifierProvider(create: (context) => VolunteerLoginProvider()),
         ChangeNotifierProvider(create: (context) => ForgotPasswordProvider()),
-      //  ChangeNotifierProvider(create:  (context) =>OwnerEditProfileProvider()),
-        ChangeNotifierProvider(create: (context) => OwnerDetailsGetterProvider()),
-         ChangeNotifierProvider(create: (context) => PetsProvider()),
+        //  ChangeNotifierProvider(create:  (context) =>OwnerEditProfileProvider()),
+        ChangeNotifierProvider(
+            create: (context) => OwnerDetailsGetterProvider()),
+        ChangeNotifierProvider(create: (context) => PetsProvider()),
         ChangeNotifierProvider(create: (context) => PetRegistrationProvider()),
-        ChangeNotifierProvider(create: (context)=> PetsDetailsGetterProvider()),
+        ChangeNotifierProvider(
+            create: (context) => PetsDetailsGetterProvider()),
 
-
-       // ChangeNotifierProvider(create: (context) =>OwnerDetailsGetterProvider()),
-        ChangeNotifierProvider(create: (context)=> OwnerDashboardProvider()),
+        // ChangeNotifierProvider(create: (context) =>OwnerDetailsGetterProvider()),
+        ChangeNotifierProvider(create: (context) => OwnerDashboardProvider()),
         ChangeNotifierProvider(create: (context) => OwnerEditProfileProvider()),
-        ChangeNotifierProvider(create: (context)=>VolunteerDetailsGetterProvider(),),
+        ChangeNotifierProvider(
+          create: (context) => VolunteerDetailsGetterProvider(),
+        ),
 
-        ChangeNotifierProvider(create: (context)=> PetSitterProvider()),
+        ChangeNotifierProvider(create: (context) => PetSitterProvider()),
 
-        ChangeNotifierProvider(create : (context) => ReminderProvider())
-
-
-
+        ChangeNotifierProvider(create: (context) => ReminderProvider())
       ],
       child: MyApp(),
     ),
@@ -103,10 +105,10 @@ class MyApp extends StatelessWidget {
         '/ownerHomeScreen': (context) => OwnerDashboard(),
         '/volunteerHomeScreen': (context) => VolunteerDashboard(),
         '/petRegistration2': (context) => PetRegistration2(),
-        '/ownerEditProfile':(context) => OwnerEditProfilePage(),
-        '/volunteerEditProfile' :(context) => VolunteerEditProfilePage(),
-        '/petSitters' : (context) => PetSitters(),
-        '/petProfile' :(context) => PetProfile()
+        '/ownerEditProfile': (context) => OwnerEditProfilePage(),
+        '/volunteerEditProfile': (context) => VolunteerEditProfilePage(),
+        '/petSitters': (context) => PetSitters(),
+        '/petProfile': (context) => PetProfile()
       },
     );
   }

@@ -75,20 +75,23 @@ class VolunteerLogin extends StatelessWidget {
                               fillColor: Colors.white,
                             ),
                             SizedBox(height: 5),
-                            CustomTextButton(
-                              onPressed: () {
-                                provider.setVolunteerEmail(
-                                    _volunteerEmailController.text);
-                                provider.setVolunteerPassword(
-                                    _volunteerPasswordController.text);
-                                provider.volunteerLogin(context);
-                              },
-                              text: 'Sign In',
-                              backgroundColor: LightColors.primaryDarkColor,
-                              textColor: LightColors.textColor,
-                              fontSize: 15,
-                              width: 100,
-                            ),
+                            provider.isLoading
+                                ? CircularProgressIndicator()
+                                : CustomTextButton(
+                                    onPressed: () {
+                                      provider.setVolunteerEmail(
+                                          _volunteerEmailController.text);
+                                      provider.setVolunteerPassword(
+                                          _volunteerPasswordController.text);
+                                      provider.volunteerLogin(context);
+                                    },
+                                    text: 'Sign In',
+                                    backgroundColor:
+                                        LightColors.primaryDarkColor,
+                                    textColor: LightColors.textColor,
+                                    fontSize: 15,
+                                    width: 100,
+                                  ),
                             SizedBox(height: 12),
                             RichText(
                               text: TextSpan(
@@ -105,11 +108,12 @@ class VolunteerLogin extends StatelessWidget {
                                       text: 'Sign Up',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: Colors.grey,
+                                        color: Colors.black87,
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {
-                                          //provider.navigateToVolunteerReg(context);
+                                          provider
+                                              .navigateToVolunteerReg(context);
                                         },
                                     )
                                   ]),

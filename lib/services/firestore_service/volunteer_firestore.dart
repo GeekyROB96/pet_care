@@ -22,9 +22,8 @@ class FireStoreService {
     required String role,
     String? profileImageUrl,
     String? locationCity,
-    int? minPrice, 
+    int? minPrice,
     int? maxPrice,
-    
   }) async {
     try {
       await _firestore
@@ -48,34 +47,29 @@ class FireStoreService {
         'providesDogWalking': providesDogWalking,
         'providesHouseSitting': providesHouseSitting,
         'role': role,
-          'profileImageUrl': profileImageUrl,
-          'minPrice': minPrice, 
-        'maxPrice': maxPrice, 
-        'locationCity' :locationCity
-
-         
+        'profileImageUrl': profileImageUrl,
+        'minPrice': minPrice,
+        'maxPrice': maxPrice,
+        'locationCity': locationCity
       });
     } catch (e) {
       print("Error saving User Details $e");
     }
   }
 
-
-
-Future<void> updateVolunteerProfileImage(
-    {required String userId, required String imageUrl}) async {
-  try {
-    await _firestore
-        .collection('users')
-        .doc('volunteers') // Corrected collection name
-        .collection('volunteers') // Corrected collection name
-        .doc(userId)
-        .update({'imageUrl': imageUrl});
-  } catch (e) {
-    print("Error updating profile image $e");
+  Future<void> updateVolunteerProfileImage(
+      {required String userId, required String imageUrl}) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc('volunteers') // Corrected collection name
+          .collection('volunteers') // Corrected collection name
+          .doc(userId)
+          .update({'imageUrl': imageUrl});
+    } catch (e) {
+      print("Error updating profile image $e");
+    }
   }
-}
-
 
   Future<Map<String, dynamic>?> getVolunteerDetails(String userId) async {
     try {
@@ -91,7 +85,6 @@ Future<void> updateVolunteerProfileImage(
       return null;
     }
   }
-
 
   // Future<List<Map<String, dynamic>>> getAllVolunteers() async {
   //   try {
@@ -109,9 +102,7 @@ Future<void> updateVolunteerProfileImage(
   //   }
   // }
 
-
-  
- Future<List<Map<String, dynamic>>> getAllVolunteers() async {
+  Future<List<Map<String, dynamic>>> getAllVolunteers() async {
     try {
       QuerySnapshot querySnapshot = await _firestore
           .collection('users')
@@ -135,7 +126,8 @@ Future<void> updateVolunteerProfileImage(
           .collection('users')
           .doc('volunteers')
           .collection('volunteers')
-          .orderBy('minPrice', descending: false) // Sorting by minPrice in ascending order
+          .orderBy('minPrice',
+              descending: false) // Sorting by minPrice in ascending order
           .get();
       List<Map<String, dynamic>> volunteers = querySnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
@@ -154,7 +146,8 @@ Future<void> updateVolunteerProfileImage(
           .collection('users')
           .doc('volunteers')
           .collection('volunteers')
-          .orderBy('minPrice', descending: true) // Sorting by minPrice in descending order
+          .orderBy('minPrice',
+              descending: true) // Sorting by minPrice in descending order
           .get();
       List<Map<String, dynamic>> volunteers = querySnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)

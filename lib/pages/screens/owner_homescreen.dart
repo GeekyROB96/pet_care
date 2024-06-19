@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_care/constants/theme/light_colors.dart';
 import 'package:pet_care/pages/screens/reminder_screen.dart';
@@ -176,175 +177,184 @@ class OwnerDashboard extends StatelessWidget {
                 }
               },
             ),
+            
             SizedBox(height: 20),
-            Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.black),
+            Text(
+              'Services',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Services',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+            ),
+            SizedBox(height: 5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  children: [
+                    IconButton(
+                      icon: Image.asset('assets/icons/bell.gif',
+                          width: 30, height: 30),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (_) => ReminderProvider(),
+                              child: ReminderScreen(),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                  SizedBox(height: 5),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            width: 55,
-                            height: 55,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: IconButton(
-                              icon: Image.asset(
-                                'assets/icons/reminderr.png',
-                                width: 30,
-                                height: 30,
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ChangeNotifierProvider(
-                                      create: (_) => ReminderProvider(),
-                                      child: ReminderScreen(),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            'Reminder',
-                            style: TextStyle(
-                              color: LightColors.textColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                    SizedBox(height: 5),
+                    Text(
+                      'Reminder',
+                      style: TextStyle(
+                        color: LightColors.textColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
                       ),
-                      Column(
-                        children: [
-                          Container(
-                            width: 55,
-                            height: 55,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: IconButton(
-                              icon: Image.asset(
-                                'assets/icons/pet-care.png',
-                                width: 30,
-                                height: 30,
-                              ),
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/petSitters');
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            'Pet Sitting',
-                            style: TextStyle(
-                              color: LightColors.textColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    IconButton(
+                      icon: Image.asset(
+                        'assets/icons/home.gif',
+                        width: 30,
+                        height: 30,
                       ),
-                      Column(
-                        children: [
-                          Container(
-                            width: 55,
-                            height: 55,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: IconButton(
-                              icon: Image.asset(
-                                'assets/icons/sad.png',
-                                width: 30,
-                                height: 30,
-                              ),
-                              onPressed: () {
-                                // Add your onPressed logic here
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Container(
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Lost your pet',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: LightColors.textColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/petSitters');
+                      },
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      'Pet Sitting',
+                      style: TextStyle(
+                        color: LightColors.textColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
                       ),
-                      Column(
-                        children: [
-                          Container(
-                            width: 55,
-                            height: 55,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: IconButton(
-                              icon: Image.asset(
-                                'assets/icons/more.png',
-                                width: 30,
-                                height: 30,
-                              ),
-                              onPressed: () {
-                                // Add your onPressed logic here
-                              },
-                            ),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    IconButton(
+                      icon: Image.asset('assets/icons/sad.gif',
+                          width: 30, height: 30),
+                      onPressed: () {
+                        // Add your onPressed logic here
+                      },
+                    ),
+                    SizedBox(height: 5),
+                    Container(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Lost your pet',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: LightColors.textColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
-                          SizedBox(height: 5),
-                          Text(
-                            'More',
-                            style: TextStyle(
-                              color: LightColors.textColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    IconButton(
+                      icon: Image.asset('assets/icons/more.gif',
+                          width: 30, height: 30),
+                      onPressed: () {
+                        // Add your onPressed logic here
+                      },
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      'More',
+                      style: TextStyle(
+                        color: LightColors.textColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
       ),
+      bottomNavigationBar: Stack(
+        children: [
+          CustomPaint(
+            size: Size(MediaQuery.of(context).size.width, 80),
+            painter: CurvedPainter(),
+          ),
+          CurvedNavigationBar(
+            backgroundColor: Colors.transparent,
+            color: Colors.transparent,
+            buttonBackgroundColor: Colors.white,
+            height: 60,
+            items: <Widget>[
+              Icon(Icons.home, size: 30, color: Colors.black),
+              Icon(Icons.favorite, size: 30, color: Colors.black),
+              Icon(Icons.notifications, size: 30, color: Colors.black),
+            ],
+            onTap: (index) {
+              if (index == 0) {
+                // Navigate to Home page
+              } else if (index == 1) {
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => PetFeedScreen()));
+                // // Navigate to Like/Favorites page
+              } else if (index == 2) {
+                // Navigate to Reminder page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChangeNotifierProvider(
+                      create: (_) => ReminderProvider(),
+                      child: ReminderScreen(),
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
+      ),
     );
+  }
+}
+
+class CurvedPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint()
+      ..color = Colors.white70
+      ..style = PaintingStyle.fill;
+
+    var path = Path()
+      ..moveTo(0, 0)
+      ..lineTo(0, size.height)
+      ..lineTo(size.width, size.height)
+      ..lineTo(size.width, 0)
+      ..quadraticBezierTo(size.width * 0.5, -30, 0, 0);
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

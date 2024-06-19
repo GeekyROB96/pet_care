@@ -8,6 +8,7 @@ class MyTextField extends StatefulWidget {
   final EdgeInsetsGeometry padding;
   final FocusNode? focusNode;
   final Widget? prefixIcon;
+  final String? prefixTooltipMessage; // Added parameter for tooltip message
   final Widget? suffixIcon;
   final TextStyle? textStyle;
   final Color? fillColor;
@@ -22,6 +23,7 @@ class MyTextField extends StatefulWidget {
     required this.padding,
     this.focusNode,
     this.prefixIcon,
+    this.prefixTooltipMessage, // Added parameter for tooltip message
     this.suffixIcon,
     this.textStyle,
     this.fillColor,
@@ -52,6 +54,7 @@ class _MyTextFieldState extends State<MyTextField> {
               borderSide: BorderSide(color: Colors.black),
             ),
             focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide(color: Colors.black),
             ),
             fillColor: widget.fillColor ?? Colors.transparent,
@@ -64,8 +67,19 @@ class _MyTextFieldState extends State<MyTextField> {
               fontStyle: widget.textStyle?.fontStyle,
               letterSpacing: widget.textStyle?.letterSpacing,
             ),
-            prefixIcon: widget.prefixIcon,
+            prefixIcon: widget.prefixIcon != null
+                ? MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Tooltip(
+                      message:
+                          widget.prefixTooltipMessage ?? '', // Tooltip message
+                      child: widget.prefixIcon!,
+                    ),
+                    onEnter: (_) {},
+                  )
+                : null,
             suffixIcon: widget.suffixIcon,
+            suffixIconConstraints: BoxConstraints(minWidth: 40, minHeight: 40),
           ),
           style: widget.textStyle,
         ),

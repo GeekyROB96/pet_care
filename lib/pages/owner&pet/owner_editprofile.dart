@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:pet_care/constants/theme/light_colors.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/owner_editprofile_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../../constants/theme/light_colors.dart';
 
 class OwnerEditProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        titleTextStyle: TextStyle(
-          color: LightColors.textColor,
-          fontSize: 25,
+        title: Text(
+          'Edit Profile',
+          style: TextStyle(
+            color: LightColors.textColor,
+            fontSize: 25,
+          ),
         ),
-        title: Text('Edit Profile', textAlign: TextAlign.center),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -37,58 +39,36 @@ class OwnerEditProfilePage extends StatelessWidget {
                               right: 0,
                               child: IconButton(
                                 icon: Icon(Icons.edit),
-                                onPressed: () =>
-                                    ownerDetailsProvider.pickProfileImage(context),
+                                onPressed: () => ownerDetailsProvider
+                                    .pickProfileImage(context),
                               ),
                             ),
                           ],
                         ),
                       ),
                       SizedBox(height: 20),
-                      Text(
-                        'Name:',
-                        style: TextStyle(
-                            color: LightColors.textColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        ownerDetailsProvider.name,
-                        style: TextStyle(
-                            color: LightColors.textColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w300),
+                      buildTextField(
+                        label: 'Name',
+                        initialValue: ownerDetailsProvider.name,
+                        onChanged: (value) =>
+                            Provider.of<OwnerEditProfileProvider>(context,
+                                    listen: false)
+                                .setName(value),
                       ),
                       SizedBox(height: 10),
-                      Text(
-                        'Email:',
-                        style: TextStyle(
-                            color: LightColors.textColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        ownerDetailsProvider.email,
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: LightColors.textColor,
-                            fontWeight: FontWeight.w300),
+                      buildTextField(
+                        label: 'Email',
+                        initialValue: ownerDetailsProvider.email,
+                        enabled: false, // Make the email field non-editable
                       ),
                       SizedBox(height: 10),
-                      TextField(
-                        decoration: InputDecoration(
-                          labelText: 'Phone Number',
-                          labelStyle: TextStyle(
-                              color: LightColors.textColor,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
+                      buildTextField(
+                        label: 'Phone Number',
+                        initialValue: ownerDetailsProvider.phoneNo,
                         onChanged: (value) =>
                             Provider.of<OwnerEditProfileProvider>(context,
                                     listen: false)
                                 .setPhoneNo(value),
-                        controller: TextEditingController(
-                            text: ownerDetailsProvider.phoneNo),
                       ),
                       SizedBox(height: 20),
                       Row(
@@ -115,21 +95,45 @@ class OwnerEditProfilePage extends StatelessWidget {
                     ],
                   )
                 : Center(
-                    child:
-                        CircularProgressIndicator(), // Show loading indicator until data is loaded
+                    child: CircularProgressIndicator(),
                   );
           },
         ),
       ),
     );
   }
-}
 
-  ImageProvider getImageProvider(OwnerDetailsGetterProvider ownerDetailsProvider) {
+  Widget buildTextField({
+    required String label,
+    required String initialValue,
+    ValueChanged<String>? onChanged,
+    bool enabled = true,
+  }) {
+    return TextField(
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(
+          color: LightColors.textColor,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      style: TextStyle(
+        fontSize: 16,
+        color: LightColors.textColor,
+      ),
+      onChanged: onChanged,
+      enabled: enabled,
+      controller: TextEditingController(
+          text: initialValue), // Initialize controller with initialValue
+    );
+  }
+
+  ImageProvider getImageProvider(
+      OwnerDetailsGetterProvider ownerDetailsProvider) {
     if (ownerDetailsProvider.profileImageUrl != null) {
       return NetworkImage(ownerDetailsProvider.profileImageUrl!);
     } else {
-      // Check if file image is available, if not, return default image
       if (ownerDetailsProvider.profileImageFile != null) {
         return FileImage(ownerDetailsProvider.profileImageFile!);
       } else {
@@ -137,7 +141,4 @@ class OwnerEditProfilePage extends StatelessWidget {
       }
     }
   }
-
-
-
-
+}

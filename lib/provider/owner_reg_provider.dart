@@ -112,15 +112,14 @@ class OwnerRegistrationProvider with ChangeNotifier {
 
       if (user != null) {
         await _fireStoreService.saveUserDetails(
-          userId: user.uid,
-          name: name,
-          email: email,
-          phoneNo: phoneNo,
-          age: age,
-          occupation: occupation,
-          role: _role,
-          locationCity: _locationCity
-        );
+            userId: user.uid,
+            name: name,
+            email: email,
+            phoneNo: phoneNo,
+            age: age,
+            occupation: occupation,
+            role: _role,
+            locationCity: _locationCity);
 
         // Update local state after successful signup
         setName(_name);
@@ -135,7 +134,7 @@ class OwnerRegistrationProvider with ChangeNotifier {
             .loadUserProfile();
 
         // Navigate to the next screen after successful signup
-         navigateToPets(context);
+        navigateToPets(context);
 
         print('Owner signed up and details saved');
       }
@@ -155,7 +154,7 @@ class OwnerRegistrationProvider with ChangeNotifier {
     Navigator.pushNamed(context, '/ownerHomeScreen');
   }
 
-  void navigateToPets(BuildContext context)  {
+  void navigateToPets(BuildContext context) {
     Navigator.pushNamed(context, '/pets');
   }
 

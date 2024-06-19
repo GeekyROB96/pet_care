@@ -28,6 +28,9 @@ class VolunteerRegistrationProvider extends ChangeNotifier {
   bool _isVolunteerLoggedIn = false;
   String _locationCity = '';
 
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
   final String _volunteerRole = 'volunteer';
   final AuthService _authService = AuthService();
   final FireStoreService _fireStoreService = FireStoreService();
@@ -51,6 +54,11 @@ class VolunteerRegistrationProvider extends ChangeNotifier {
   bool get providesDogWalking => _providesDogWalking;
   bool get providesHouseSitting => _providesHouseSitting;
   bool get isPasswordVisible => _isVolunteerPasswordVisible;
+
+  void setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
 
   void setVolunteerName(String name) {
     _volunteerName = name;
@@ -165,24 +173,23 @@ class VolunteerRegistrationProvider extends ChangeNotifier {
 
     if (user != null) {
       await _fireStoreService.saveVolunteerDetails(
-        userId: user.uid,
-        name: volunteerName,
-        email: volunteerEmail,
-        phoneNo: volunteerPhoneNo,
-        age: volunteerAge,
-        occupation: volunteerOccupation,
-        aboutMe: volunteerAboutMe,
-        prefersCat: prefersCat,
-        prefersDog: prefersDog,
-        prefersBird: prefersBird,
-        prefersRabbit: prefersRabbit,
-        prefersOthers: prefersOthers,
-        providesHomeVisits: providesHomeVisits,
-        providesDogWalking: providesDogWalking,
-        providesHouseSitting: providesHouseSitting,
-        role: _volunteerRole,
-        locationCity: _locationCity
-      );
+          userId: user.uid,
+          name: volunteerName,
+          email: volunteerEmail,
+          phoneNo: volunteerPhoneNo,
+          age: volunteerAge,
+          occupation: volunteerOccupation,
+          aboutMe: volunteerAboutMe,
+          prefersCat: prefersCat,
+          prefersDog: prefersDog,
+          prefersBird: prefersBird,
+          prefersRabbit: prefersRabbit,
+          prefersOthers: prefersOthers,
+          providesHomeVisits: providesHomeVisits,
+          providesDogWalking: providesDogWalking,
+          providesHouseSitting: providesHouseSitting,
+          role: _volunteerRole,
+          locationCity: _locationCity);
 
       await _prefsService.setBool('isVolunteerLoggedIn', true);
       _isVolunteerLoggedIn = true;

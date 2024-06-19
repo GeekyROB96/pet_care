@@ -19,9 +19,17 @@ class VolunteerLoginProvider extends ChangeNotifier {
   bool get isVolunteerPasswordVisible => _isVolunteerPasswordVisible;
   bool get isVolunteerLoggedIn => _isVolunteerLoggedIn;
 
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
   final AuthService _authService = AuthService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final SharedPreferencesService _prefsService = SharedPreferencesService();
+
+  void setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
 
   void setVolunteerEmail(String email) {
     _volunteerEmail = email;
@@ -73,13 +81,14 @@ class VolunteerLoginProvider extends ChangeNotifier {
         _isVolunteerLoggedIn = true;
         notifyListeners();
         print("Shared Value is $_isVolunteerLoggedIn");
-         Provider.of<VolunteerDetailsGetterProvider>(context, listen: false)
-          .loadVolunteerDetails();
+        Provider.of<VolunteerDetailsGetterProvider>(context, listen: false)
+            .loadVolunteerDetails();
         navigateToVolunteerDashboard(context);
         showSnackBar(context, "Sign In Successful!");
         print('User signed in successfully');
       } else {
-        showSnackBar(context, "You are not authorized to log in as a volunteer");
+        showSnackBar(
+            context, "You are not authorized to log in as a volunteer");
         print('You are not authorized to log in as a volunteer');
         await FirebaseAuth.instance.signOut();
       }
@@ -100,6 +109,10 @@ class VolunteerLoginProvider extends ChangeNotifier {
   Future<void> checkVolunteerLoginStatus() async {
     _isVolunteerLoggedIn = _prefsService.getBool('isVolunteerLoggedIn');
     notifyListeners();
+  }
+
+  void navigateToVolunteerReg(BuildContext context) {
+    Navigator.pushNamed(context, '/volunteerReg');
   }
 
   void navigateToVolunteerDashboard(BuildContext context) {

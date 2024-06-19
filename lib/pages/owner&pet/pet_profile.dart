@@ -19,7 +19,8 @@ class PetProfile extends StatelessWidget {
 
           final pet = petsDetailsProvider.petData;
           final imagePath = pet['imagePath'];
-          final isNetworkImage = Uri.tryParse(imagePath)?.hasAbsolutePath ?? false;
+          final isNetworkImage =
+              Uri.tryParse(imagePath)?.hasAbsolutePath ?? false;
 
           return Stack(
             children: [
@@ -28,34 +29,34 @@ class PetProfile extends StatelessWidget {
                 height: MediaQuery.of(context).size.height * 0.4,
                 width: double.infinity,
                 color: Colors.grey[200],
-                child:  imagePath != null
-                ? (isNetworkImage
-                    ? Image.network(
-                        imagePath,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            'assets/images/cat.png',
+                child: imagePath != null
+                    ? (isNetworkImage
+                        ? Image.network(
+                            imagePath,
                             fit: BoxFit.cover,
-                          );
-                        },
-                      )
-                    : Image.file(
-                        File(imagePath),
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            'assets/images/cat.png',
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/images/cat.png',
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          )
+                        : Image.file(
+                            File(imagePath),
                             fit: BoxFit.cover,
-                          );
-                        },
-                      ))
-                : Image.asset(
-                    'assets/images/cat.png',
-                    fit: BoxFit.cover,
-                  ),
-          ),
-              
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/images/cat.png',
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ))
+                    : Image.asset(
+                        'assets/images/cat.png',
+                        fit: BoxFit.cover,
+                      ),
+              ),
+
               // Content Container
               SingleChildScrollView(
                 child: Column(
@@ -109,7 +110,8 @@ class PetProfile extends StatelessWidget {
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
                                   ),
-                                  overflow: TextOverflow.ellipsis, // Handle overflow if petName is too long
+                                  overflow: TextOverflow
+                                      .ellipsis, // Handle overflow if petName is too long
                                 ),
                               ),
                               if (pet['energyLevel'] == 'low')
@@ -118,7 +120,8 @@ class PetProfile extends StatelessWidget {
                                 EnergyLevelIndicator(energyLevel: 'medium'),
                               if (pet['energyLevel'] == 'high')
                                 EnergyLevelIndicator(energyLevel: 'high'),
-                              SizedBox(width: 16), // Adjust the spacing as needed
+                              SizedBox(
+                                  width: 16), // Adjust the spacing as needed
                               if (pet['selectedPetType'] == 'Dog')
                                 Image.asset(
                                   'assets/images/dog_face.png',
@@ -195,22 +198,24 @@ class PetProfile extends StatelessWidget {
                             ],
                           ),
                           SizedBox(height: 20),
-                          Row(
-                            children: [Text(
+                          Row(children: [
+                            Text(
                               'Attributes: ',
                               style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold),
                             ),
-                          if(pet['friendlyWithChildren'] == false && pet['friendlyWithOtherPets']== false)
-                            
-                            Text('N/A',style: TextStyle(color: Colors.black),)
-                            ]
-                          ),
-                        if(pet['friendlyWithChildren'] ==true || pet['friendlyWithOtherPets']== true)
-
-                          SizedBox(height: 10),
+                            if (pet['friendlyWithChildren'] == false &&
+                                pet['friendlyWithOtherPets'] == false)
+                              Text(
+                                'N/A',
+                                style: TextStyle(color: Colors.black),
+                              )
+                          ]),
+                          if (pet['friendlyWithChildren'] == true ||
+                              pet['friendlyWithOtherPets'] == true)
+                            SizedBox(height: 10),
                           Row(
                             children: [
                               if (pet['friendlyWithChildren'] == true)
@@ -405,7 +410,7 @@ class EnergyLevelIndicator extends StatelessWidget {
       height: height,
       color: Colors.grey[300], // Background bar color
       child: SizedBox(
-       // alignment: Alignment.centerLeft,
+        // alignment: Alignment.centerLeft,
         width: widthFactor,
         child: Container(
           color: color,

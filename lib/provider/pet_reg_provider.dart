@@ -54,8 +54,7 @@ class PetRegistrationProvider with ChangeNotifier {
   bool get canBeLeftAlone => _canBeLeftAlone;
 
   final FireStoreService _fireStoreService = FireStoreService();
-    final FirebaseStorage _storage = FirebaseStorage.instance;
-
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   void setPetName(String name) {
     _petName = name;
@@ -139,7 +138,8 @@ class PetRegistrationProvider with ChangeNotifier {
       showSnackBar(context, 'No profile image selected!');
     }
   }
-   Future<void> registerPet(BuildContext context) async {
+
+  Future<void> registerPet(BuildContext context) async {
     setLoading(true);
     await Provider.of<OwnerDetailsGetterProvider>(context, listen: false)
         .loadUserProfile();

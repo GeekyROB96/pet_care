@@ -148,6 +148,7 @@ class OwnerReg extends StatelessWidget {
                                       provider.setLocationCity(
                                           _locationController.text);
                                       await provider.signUp(context);
+                                      // Navigator.pushNamed(context, '/pets');
                                     },
                                     text: 'Sign Up',
                                     backgroundColor:

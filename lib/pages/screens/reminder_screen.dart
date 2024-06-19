@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pet_care/widgets/components/textfield.dart';
@@ -105,34 +104,77 @@ class _ReminderScreenState extends State<ReminderScreen> {
     final tz.TZDateTime tzScheduledTime =
         tz.TZDateTime.from(scheduledTime, tz.local);
 
-    const androidDetails = AndroidNotificationDetails(
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
       'reminder_channel',
       'Reminders',
       importance: Importance.max,
     );
-    const notificationDetails = NotificationDetails(
-      android: androidDetails,
-    );
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidDetails);
 
     try {
       await flutterLocalNotificationsPlugin.zonedSchedule(
-        0,
-        'Reminder',
-        reminderText,
-        tzScheduledTime,
+        0, // Notification ID
+        'Reminder', // Notification title
+        reminderText, // Notification content
+        tzScheduledTime, // Scheduled date and time
         notificationDetails,
-        androidAllowWhileIdle: true,
+        androidAllowWhileIdle:
+            true, // Allow notification to be delivered even when the device is in idle doze mode
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
       );
     } catch (e) {
       print('Error scheduling notification: $e');
-      // Handle error
     }
   }
 
   String formatTimestamp(DateTime timestamp) {
     return '${timestamp.day} ${_getMonthName(timestamp.month)} ${timestamp.year} ${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}';
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context,
+      ReminderProvider reminderProvider, String reminderId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Reminder'),
+          content: Text(
+            'Are you sure you want to delete this reminder?',
+            style: TextStyle(
+              color: LightColors.textColor,
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: LightColors.textColor,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  color: LightColors.textColor,
+                ),
+              ),
+              onPressed: () async {
+                await reminderProvider.deleteReminder(reminderId);
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   String _getMonthName(int month) {
@@ -208,7 +250,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
                               child: Card(
                                 elevation: 4.0,
                                 color: selectedCategoryIndex == index
-                                    ? LightColors.primaryColor.withOpacity(0.5)
+                                    ? Colors.deepPurple.withOpacity(0.5)
                                     : Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.0),
@@ -370,10 +412,20 @@ class _ReminderScreenState extends State<ReminderScreen> {
                                   title: Text('Incomplete Fields'),
                                   content: Text(
                                     'Please select all fields before saving the reminder.',
+                                    style: TextStyle(
+                                      color: LightColors.textColor,
+                                      fontSize: 14,
+                                    ),
                                   ),
                                   actions: <Widget>[
                                     TextButton(
-                                      child: Text('OK'),
+                                      child: Text(
+                                        'OK',
+                                        style: TextStyle(
+                                          color: LightColors.textColor,
+                                          fontSize: 14,
+                                        ),
+                                      ),
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
@@ -390,7 +442,14 @@ class _ReminderScreenState extends State<ReminderScreen> {
                         },
                         child: Text(
                           'Save Reminder',
-                          style: TextStyle(),
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 18,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Colors.deepPurpleAccent.withOpacity(0.5),
                         ),
                       ),
                     ],
@@ -422,8 +481,19 @@ class _ReminderScreenState extends State<ReminderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: Text('Reminder'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Reminders',
+            ),
+            SizedBox(width: 8),
+            Icon(
+              Icons.alarm_add_outlined,
+              size: 25,
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -435,7 +505,12 @@ class _ReminderScreenState extends State<ReminderScreen> {
               },
               child: Text(
                 'Add Reminder',
-                style: TextStyle(),
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurpleAccent.withOpacity(0.5),
               ),
             ),
             SizedBox(height: 20),
@@ -464,8 +539,8 @@ class _ReminderScreenState extends State<ReminderScreen> {
                       return Column(
                         children: [
                           ListTile(
-                          visualDensity: VisualDensity.adaptivePlatformDensity,
-
+                            visualDensity:
+                                VisualDensity.adaptivePlatformDensity,
                             tileColor: Color.fromARGB(30, 180, 180, 185),
                             leading: Image.asset(
                               icons[
@@ -478,12 +553,18 @@ class _ReminderScreenState extends State<ReminderScreen> {
                             trailing: IconButton(
                               icon: Icon(Icons.delete),
                               onPressed: () async {
-                                await reminderProvider
-                                    .deleteReminder(reminder['id']);
+                                _showDeleteConfirmationDialog(
+                                  context,
+                                  reminderProvider,
+                                  reminder['id'],
+                                  //reminder['reminderText'],
+                                );
                               },
                             ),
                           ),
-                          Divider(color: Color.fromARGB(30, 180, 180, 185),), // Add a divider after each tile
+                          Divider(
+                            color: Color.fromARGB(30, 180, 180, 185),
+                          ), // Add a divider after each tile
                         ],
                       );
                     },
