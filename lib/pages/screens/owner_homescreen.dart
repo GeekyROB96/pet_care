@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:pet_care/constants/theme/light_colors.dart';
 import 'package:pet_care/pages/screens/reminder_screen.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
@@ -58,22 +57,23 @@ class OwnerDashboard extends StatelessWidget {
                                 itemCount: petsDetailsProvider.pets.length,
                                 itemBuilder: (context, index) {
                                   final pet = petsDetailsProvider.pets[index];
+                                  final imagePath = pet['imagePath'];
+                                  final isNetworkImage =
+                                      Uri.tryParse(imagePath)?.hasAbsolutePath ?? false;
+
                                   return GestureDetector(
                                     onTap: () {
-                                      ownerDashboardProvider
-                                          .selectPetIndex(index);
+                                      ownerDashboardProvider.selectPetIndex(index);
                                     },
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 8.0),
+                                      padding: const EdgeInsets.only(right: 8.0),
                                       child: CircleAvatar(
                                         radius: 30,
-                                        backgroundImage: pet['imagePath'] !=
-                                                null
-                                            ? FileImage(File(pet['imagePath']))
-                                            : AssetImage(
-                                                    'assets/images/cat.png')
-                                                as ImageProvider<Object>,
+                                        backgroundImage: imagePath != null
+                                            ? (isNetworkImage
+                                                ? NetworkImage(imagePath)
+                                                : FileImage(File(imagePath))) as ImageProvider
+                                            : AssetImage('assets/images/cat.png') as ImageProvider,
                                       ),
                                     ),
                                   );
@@ -90,10 +90,7 @@ class OwnerDashboard extends StatelessWidget {
                   child: IconButton(
                     icon: Icon(Icons.add),
                     onPressed: () async {
-                      // Navigate to the page to register a new pet
                       await Navigator.pushNamed(context, '/pets');
-
-                      // After returning, update the pet data
                       await petsDetailsProvider.loadPets();
                     },
                   ),
@@ -110,21 +107,19 @@ class OwnerDashboard extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-             Consumer<OwnerDashboardProvider>(
+            Consumer<OwnerDashboardProvider>(
               builder: (context, ownerDashboardProvider, child) {
                 if (petsDetailsProvider.isDataLoaded &&
                     petsDetailsProvider.pets.isNotEmpty) {
-                  final pet = petsDetailsProvider
-                      .pets[ownerDashboardProvider.selectedPetIndex];
+                  final pet = petsDetailsProvider.pets[ownerDashboardProvider.selectedPetIndex];
+                  final imagePath = pet['imagePath'];
+                  final isNetworkImage =
+                      Uri.tryParse(imagePath)?.hasAbsolutePath ?? false;
 
                   return GestureDetector(
                     onTap: () async {
-                      
                       await petsDetailsProvider.navigateAndgetPetByName(
-                        pet['petName'],
-                        pet['ownerEmail'],
-                        context
-                      );
+                          pet['petName'], pet['ownerEmail'], context);
                     },
                     child: Container(
                       padding: EdgeInsets.all(10),
@@ -137,8 +132,10 @@ class OwnerDashboard extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 40,
-                            backgroundImage: pet['imagePath'] != null
-                                ? FileImage(File(pet['imagePath']))
+                            backgroundImage: imagePath != null
+                                ? (isNetworkImage
+                                    ? NetworkImage(imagePath)
+                                    : FileImage(File(imagePath))) as ImageProvider
                                 : AssetImage('assets/images/cat.png') as ImageProvider,
                           ),
                           SizedBox(width: 20),
@@ -212,14 +209,16 @@ class OwnerDashboard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: IconButton(
-                              icon: Image.asset('assets/icons/reminderr.png',
-                                  width: 30, height: 30),
+                              icon: Image.asset(
+                                'assets/icons/reminderr.png',
+                                width: 30,
+                                height: 30,
+                              ),
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        ChangeNotifierProvider(
+                                    builder: (context) => ChangeNotifierProvider(
                                       create: (_) => ReminderProvider(),
                                       child: ReminderScreen(),
                                     ),
@@ -249,8 +248,11 @@ class OwnerDashboard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: IconButton(
-                              icon: Image.asset('assets/icons/pet-care.png',
-                                  width: 30, height: 30),
+                              icon: Image.asset(
+                                'assets/icons/pet-care.png',
+                                width: 30,
+                                height: 30,
+                              ),
                               onPressed: () {
                                 Navigator.pushNamed(context, '/petSitters');
                               },
@@ -277,8 +279,11 @@ class OwnerDashboard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: IconButton(
-                              icon: Image.asset('assets/icons/sad.png',
-                                  width: 30, height: 30),
+                              icon: Image.asset(
+                                'assets/icons/sad.png',
+                                width: 30,
+                                height: 30,
+                              ),
                               onPressed: () {
                                 // Add your onPressed logic here
                               },
@@ -311,8 +316,11 @@ class OwnerDashboard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: IconButton(
-                              icon: Image.asset('assets/icons/more.png',
-                                  width: 30, height: 30),
+                              icon: Image.asset(
+                                'assets/icons/more.png',
+                                width: 30,
+                                height: 30,
+                              ),
                               onPressed: () {
                                 // Add your onPressed logic here
                               },
@@ -339,8 +347,4 @@ class OwnerDashboard extends StatelessWidget {
       ),
     );
   }
-}
-
-class NavigationProvider extends ChangeNotifier {
-  void navigateToPetsPage() {}
 }

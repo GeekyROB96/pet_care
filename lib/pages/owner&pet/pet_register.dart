@@ -77,7 +77,7 @@ class PetRegistration extends StatelessWidget {
                                       color: LightColors.textColor,
                                     ),
                                     onPressed: () {
-                                      provider.pickImage();
+                                      provider.pickProfileImage(context);
                                     },
                                   ),
                                 ),

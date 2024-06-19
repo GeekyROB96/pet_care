@@ -1,3 +1,8 @@
+import 'dart:async';
+import 'dart:core';
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pet_care/constants/snackbar.dart';
@@ -36,6 +41,10 @@ class PetRegistrationProvider with ChangeNotifier {
   String? get gender => _gender;
   String? get aboutPet => _aboutPet;
 
+  File? _profileImageFile;
+
+  File? get profileImageFile => _profileImageFile;
+
   bool get friendlyWithChildren => _friendlyWithChildren;
   bool get friendlyWithOtherPets => _friendlyWithOtherPets;
   bool get houseTrained => _houseTrained;
@@ -45,6 +54,8 @@ class PetRegistrationProvider with ChangeNotifier {
   bool get canBeLeftAlone => _canBeLeftAlone;
 
   final FireStoreService _fireStoreService = FireStoreService();
+    final FirebaseStorage _storage = FirebaseStorage.instance;
+
 
   void setPetName(String name) {
     _petName = name;
@@ -116,17 +127,19 @@ class PetRegistrationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  Future<void> pickProfileImage(BuildContext context) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      _image = pickedFile;
+      _profileImageFile = File(pickedFile.path);
       notifyListeners();
+      showSnackBar(context, 'Profile image picked successfully!');
+    } else {
+      showSnackBar(context, 'No profile image selected!');
     }
   }
-
-  Future<void> registerPet(BuildContext context) async {
+   Future<void> registerPet(BuildContext context) async {
     setLoading(true);
     await Provider.of<OwnerDetailsGetterProvider>(context, listen: false)
         .loadUserProfile();
@@ -141,11 +154,9 @@ class PetRegistrationProvider with ChangeNotifier {
     if (_petName != null &&
         _breed != null &&
         _age != null &&
-        _image != null &&
+        _profileImageFile != null &&
         _gender != null) {
       try {
-        setLoading(true);
-
         // Check if the pet name is already registered
         bool isDuplicate =
             await _fireStoreService.isPetNameDuplicate(ownerEmail, _petName!);
@@ -157,27 +168,39 @@ class PetRegistrationProvider with ChangeNotifier {
           return;
         }
 
-        // Save the pet details
+        // Save the pet details with a placeholder image URL
         await _fireStoreService.savePetDetails(
-            ownerEmail: ownerEmail,
-            petName: _petName!,
-            breed: _breed!,
-            age: _age!,
-            gender: _gender!,
-            imagePath: _image!.path,
-            friendlyWithChildren: _friendlyWithChildren,
-            friendlyWithOtherPets: _friendlyWithOtherPets,
-            houseTrained: _houseTrained,
-            walksPerDay: _walksPerDay,
-            energyLevel: _energyLevel,
-            feedingSchedule: _feedingSchedule ?? '',
-            canBeLeftAlone: _canBeLeftAlone,
-            selectedPetType: selectedPetType ?? '',
-            aboutPet: _aboutPet ?? '',
-            weight: _weight);
+          ownerEmail: ownerEmail,
+          petName: _petName!,
+          breed: _breed!,
+          age: _age!,
+          gender: _gender!,
+          imagePath: '', // Placeholder
+          friendlyWithChildren: _friendlyWithChildren,
+          friendlyWithOtherPets: _friendlyWithOtherPets,
+          houseTrained: _houseTrained,
+          walksPerDay: _walksPerDay,
+          energyLevel: _energyLevel,
+          feedingSchedule: _feedingSchedule ?? '',
+          canBeLeftAlone: _canBeLeftAlone,
+          selectedPetType: selectedPetType ?? '',
+          aboutPet: _aboutPet ?? '',
+          weight: _weight,
+        );
 
-        print("weight is $_weight");
-        print("About pet $_aboutPet");
+        // Upload the image to Firebase Storage
+        String filePath = 'pets_images/${ownerEmail}_${_petName}.jpg';
+        UploadTask uploadTask =
+            _storage.ref().child(filePath).putFile(_profileImageFile!);
+        TaskSnapshot taskSnapshot = await uploadTask;
+        String imageUrl = await taskSnapshot.ref.getDownloadURL();
+
+        // Update the Firestore document with the real image URL
+        await _fireStoreService.updateProfileImage(
+          ownerEmail: ownerEmail,
+          petName: _petName!,
+          imageUrl: imageUrl,
+        );
 
         final petsDetailsProvider =
             Provider.of<PetsDetailsGetterProvider>(context, listen: false);
@@ -191,10 +214,13 @@ class PetRegistrationProvider with ChangeNotifier {
             'Pet Name: $_petName, Breed: $_breed, Age: $_age, Gender: $_gender, Image Path: ${_image?.path}');
 
         print('Error registering pet: $e');
+      } finally {
+        setLoading(false);
       }
     } else {
       showSnackBar(context, "Please fill all the fields and upload an image");
       print('Please fill all the fields and upload an image');
+      setLoading(false);
     }
   }
 

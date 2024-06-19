@@ -18,6 +18,8 @@ class PetProfile extends StatelessWidget {
           }
 
           final pet = petsDetailsProvider.petData;
+          final imagePath = pet['imagePath'];
+          final isNetworkImage = Uri.tryParse(imagePath)?.hasAbsolutePath ?? false;
 
           return Stack(
             children: [
@@ -26,22 +28,34 @@ class PetProfile extends StatelessWidget {
                 height: MediaQuery.of(context).size.height * 0.4,
                 width: double.infinity,
                 color: Colors.grey[200],
-                child: pet != null && pet['imagePath'] != null
-                    ? Image(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(pet['imagePath']),
+                child:  imagePath != null
+                ? (isNetworkImage
+                    ? Image.network(
+                        imagePath,
+                        fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Image.asset(
                             'assets/images/cat.png',
-                            fit: BoxFit.fill,
+                            fit: BoxFit.cover,
                           );
                         },
                       )
-                    : Image.asset(
-                        'assets/images/cat.png',
-                        fit: BoxFit.fitHeight,
-                      ),
-              ),
+                    : Image.file(
+                        File(imagePath),
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/images/cat.png',
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      ))
+                : Image.asset(
+                    'assets/images/cat.png',
+                    fit: BoxFit.cover,
+                  ),
+          ),
+              
               // Content Container
               SingleChildScrollView(
                 child: Column(
@@ -364,22 +378,22 @@ class EnergyLevelIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double height = 10.0;
+    double height = 30.0;
     Color color;
     double widthFactor;
 
     switch (energyLevel.toLowerCase()) {
       case 'high':
         color = Colors.green;
-        widthFactor = 1.0; // Full width
+        widthFactor = 5.0; // Full width
         break;
       case 'medium':
         color = Colors.orange;
-        widthFactor = 0.5; // Half width
+        widthFactor = 2.5; // Half width
         break;
       case 'low':
         color = Colors.red;
-        widthFactor = 0.25; // Quarter width
+        widthFactor = 1.25; // Quarter width
         break;
       default:
         color = Colors.grey;
@@ -390,9 +404,9 @@ class EnergyLevelIndicator extends StatelessWidget {
       width: 50, // Set a fixed width for the indicator
       height: height,
       color: Colors.grey[300], // Background bar color
-      child: FractionallySizedBox(
-        alignment: Alignment.centerLeft,
-        widthFactor: widthFactor,
+      child: SizedBox(
+       // alignment: Alignment.centerLeft,
+        width: widthFactor,
         child: Container(
           color: color,
         ),

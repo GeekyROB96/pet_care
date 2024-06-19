@@ -28,8 +28,8 @@ class PetsDetailsGetterProvider extends ChangeNotifier {
         _pets.clear();
 
         _pets = await _fireStoreService.getPets(user.email!);
-        _isDataLoaded = true; // Set isDataLoaded to true when data is loaded
-        notifyListeners(); // Notify listeners after loading pets
+        _isDataLoaded = true; 
+        notifyListeners(); 
       } catch (e) {
         print("Error loading pets data: $e");
       }
@@ -56,22 +56,7 @@ class PetsDetailsGetterProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-  Future<void> addPet(Map<String, dynamic> petData) async {
-    User? user = _auth.currentUser;
-    print("User is $user");
-    print("Its email is ${user?.email}");
-    if (user != null) {
-      try {
-        await _fireStoreService.addPet(user.email!, petData);
-        _pets.add(petData);
-        notifyListeners();
-      } catch (e) {
-        print("Error adding pet: $e");
-      }
-    } else {
-      print("No user logged in.");
-    }
-  }
+
 
   void clearData() {
     _pets = [];
