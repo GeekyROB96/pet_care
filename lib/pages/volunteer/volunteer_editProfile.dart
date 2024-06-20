@@ -142,8 +142,9 @@ class VolunteerEditProfilePage extends StatelessWidget {
                         children: [
                           Flexible(
                             child: TextField(
+                              readOnly: volunteerDetailsProvider.checkHomeVisits(),
                                 decoration: InputDecoration(
-                                  labelText: 'Min',
+                                  labelText: 'Home Visits',
                                   labelStyle: TextStyle(
                                     color: LightColors.textColor,
                                     fontSize: 16,
@@ -151,18 +152,19 @@ class VolunteerEditProfilePage extends StatelessWidget {
                                   ),
                                 ),
                                 controller: TextEditingController(
-                                  text: volunteerDetailsProvider.minPrice
+                                  text: volunteerDetailsProvider.providesHomeVisitsPrice
                                       .toString(),
                                 ),
                                 onChanged: (value) => volunteerDetailsProvider
-                                    .setMinPrice(int.parse(value)),
+                                    .setprovideHomeSVisitsPrice(int.parse(value)),
                                 keyboardType: TextInputType.number),
                           ),
                           SizedBox(width: 10),
                           Flexible(
                             child: TextField(
+                              readOnly: volunteerDetailsProvider.checkHouseSitting(),
                                 decoration: InputDecoration(
-                                  labelText: 'Max',
+                                  labelText: 'House Sitting',
                                   labelStyle: TextStyle(
                                     color: LightColors.textColor,
                                     fontSize: 16,
@@ -170,11 +172,11 @@ class VolunteerEditProfilePage extends StatelessWidget {
                                   ),
                                 ),
                                 controller: TextEditingController(
-                                  text: volunteerDetailsProvider.maxPrice
+                                  text: volunteerDetailsProvider.providesHouseSittingPrice
                                       .toString(),
                                 ),
                                 onChanged: (value) => volunteerDetailsProvider
-                                    .setMaxPrice(int.parse(value)),
+                                    .setprovideHouseSitting(int.parse(value)),
                                 keyboardType: TextInputType.number),
                           ),
                         ],

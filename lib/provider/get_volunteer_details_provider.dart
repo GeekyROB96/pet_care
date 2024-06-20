@@ -24,8 +24,8 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
   String? _imageUrl;
   String? _age;
   String? _occupation;
-  int? _minPrice;
-  int? _maxPrice;
+  int? _providesHomeVisitsPrice;
+  int? _providesHouseSittingPrice;
 
   bool _preferCat = false;
   bool _preferDog = false;
@@ -37,6 +37,8 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
   bool _providesHouseSitting = false;
   String? _locationCity;
 
+  Map<String, dynamic>? volunteerData;
+
   bool get isDataLoaded => _isDataLoaded;
   String get name => _name;
   String get email => _email;
@@ -47,8 +49,8 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
   String? get imageUrl => _imageUrl;
   String? get age => _age;
   String? get occupation => _occupation;
-  int? get minPrice => _minPrice;
-  int? get maxPrice => _maxPrice;
+  int? get providesHomeVisitsPrice => _providesHomeVisitsPrice;
+  int? get providesHouseSittingPrice => _providesHouseSittingPrice;
   String? get locationCity => _locationCity;
 
   VolunteerDetailsGetterProvider() {
@@ -78,8 +80,9 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
         _provideDogWalking = volunteerData?['providesDogWalking'] ?? false;
         _providesHouseSitting = volunteerData?['providesHouseSitting'] ?? false;
 
-        _minPrice = volunteerData?['minPrice'];
-        _maxPrice = volunteerData?['maxPrice'];
+        _providesHomeVisitsPrice = volunteerData?['providesHomeVisitsPrice'];
+        _providesHouseSittingPrice =
+            volunteerData?['providesHouseSittingPrice'];
 
         _locationCity = volunteerData?['locationCity'];
 
@@ -98,16 +101,16 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setMinPrice(int minPrice) {
-    _minPrice = minPrice;
+  void setprovideHomeSVisitsPrice(int providesHomeVisitsPrice) {
+    _providesHomeVisitsPrice = providesHomeVisitsPrice;
     notifyListeners();
-    print(_minPrice);
+    print(providesHomeVisitsPrice);
   }
 
-  void setMaxPrice(int maxPrice) {
-    _maxPrice = maxPrice;
+  void setprovideHouseSitting(int providesHouseSittingPrice) {
+    _providesHouseSittingPrice = providesHouseSittingPrice;
     notifyListeners();
-    print(_maxPrice);
+    print(providesHouseSittingPrice);
   }
 
   void setPhoneNo(String phoneNo) {
@@ -118,6 +121,14 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
   void setAboutMe(String aboutMe) {
     _aboutMe = aboutMe;
     notifyListeners();
+  }
+
+  bool checkHomeVisits() {
+    return volunteerData?['providesHomeVisits'] ?? false;
+  }
+
+  bool checkHouseSitting() {
+    return volunteerData?['providesHouseSitting'] ?? false;
   }
 
   Future<void> pickProfileImage(BuildContext context) async {
@@ -137,6 +148,7 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
     User? user = _auth.currentUser;
     if (user != null) {
       try {
+        // Inside saveProfile method
         if (_profileImageFile != null) {
           String filePath = 'volunteer/profile_images/${user.uid}.jpg';
           UploadTask uploadTask =
@@ -149,11 +161,23 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
               userId: user.uid, imageUrl: _imageUrl!);
         }
 
-        final volunteerData =
+// Fetch updated volunteer details after profile image upload
+        final updatedVolunteerData =
             await _fireStoreService.getVolunteerDetails(user.uid);
+// Ensure to update local variables with updated data if needed
 
-        if (_minPrice != null && _maxPrice != null && _maxPrice! > _minPrice!) {
-          showSnackBar(context, "Max price can't be less than min price!");
+// Perform save operation
+        if (updatedVolunteerData?['providesHomeVisits'] == false &&
+            _providesHomeVisitsPrice != null) {
+          showSnackBar(
+              context, 'You have not opted for HomeVisits Service option');
+          return;
+        }
+
+        if (updatedVolunteerData?['providesHouseSitting'] == false &&
+            _providesHouseSittingPrice != null) {
+          showSnackBar(
+              context, 'You have not opted for House Sitting Service option');
           return;
         }
 
@@ -162,7 +186,7 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
             name: _name,
             email: _email,
             phoneNo: _phoneNo,
-            age: _age ?? '', // Add age here if needed
+            age: _age ?? '',
             occupation: _occupation ?? '',
             aboutMe: _aboutMe,
             prefersCat: _preferCat,
@@ -175,11 +199,9 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
             providesHouseSitting: _providesHouseSitting,
             role: 'volunteer',
             profileImageUrl: _imageUrl,
-            minPrice: _minPrice,
-            maxPrice: _maxPrice,
-            locationCity: _locationCity
-            // Save the profile image URL
-            );
+            providesHomeVisitsPrice: _providesHomeVisitsPrice,
+            providesHouseSittingPrice: _providesHouseSittingPrice,
+            locationCity: _locationCity);
 
         showSnackBar(context, "Profile details saved successfully!");
       } catch (e) {
@@ -209,8 +231,10 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
     _phoneNo = '';
     _aboutMe = '';
     _imageUrl = '';
-    _minPrice = null;
-    _maxPrice = null;
+    _providesHomeVisits = false;
+    _providesHouseSitting = false;
+    _providesHomeVisitsPrice = null;
+    _providesHouseSittingPrice = null;
     _locationCity = '';
     notifyListeners();
   }

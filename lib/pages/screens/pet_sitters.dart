@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 
 import '../volunteer/volunteer_details_page.dart';
 
+
+import '../volunteer/volunteer_details_page.dart';
+
 class PetSitters extends StatefulWidget {
   const PetSitters({Key? key}) : super(key: key);
 
@@ -13,7 +16,9 @@ class PetSitters extends StatefulWidget {
 
 class _PetSittersState extends State<PetSitters> {
   late PetSitterProvider _provider;
-  String? selectedPetType; // Track selected pet type for filtering
+  String? selectedPetType;
+  bool showHouseSitting = false;
+  bool showHouseVisit = false;
 
   @override
   void initState() {
@@ -38,23 +43,21 @@ class _PetSittersState extends State<PetSitters> {
             if (provider.volunteers.isEmpty) {
               return Center(child: Text('No volunteers found'));
             }
-            // Filter volunteers based on selectedPetType
-            final filteredVolunteers = selectedPetType == null
-                ? provider.volunteers
-                : provider.volunteers.where((volunteer) {
-                    switch (selectedPetType) {
-                      case 'dogs':
-                        return volunteer['prefersDog'] == true;
-                      case 'cats':
-                        return volunteer['prefersCat'] == true;
-                      case 'rabbits':
-                        return volunteer['prefersRabbit'] == true;
-                      case 'birds':
-                        return volunteer['prefersBird'] == true;
-                      default:
-                        return true; // Show all if no pet type selected
-                    }
-                  }).toList();
+            final filteredVolunteers = provider.volunteers.where((volunteer) {
+              // Apply selected pet type filter (if needed)
+              if (selectedPetType != null) {
+                // Implement pet type filtering logic if required
+              }
+              // Apply house sitting filter
+              if (showHouseSitting && volunteer['providesHouseSitting'] != true) {
+                return false;
+              }
+              // Apply house visit filter
+              if (showHouseVisit && volunteer['providesHomeVisits'] != true) {
+                return false;
+              }
+              return true; // Include volunteer in the list
+            }).toList();
 
             return Column(
               children: [
@@ -89,6 +92,70 @@ class _PetSittersState extends State<PetSitters> {
                           ),
                         ),
                         SizedBox(width: 15),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              showHouseSitting = !showHouseSitting;
+                            });
+                          },
+                          child: Card(
+                            color: showHouseSitting
+                                ? Colors.blue.withOpacity(0.8)
+                                : Colors.white.withOpacity(0.8),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 2, horizontal: 15),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.home, color: Colors.grey),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'House Sitting',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: showHouseSitting
+                                          ? Colors.white
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 15),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              showHouseVisit = !showHouseVisit;
+                            });
+                          },
+                          child: Card(
+                            color: showHouseVisit
+                                ? Colors.blue.withOpacity(0.8)
+                                : Colors.white.withOpacity(0.8),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 2, horizontal: 15),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.home, color: Colors.grey),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'House Visit',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: showHouseVisit
+                                          ? Colors.white
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 15),
                         _buildPetTypeFilter('dogs'),
                         _buildPetTypeFilter('cats'),
                         _buildPetTypeFilter('rabbits'),
@@ -110,8 +177,7 @@ class _PetSittersState extends State<PetSitters> {
                             MaterialPageRoute(
                               builder: (context) => VolunteerDetailsPage(
                                 volunteer: {
-                                  'profileImageUrl':
-                                      volunteer['profileImageUrl'],
+                                  'profileImageUrl': volunteer['profileImageUrl'],
                                   'name': volunteer['name'],
                                   'phoneNo': volunteer['phoneNo'],
                                   'aboutMe': volunteer['aboutMe'],
@@ -123,18 +189,17 @@ class _PetSittersState extends State<PetSitters> {
                                   'age': volunteer['age'],
                                   'occupation': volunteer['occupation'],
                                   'minPrice': volunteer['minPrice'],
-                                  'providesDogWalking':
-                                      volunteer['providesDogWalking'],
-                                  'providesHomeVisits':
-                                      volunteer['providesHomeVisits'],
-                                  'providesHouseSitting':
-                                      volunteer['providesHouseSitting'],
+                                  'providesDogWalking': volunteer['providesDogWalking'],
+                                  'providesHomeVisits': volunteer['providesHomeVisits'],
+                                  'providesHouseSitting': volunteer['providesHouseSitting'],
+                                  'providesHomeVisitsPrice': volunteer['providesHomeVisitsPrice'],
+                                  'providesHouseSittingPrice': volunteer['providesHouseSittingPrice'],
                                 },
                               ),
                             ),
                           );
                         },
-                        child: VolunteerCard(volunteer: volunteer),
+                        child: VolunteerCard(volunteer: volunteer, showHouseSitting: showHouseSitting),
                       );
                     },
                   ),
@@ -205,10 +270,12 @@ class _PetSittersState extends State<PetSitters> {
   }
 }
 
+
 class VolunteerCard extends StatefulWidget {
   final Map<String, dynamic> volunteer;
+  final bool showHouseSitting;
 
-  const VolunteerCard({Key? key, required this.volunteer}) : super(key: key);
+  const VolunteerCard({Key? key, required this.volunteer, required this.showHouseSitting}) : super(key: key);
 
   @override
   _VolunteerCardState createState() => _VolunteerCardState();
@@ -246,8 +313,7 @@ class _VolunteerCardState extends State<VolunteerCard> {
                 radius: 30,
                 backgroundImage: widget.volunteer['profileImageUrl'] != null
                     ? NetworkImage(widget.volunteer['profileImageUrl'])
-                    : AssetImage('assets/images/default_profile.png')
-                        as ImageProvider,
+                    : AssetImage('assets/images/default_profile.png') as ImageProvider,
               ),
               SizedBox(width: 15),
               Expanded(
@@ -343,7 +409,9 @@ class _VolunteerCardState extends State<VolunteerCard> {
                   Row(
                     children: [
                       Text(
-                        '${widget.volunteer['minPrice'] ?? 0} INR',
+                        (widget.showHouseSitting == true)
+                            ? '${widget.volunteer['providesHouseSittingPrice'] ?? 0} INR'
+                            : '${widget.volunteer['providesHomeVisitsPrice'] ?? 0} INR',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
