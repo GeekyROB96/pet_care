@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_care/constants/theme/light_colors.dart';
 import 'package:pet_care/pages/screens/reminder_screen.dart';
+import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
 import 'package:pet_care/provider/owner_dashboard_provider.dart';
 import 'package:pet_care/provider/reminder_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../../constants/theme/light_colors.dart';
 
 class OwnerDashboard extends StatelessWidget {
   @override
@@ -36,10 +38,24 @@ class OwnerDashboard extends StatelessWidget {
                   onTap: () {
                     Navigator.pushNamed(context, '/ownerEditProfile');
                   },
-                  child: CircleAvatar(
-                    radius: 20,
-                    child: Icon(Icons.person, color: Colors.white),
-                    backgroundColor: Colors.blue,
+                  child: Consumer<OwnerDetailsGetterProvider>(
+                    builder: (context, ownerProvider, child) {
+                      return CircleAvatar(
+                        radius: 30,
+                        backgroundColor: Colors.transparent,
+                        child: ClipOval(
+                          child: ownerProvider.profileImageUrl != null
+                              ? Image.network(
+                                  ownerProvider.profileImageUrl!,
+                                  fit: BoxFit.cover,
+                                  height: 60,
+                                  width: 60,
+                                )
+                              : Icon(Icons.person, color: Colors.white),
+                        ),
+                        // backgroundImage: Colors.white,
+                      );
+                    },
                   ),
                 ),
               ],
@@ -59,22 +75,29 @@ class OwnerDashboard extends StatelessWidget {
                                 itemBuilder: (context, index) {
                                   final pet = petsDetailsProvider.pets[index];
                                   final imagePath = pet['imagePath'];
-                                  final isNetworkImage =
-                                      Uri.tryParse(imagePath)?.hasAbsolutePath ?? false;
+                                  final isNetworkImage = Uri.tryParse(imagePath)
+                                          ?.hasAbsolutePath ??
+                                      false;
 
                                   return GestureDetector(
                                     onTap: () {
-                                      ownerDashboardProvider.selectPetIndex(index);
+                                      ownerDashboardProvider
+                                          .selectPetIndex(index);
                                     },
                                     child: Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
+                                      padding:
+                                          const EdgeInsets.only(right: 8.0),
                                       child: CircleAvatar(
                                         radius: 30,
                                         backgroundImage: imagePath != null
                                             ? (isNetworkImage
-                                                ? NetworkImage(imagePath)
-                                                : FileImage(File(imagePath))) as ImageProvider
-                                            : AssetImage('assets/images/cat.png') as ImageProvider,
+                                                    ? NetworkImage(imagePath)
+                                                    : FileImage(
+                                                        File(imagePath)))
+                                                as ImageProvider
+                                            : AssetImage(
+                                                    'assets/images/cat.png')
+                                                as ImageProvider,
                                       ),
                                     ),
                                   );
@@ -112,7 +135,8 @@ class OwnerDashboard extends StatelessWidget {
               builder: (context, ownerDashboardProvider, child) {
                 if (petsDetailsProvider.isDataLoaded &&
                     petsDetailsProvider.pets.isNotEmpty) {
-                  final pet = petsDetailsProvider.pets[ownerDashboardProvider.selectedPetIndex];
+                  final pet = petsDetailsProvider
+                      .pets[ownerDashboardProvider.selectedPetIndex];
                   final imagePath = pet['imagePath'];
                   final isNetworkImage =
                       Uri.tryParse(imagePath)?.hasAbsolutePath ?? false;
@@ -125,7 +149,7 @@ class OwnerDashboard extends StatelessWidget {
                     child: Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.grey[200],
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
                         border: Border.all(color: Colors.black),
                       ),
@@ -135,9 +159,11 @@ class OwnerDashboard extends StatelessWidget {
                             radius: 40,
                             backgroundImage: imagePath != null
                                 ? (isNetworkImage
-                                    ? NetworkImage(imagePath)
-                                    : FileImage(File(imagePath))) as ImageProvider
-                                : AssetImage('assets/images/cat.png') as ImageProvider,
+                                        ? NetworkImage(imagePath)
+                                        : FileImage(File(imagePath)))
+                                    as ImageProvider
+                                : AssetImage('assets/images/cat.png')
+                                    as ImageProvider,
                           ),
                           SizedBox(width: 20),
                           Expanded(
@@ -177,7 +203,6 @@ class OwnerDashboard extends StatelessWidget {
                 }
               },
             ),
-            
             SizedBox(height: 20),
             Text(
               'Services',
@@ -312,21 +337,13 @@ class OwnerDashboard extends StatelessWidget {
             onTap: (index) {
               if (index == 0) {
                 // Navigate to Home page
+                Navigator.pushNamed(context, '/');
               } else if (index == 1) {
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => PetFeedScreen()));
-                // // Navigate to Like/Favorites page
+                // Navigate to Favorites page
+                Navigator.pushNamed(context, '/favorites');
               } else if (index == 2) {
-                // Navigate to Reminder page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChangeNotifierProvider(
-                      create: (_) => ReminderProvider(),
-                      child: ReminderScreen(),
-                    ),
-                  ),
-                );
+                // Navigate to Notifications page
+                Navigator.pushNamed(context, '/notifications');
               }
             },
           ),
@@ -336,25 +353,26 @@ class OwnerDashboard extends StatelessWidget {
   }
 }
 
+// Custom painter class for the curved bottom navigation bar
 class CurvedPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    var paint = Paint()
-      ..color = Colors.white70
+    final paint = Paint()
+      ..color = Colors.white
       ..style = PaintingStyle.fill;
 
-    var path = Path()
+    final path = Path()
       ..moveTo(0, 0)
-      ..lineTo(0, size.height)
-      ..lineTo(size.width, size.height)
       ..lineTo(size.width, 0)
-      ..quadraticBezierTo(size.width * 0.5, -30, 0, 0);
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
 
     canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return false;
   }
 }

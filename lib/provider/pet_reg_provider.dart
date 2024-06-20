@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:core';
 import 'dart:io';
 
@@ -8,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:pet_care/constants/snackbar.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
-import 'package:pet_care/provider/owner_reg_provider.dart';
 import 'package:pet_care/provider/pets_provider.dart';
 import 'package:pet_care/services/firestore_service/pet_register.dart';
 import 'package:provider/provider.dart';
@@ -139,8 +137,23 @@ class PetRegistrationProvider with ChangeNotifier {
     }
   }
 
+  String? validateFields() {
+    if (_energyLevel.isEmpty) {
+      return 'Please select an energy level';
+    }
+    if (_feedingSchedule == null) {
+      return 'Please select a feeding schedule';
+    }
+    if (_aboutPet == null || _aboutPet!.isEmpty) {
+      return 'Please enter information about your pet';
+    }
+    return null;
+  }
+
   Future<void> registerPet(BuildContext context) async {
     setLoading(true);
+    notifyListeners();
+
     await Provider.of<OwnerDetailsGetterProvider>(context, listen: false)
         .loadUserProfile();
     var ownerEmail =

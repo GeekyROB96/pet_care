@@ -13,33 +13,44 @@ class VolunteerDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          padding: EdgeInsets.all(25),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Consumer<VolunteerDetailsGetterProvider>(
-                  builder: (context, volunteerProvider, child) {
-                return Text(
-                  'Hello ${volunteerProvider.name}',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                );
-              }),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/volunteerEditProfile');
-                },
-                child: CircleAvatar(
-                  radius: 20,
-                  child: Icon(Icons.person, color: Colors.white),
-                  backgroundColor: Colors.blue,
+        padding: EdgeInsets.all(25),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Consumer<VolunteerDetailsGetterProvider>(
+                builder: (context, volunteerProvider, child) {
+              return Text(
+                'Hello ${volunteerProvider.name}',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
+              );
+            }),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/volunteerEditProfile');
+              },
+              child: Consumer<VolunteerDetailsGetterProvider>(
+                builder: (context, volunteerProvider, child) {
+                  return CircleAvatar(
+                    radius: 30,
+                    child: ClipOval(
+                      child: volunteerProvider.profileImageUrl != null
+                          ? Image.network(
+                              volunteerProvider.profileImageUrl!,
+                              fit: BoxFit.cover,
+                            )
+                          : Icon(Icons.person, color: Colors.white),
+                    ),
+                    backgroundColor: Colors.black45,
+                  );
+                },
               ),
-            ]),
-          ])),
+            ),
+          ]),
+        ]),
+      ),
       bottomNavigationBar: Stack(
         children: [
           CustomPaint(
@@ -53,7 +64,7 @@ class VolunteerDashboard extends StatelessWidget {
             height: 60,
             items: <Widget>[
               Icon(Icons.home, size: 30, color: Colors.black),
-              Icon(Icons.mail, size: 30, color: Colors.black),
+              Icon(Icons.add_a_photo, size: 30, color: Colors.black),
               Icon(Icons.notifications, size: 30, color: Colors.black),
             ],
             onTap: (index) {

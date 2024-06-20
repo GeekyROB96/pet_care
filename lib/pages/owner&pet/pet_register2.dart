@@ -7,8 +7,6 @@ import '../../provider/pet_reg_provider.dart';
 import '../../widgets/components/text_button.dart';
 
 class PetRegistration2 extends StatelessWidget {
-  final TextEditingController _feedingScheduleController =
-      TextEditingController();
   final TextEditingController _aboutPetController = TextEditingController();
 
   @override
@@ -219,8 +217,6 @@ class PetRegistration2 extends StatelessWidget {
                               ),
 
                               TextFormField(
-                                // minLines: 3,
-
                                 autofocus: true,
                                 controller: _aboutPetController,
                                 decoration: InputDecoration(
@@ -229,8 +225,8 @@ class PetRegistration2 extends StatelessWidget {
                                       borderRadius: BorderRadius.all(
                                           new Radius.circular(20.0))),
                                 ),
-                                onChanged: (_aboutPetController) =>
-                                    provider.setAboutPet(_aboutPetController),
+                                onChanged: (value) =>
+                                    provider.setAboutPet(value),
                               ),
                               SizedBox(height: 20),
                               Center(
@@ -238,7 +234,16 @@ class PetRegistration2 extends StatelessWidget {
                                     ? CircularProgressIndicator()
                                     : CustomTextButton(
                                         onPressed: () async {
-                                          await provider.registerPet(context);
+                                          String? validationMessage =
+                                              provider.validateFields();
+                                          if (validationMessage != null) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                              content: Text(validationMessage),
+                                            ));
+                                          } else {
+                                            await provider.registerPet(context);
+                                          }
                                         },
                                         text: 'Register Pet',
                                         backgroundColor:

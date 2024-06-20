@@ -544,6 +544,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  primer_progress_bar:
+    dependency: "direct main"
+    description:
+      name: primer_progress_bar
+      sha256: b6623d4c1036a5bf2f68c4a5a7e531d29d81d076f2154c0564951ef43988aa03
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.2"
   provider:
     dependency: "direct main"
     description:

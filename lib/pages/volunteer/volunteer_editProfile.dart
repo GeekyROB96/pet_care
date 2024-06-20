@@ -131,9 +131,10 @@ class VolunteerEditProfilePage extends StatelessWidget {
                         Text(
                           'INR',
                           style: TextStyle(
-                              color: Color.fromARGB(66, 99, 97, 97),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w300),
+                            color: LightColors.textColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                          ),
                         ),
                       ]),
                       Row(

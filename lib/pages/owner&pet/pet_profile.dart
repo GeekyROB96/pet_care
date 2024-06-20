@@ -1,7 +1,6 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -26,9 +25,9 @@ class PetProfile extends StatelessWidget {
             children: [
               // Background Image Container
               Container(
-                height: MediaQuery.of(context).size.height * 0.4,
+                height: MediaQuery.of(context).size.height * 0.45,
                 width: double.infinity,
-                color: Colors.grey[200],
+                color: Colors.white,
                 child: imagePath != null
                     ? (isNetworkImage
                         ? Image.network(
@@ -56,8 +55,6 @@ class PetProfile extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
               ),
-
-              // Content Container
               SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,26 +99,42 @@ class PetProfile extends StatelessWidget {
                         children: [
                           Row(
                             children: [
+                              // Pet Name and Energy
                               Expanded(
-                                child: Text(
-                                  pet['petName'] ?? 'N/A',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  overflow: TextOverflow
-                                      .ellipsis, // Handle overflow if petName is too long
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          pet['petName'] ?? 'N/A',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        SizedBox(width: 8),
+                                        EnergyBarWithIcon(
+                                          energyLevel:
+                                              pet['energyLevel'] ?? 'low',
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      pet['breed'] ?? 'N/A',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              if (pet['energyLevel'] == 'low')
-                                EnergyLevelIndicator(energyLevel: 'low'),
-                              if (pet['energyLevel'] == 'medium')
-                                EnergyLevelIndicator(energyLevel: 'medium'),
-                              if (pet['energyLevel'] == 'high')
-                                EnergyLevelIndicator(energyLevel: 'high'),
-                              SizedBox(
-                                  width: 16), // Adjust the spacing as needed
+                              SizedBox(width: 16),
+                              // Pet Type Image
                               if (pet['selectedPetType'] == 'Dog')
                                 Image.asset(
                                   'assets/images/dog_face.png',
@@ -148,12 +161,8 @@ class PetProfile extends StatelessWidget {
                                 ),
                             ],
                           ),
-                          SizedBox(height: 8),
-                          Text(
-                            pet['breed'] ?? 'N/A',
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
-                          ),
                           SizedBox(height: 20),
+                          // Info Cards
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
@@ -161,76 +170,86 @@ class PetProfile extends StatelessWidget {
                                 colors: Color.fromARGB(255, 250, 223, 187),
                                 title: 'Age',
                                 titleTextStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
                                 content: '${pet['age']} years',
                                 contentTextStyle: TextStyle(
-                                    color: const Color.fromARGB(
-                                        255, 121, 121, 121)),
+                                  color:
+                                      const Color.fromARGB(255, 121, 121, 121),
+                                ),
                               ),
                               InfoCard(
                                 colors: Color.fromARGB(255, 197, 251, 199),
                                 title: '${pet['gender']}',
                                 titleTextStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
                                 content: 'sex',
                                 contentTextStyle: TextStyle(
-                                    color: const Color.fromARGB(
-                                        255, 121, 121, 121)),
+                                  color:
+                                      const Color.fromARGB(255, 121, 121, 121),
+                                ),
                               ),
                               InfoCard(
                                 colors: Color.fromARGB(255, 191, 225, 249),
                                 title: 'Weight',
                                 titleTextStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
                                 content: pet['weight'] != null
                                     ? '${pet['weight']} kg'
                                     : 'N/A',
                                 contentTextStyle: TextStyle(
-                                    color: const Color.fromARGB(
-                                        255, 121, 121, 121)),
+                                  color:
+                                      const Color.fromARGB(255, 121, 121, 121),
+                                ),
                               ),
                             ],
                           ),
                           SizedBox(height: 20),
-                          Row(children: [
-                            Text(
-                              'Attributes: ',
-                              style: TextStyle(
+                          // Attributes
+                          Row(
+                            children: [
+                              Text(
+                                'Attributes: ',
+                                style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 18,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            if (pet['friendlyWithChildren'] == false &&
-                                pet['friendlyWithOtherPets'] == false)
-                              Text(
-                                'N/A',
-                                style: TextStyle(color: Colors.black),
-                              )
-                          ]),
-                          if (pet['friendlyWithChildren'] == true ||
-                              pet['friendlyWithOtherPets'] == true)
-                            SizedBox(height: 10),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              if (pet['friendlyWithChildren'] == false &&
+                                  pet['friendlyWithOtherPets'] == false)
+                                Text(
+                                  'N/A',
+                                  style: TextStyle(color: Colors.black),
+                                )
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          // Additional Attributes
                           Row(
                             children: [
                               if (pet['friendlyWithChildren'] == true)
                                 Container(
                                   padding: EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(22),
-                                      color:
-                                          Color.fromARGB(255, 176, 147, 255)),
+                                    borderRadius: BorderRadius.circular(22),
+                                    color: Color.fromARGB(255, 176, 147, 255),
+                                  ),
                                   child: Text(
                                     'Children Friendly',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600),
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               SizedBox(width: 8),
@@ -238,15 +257,16 @@ class PetProfile extends StatelessWidget {
                                 Container(
                                   padding: EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(22),
-                                      color:
-                                          Color.fromARGB(255, 255, 235, 147)),
+                                    borderRadius: BorderRadius.circular(22),
+                                    color: Color.fromARGB(255, 255, 235, 147),
+                                  ),
                                   child: Text(
                                     'Pet Friendly',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600),
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               SizedBox(width: 8),
@@ -254,30 +274,31 @@ class PetProfile extends StatelessWidget {
                                 Container(
                                   padding: EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(22),
-                                      color:
-                                          Color.fromARGB(255, 255, 235, 147)),
+                                    borderRadius: BorderRadius.circular(22),
+                                    color: Color.fromARGB(255, 255, 235, 147),
+                                  ),
                                   child: Text(
                                     'House Trained',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600),
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                             ],
                           ),
                           SizedBox(height: 10),
+                          // Feeding Schedule
                           Text(
                             'Feeding Schedule',
                             style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
+                          SizedBox(height: 10),
                           SingleChildScrollView(
                             child: Container(
                               width: MediaQuery.of(context).size.width,
@@ -295,12 +316,14 @@ class PetProfile extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 10),
+                          // About Pet
                           Text(
                             'About Pet',
                             style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Container(
                             padding: EdgeInsets.all(10),
@@ -376,46 +399,55 @@ class InfoCard extends StatelessWidget {
   }
 }
 
-class EnergyLevelIndicator extends StatelessWidget {
+class EnergyBarWithIcon extends StatelessWidget {
   final String energyLevel;
 
-  EnergyLevelIndicator({required this.energyLevel});
+  EnergyBarWithIcon({required this.energyLevel});
 
   @override
   Widget build(BuildContext context) {
-    double height = 30.0;
-    Color color;
-    double widthFactor;
-
-    switch (energyLevel.toLowerCase()) {
-      case 'high':
-        color = Colors.green;
-        widthFactor = 5.0; // Full width
+    Color barColor;
+    switch (energyLevel) {
+      case 'low':
+        barColor = Colors.red;
         break;
       case 'medium':
-        color = Colors.orange;
-        widthFactor = 2.5; // Half width
+        barColor = Colors.orange;
         break;
-      case 'low':
-        color = Colors.red;
-        widthFactor = 1.25; // Quarter width
+      case 'high':
+        barColor = Colors.green;
         break;
       default:
-        color = Colors.grey;
-        widthFactor = 0.0; // No width
+        barColor = Colors.grey;
+        break;
     }
 
-    return Container(
-      width: 50, // Set a fixed width for the indicator
-      height: height,
-      color: Colors.grey[300], // Background bar color
-      child: SizedBox(
-        // alignment: Alignment.centerLeft,
-        width: widthFactor,
-        child: Container(
-          color: color,
+    return Row(
+      children: [
+        // Energy Icon
+        Image.asset(
+          'assets/icons/energy.png',
+          height: 30,
+          width: 30,
         ),
-      ),
+        SizedBox(width: 5),
+        // Energy Bar
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          decoration: BoxDecoration(
+            color: barColor.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            energyLevel.toUpperCase(),
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

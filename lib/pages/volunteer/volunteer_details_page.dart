@@ -18,50 +18,48 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF4F7FFA).withOpacity(0.8),
+      //  backgroundColor: Color(0xFF4F7FFA).withOpacity(0.8),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            height: MediaQuery.of(context).size.height * 0.23,
-            // color: Color(0xFF3B6CEC),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            height: MediaQuery.of(context).size.height * 0.4,
+            child: Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.8),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          padding: EdgeInsets.all(8),
-                          child: Icon(Icons.arrow_back, color: Colors.black),
-                        ),
+                widget.volunteer['profileImageUrl'] != null
+                    ? Image.network(
+                        widget.volunteer['profileImageUrl'],
+                        width: double.infinity,
+                        height: 400,
+                        //height: double.infinity,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        'assets/images/default_profile.png',
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
                       ),
-                    ],
+                Positioned(
+                  top: 20,
+                  left: 20,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: EdgeInsets.all(8),
+                      child: Icon(Icons.arrow_back, color: Colors.black),
+                    ),
                   ),
-                ),
-                SizedBox(height: 5),
-                CircleAvatar(
-                  radius: 60,
-                  backgroundImage: widget.volunteer['profileImageUrl'] != null
-                      ? NetworkImage(widget.volunteer['profileImageUrl'])
-                      : AssetImage('assets/images/default_profile.png')
-                          as ImageProvider,
                 ),
               ],
             ),
           ),
-
-          // Lower half: Details Section
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -199,11 +197,13 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
 
   Widget _buildInfoCard(String title, String value, Color color) {
     return Container(
+      width: 93,
+      height: 100,
       margin: EdgeInsets.symmetric(horizontal: 5),
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),

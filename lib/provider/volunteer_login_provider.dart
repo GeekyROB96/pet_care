@@ -11,6 +11,8 @@ class VolunteerLoginProvider extends ChangeNotifier {
   String _volunteerEmail = '';
   String _volunteerPassword = '';
   bool _isVolunteerPasswordVisible = false;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
   bool _isVolunteerLoggedIn = false;
 
@@ -18,9 +20,6 @@ class VolunteerLoginProvider extends ChangeNotifier {
   String get volunteerPassword => _volunteerPassword;
   bool get isVolunteerPasswordVisible => _isVolunteerPasswordVisible;
   bool get isVolunteerLoggedIn => _isVolunteerLoggedIn;
-
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
 
   final AuthService _authService = AuthService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -47,6 +46,13 @@ class VolunteerLoginProvider extends ChangeNotifier {
   }
 
   Future<void> volunteerLogin(BuildContext context) async {
+    _isLoading = true;
+    notifyListeners();
+
+    //await Future.delayed(Duration(seconds: 2));
+
+    _isLoading = false;
+    notifyListeners();
     if (_volunteerEmail.isEmpty || _volunteerPassword.isEmpty) {
       showSnackBar(context, "All fields are required!");
       print("All fields are required!");
