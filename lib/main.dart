@@ -42,7 +42,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final prefsService = SharedPreferencesService();
-  await prefsService.init();
+  await prefsService.init(); //made changes
 
   runApp(
     MultiProvider(
