@@ -45,6 +45,7 @@ dependencies:
   flutter_local_notifications: ^17.1.2
   curved_navigation_bar: ^1.0.6
   primer_progress_bar: ^0.4.2
+  uuid: ^4.4.0
 
   
 

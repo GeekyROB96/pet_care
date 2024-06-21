@@ -1,47 +1,61 @@
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pet_care/model/reminder_model.dart';
+import 'package:uuid/uuid.dart';
 
-import '../services/firestore_service/reminder_firestore.dart';
 
 class ReminderProvider with ChangeNotifier {
-  final ReminderService _reminderService = ReminderService();
-  List<Map<String, dynamic>> _reminders = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  List<Reminder> _reminders = [];
 
-  List<Map<String, dynamic>> get reminders => _reminders;
+  List<Reminder> get reminders => _reminders;
 
   Future<void> fetchReminders() async {
     try {
-      _reminders = await _reminderService.getReminders();
+      QuerySnapshot snapshot = await _firestore.collection('reminders').get();
+      _reminders = snapshot.docs.map((doc) {
+        return Reminder(
+          id: doc.id,
+          title: doc['title'],
+          categoryIndex: doc['categoryIndex'],
+          timestamp: (doc['timestamp'] as Timestamp).toDate(),
+        );
+      }).toList();
       notifyListeners();
     } catch (e) {
       print('Error fetching reminders: $e');
-      throw Exception('Failed to fetch reminders');
     }
   }
 
-  Future<void> addReminder(String reminderText, int selectedCategoryIndex,
-      DateTime finalDateTime) async {
+  Future<void> addReminder(
+      String title, int categoryIndex, DateTime timestamp) async {
     try {
-      await _reminderService.addReminder(
-        reminderText: reminderText,
-        selectedCategoryIndex: selectedCategoryIndex,
-        finalDateTime: finalDateTime,
+      String id = Uuid().v4(); // Generate a unique ID for the reminder
+      Reminder newReminder = Reminder(
+        id: id,
+        title: title,
+        categoryIndex: categoryIndex,
+        timestamp: timestamp,
       );
-      await fetchReminders();
+      await _firestore.collection('reminders').doc(id).set({
+        'title': title,
+        'categoryIndex': categoryIndex,
+        'timestamp': Timestamp.fromDate(timestamp),
+      });
+      _reminders.add(newReminder);
+      notifyListeners();
     } catch (e) {
       print('Error adding reminder: $e');
-      throw Exception('Failed to add reminder');
     }
   }
 
   Future<void> deleteReminder(String reminderId) async {
     try {
-      await _reminderService.deleteReminder(reminderId);
-      await fetchReminders();
+      await _firestore.collection('reminders').doc(reminderId).delete();
+      _reminders.removeWhere((reminder) => reminder.id == reminderId);
+      notifyListeners();
     } catch (e) {
       print('Error deleting reminder: $e');
-      throw Exception('Failed to delete reminder');
     }
   }
 }
-

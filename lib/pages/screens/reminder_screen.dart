@@ -57,78 +57,75 @@ class _ReminderScreenState extends State<ReminderScreen> {
     Provider.of<ReminderProvider>(context, listen: false).fetchReminders();
   }
 
-  void _addReminder(String reminderText) async {
-    if (reminderText.isNotEmpty && selectedCategoryIndex != -1) {
-      DateTime finalDateTime = DateTime(
-        _selectedDate.year,
-        _selectedDate.month,
-        _selectedDate.day,
-        _selectedTime.hour,
-        _selectedTime.minute,
-      );
-
-      try {
-        // Save to Firebase
-        await Provider.of<ReminderProvider>(context, listen: false)
-            .addReminder(reminderText, selectedCategoryIndex, finalDateTime);
-
-        _scheduleNotification(reminderText, finalDateTime);
-        _reminderController.clear();
-        setState(() {
-          selectedCategoryIndex = -1;
-        });
-      } catch (e) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Error'),
-              content: Text('Failed to save reminder. Please try again.'),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      }
-    }
-  }
-
-  void _scheduleNotification(
-      String reminderText, DateTime scheduledTime) async {
-    final tz.TZDateTime tzScheduledTime =
-        tz.TZDateTime.from(scheduledTime, tz.local);
-
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-      'reminder_channel',
-      'Reminders',
-      importance: Importance.max,
+ void _addReminder(String reminderText) async {
+  if (reminderText.isNotEmpty && selectedCategoryIndex != -1) {
+    DateTime finalDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedTime.hour,
+      _selectedTime.minute,
     );
-    const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidDetails);
 
     try {
-      await flutterLocalNotificationsPlugin.zonedSchedule(
-        0, // Notification ID
-        'Reminder', // Notification title
-        reminderText, // Notification content
-        tzScheduledTime, // Scheduled date and time
-        notificationDetails,
-        androidAllowWhileIdle:
-            true, // Allow notification to be delivered even when the device is in idle doze mode
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-      );
+      // Save to Firebase or wherever you store reminders
+      await Provider.of<ReminderProvider>(context, listen: false)
+          .addReminder(reminderText, selectedCategoryIndex, finalDateTime);
+
+      _scheduleNotification(reminderText, finalDateTime);
+      _reminderController.clear();
+      setState(() {
+        selectedCategoryIndex = -1;
+      });
     } catch (e) {
-      print('Error scheduling notification: $e');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Failed to save reminder. Please try again.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
+}
+  void _scheduleNotification(String reminderText, DateTime scheduledTime) async {
+  final tz.TZDateTime tzScheduledTime = tz.TZDateTime.from(scheduledTime, tz.local);
+
+  const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    'reminder_channel',
+    'Reminders',
+    importance: Importance.max,
+    priority: Priority.high,
+  );
+  const NotificationDetails notificationDetails = NotificationDetails(android: androidDetails);
+
+  try {
+    // Generate a unique ID for each notification
+    int notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000; // Example unique ID generation
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      notificationId, // Unique notification ID
+      'Reminder', // Notification title
+      reminderText, // Notification content
+      tzScheduledTime, // Scheduled date and time
+      notificationDetails,
+      androidAllowWhileIdle: true, // Allow notification to be delivered even when the device is in idle mode
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  } catch (e) {
+    print('Error scheduling notification: $e');
+  }
+}
 
   String formatTimestamp(DateTime timestamp) {
     return '${timestamp.day} ${_getMonthName(timestamp.month)} ${timestamp.year} ${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}';
@@ -310,146 +307,50 @@ class _ReminderScreenState extends State<ReminderScreen> {
                             width: 1,
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Column(
                           children: [
-                            Row(
-                              children: [
-                                Icon(Icons.calendar_today),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Date:',
-                                  style: TextStyle(
-                                    color: LightColors.textColor,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  '${_selectedDate.toLocal()}'.split(' ')[0],
-                                  style: TextStyle(
-                                    color: LightColors.textColor,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
+                            ListTile(
+                              title: Text(
+                                'Select Date: ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                                style: TextStyle(color: LightColors.textColor),
+                              ),
+                              trailing: Icon(
+                                Icons.calendar_today,
+                                color: LightColors.primaryColor,
+                              ),
+                              onTap: _selectDate,
                             ),
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                _showDatePicker(context);
-                              },
+                            ListTile(
+                              title: Text(
+                                'Select Time: ${_selectedTime.format(context)}',
+                                style: TextStyle(color: LightColors.textColor),
+                              ),
+                              trailing: Icon(
+                                Icons.access_time,
+                                color: LightColors.primaryColor,
+                              ),
+                              onTap: _selectTime,
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 12),
-                      Container(
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.grey.shade400,
-                            width: 1,
+                      SizedBox(height: 50),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 40),
+                          backgroundColor: LightColors.primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.access_time),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Time:',
-                                  style: TextStyle(
-                                    color: LightColors.textColor,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  _selectedTime.format(context),
-                                  style: TextStyle(
-                                    color: LightColors.textColor,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () async {
-                                TimeOfDay? picked = await showTimePicker(
-                                  context: context,
-                                  initialTime: _selectedTime,
-                                );
-                                if (picked != null) {
-                                  setState(() {
-                                    _selectedTime = picked;
-                                    print('Selected Time: $_selectedTime');
-                                  });
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      ElevatedButton(
                         onPressed: () {
-                          print('Category Index: $selectedCategoryIndex');
-                          print('Reminder Text: ${_reminderController.text}');
-                          print('Selected Date: $_selectedDate');
-                          print('Selected Time: $_selectedTime');
-
-                          if (selectedCategoryIndex == -1 ||
-                              _reminderController.text.isEmpty) {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Incomplete Fields'),
-                                  content: Text(
-                                    'Please select all fields before saving the reminder.',
-                                    style: TextStyle(
-                                      color: LightColors.textColor,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: Text(
-                                        'OK',
-                                        style: TextStyle(
-                                          color: LightColors.textColor,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          } else {
-                            _addReminder(_reminderController.text);
-                            Navigator.of(context)
-                                .pop(); // Close the bottom sheet
-                          }
+                          _addReminder(_reminderController.text);
+                          Navigator.pop(context); // Close the BottomSheet
                         },
                         child: Text(
-                          'Save Reminder',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 18,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Colors.deepPurpleAccent.withOpacity(0.5),
+                          'Add Reminder',
+                          style: TextStyle(fontSize: 20),
                         ),
                       ),
                     ],
@@ -463,117 +364,132 @@ class _ReminderScreenState extends State<ReminderScreen> {
     );
   }
 
-  void _showDatePicker(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+  Future<void> _selectDate() async {
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != _selectedDate) {
+    if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
-        _selectedDate = picked;
+        _selectedDate = pickedDate;
+      });
+    }
+  }
+
+  Future<void> _selectTime() async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+    );
+    if (pickedTime != null && pickedTime != _selectedTime) {
+      setState(() {
+        _selectedTime = pickedTime;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final reminderProvider = Provider.of<ReminderProvider>(context);
+
     return Scaffold(
+      backgroundColor: LightColors.backgroundColor,
       appBar: AppBar(
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'Reminders',
-            ),
-            SizedBox(width: 8),
-            Icon(
+            const SizedBox(width: 55,),
+            const Text('Reminders'),
+            const SizedBox(width: 4),
+            const Icon(
               Icons.alarm_add_outlined,
               size: 25,
             ),
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                _showAddReminderBottomSheet(context);
-              },
-              child: Text(
-                'Add Reminder',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
+      body: Column(
+        children: [
+          SizedBox(height: 8,),
+          Center(
+            
+            child: ElevatedButton(
+              onPressed: () => _showAddReminderBottomSheet(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurpleAccent.withOpacity(0.5),
+                backgroundColor: Color.fromARGB(255, 52, 135, 243),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Add Reminder'),
+                  SizedBox(width: 3),
+                  Icon(Icons.notification_add_outlined),
+                ],
               ),
             ),
-            SizedBox(height: 20),
-            Expanded(
-              child: Consumer<ReminderProvider>(
-                builder: (context, reminderProvider, child) {
-                  if (reminderProvider.reminders.isEmpty) {
-                    return Center(
-                      child: Text(
-                        'No reminders found',
-                        style: TextStyle(
-                          color: LightColors.textColor,
-                          fontSize: 16,
-                        ),
+          ),
+                    SizedBox(height: 10,),
+
+          Expanded(
+            child: reminderProvider.reminders.isEmpty
+                ? Center(
+                    child: Text(
+                      'No reminders yet!',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
                       ),
-                    );
-                  }
-                  return ListView.builder(
+                    ),
+                  )
+                : ListView.builder(
                     itemCount: reminderProvider.reminders.length,
                     itemBuilder: (context, index) {
                       final reminder = reminderProvider.reminders[index];
-                      final DateTime timestamp = reminder['timestamp'];
-                      final categoryIndex = reminder['categoryIndex'];
-
-                      final formattedTimestamp = formatTimestamp(timestamp);
                       return Column(
                         children: [
-                          ListTile(
-                            visualDensity:
-                                VisualDensity.adaptivePlatformDensity,
-                            tileColor: Color.fromARGB(30, 180, 180, 185),
-                            leading: Image.asset(
-                              icons[
-                                  categoryIndex], // Use icon based on category index
-                              width: 40,
-                              height: 40,
-                            ),
-                            title: Text(reminder['reminderText']),
-                            subtitle: Text(formattedTimestamp),
-                            trailing: IconButton(
-                              icon: Icon(Icons.delete),
-                              onPressed: () async {
-                                _showDeleteConfirmationDialog(
-                                  context,
-                                  reminderProvider,
-                                  reminder['id'],
-                                  //reminder['reminderText'],
-                                );
-                              },
+                          Card(
+                            elevation: 4.0,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 6.0, horizontal: 16.0),
+                            child: ListTile(
+                              visualDensity:
+                                  VisualDensity.adaptivePlatformDensity,
+                              tileColor: Color.fromARGB(30, 197, 197, 198),
+                              leading: Image.asset(
+                                icons[reminder.categoryIndex],
+                                width: 30,
+                                height: 30,
+                              ),
+                              title: Text(
+                                reminder.title,
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              subtitle: Text(
+                                'Scheduled for: ${formatTimestamp(reminder.timestamp)}',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              trailing: IconButton(
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () {
+                                  _showDeleteConfirmationDialog(
+                                      context, reminderProvider, reminder.id);
+                                },
+                              ),
                             ),
                           ),
                           Divider(
-                            color: Color.fromARGB(30, 180, 180, 185),
-                          ), // Add a divider after each tile
+                            color: Color.fromARGB(30, 122, 122, 124),
+                          ),
                         ],
                       );
                     },
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+                  ),
+          ),
+        ],
       ),
     );
   }

@@ -1,3 +1,16 @@
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.3.1'
+        // NOTE: We should not  place the  application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
 allprojects {
     repositories {
         google()
