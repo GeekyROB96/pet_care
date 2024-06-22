@@ -51,7 +51,7 @@ class PetRegistrationProvider with ChangeNotifier {
   String? get feedingSchedule => _feedingSchedule;
   bool get canBeLeftAlone => _canBeLeftAlone;
 
-  final FireStoreService _fireStoreService = FireStoreService();
+  final PetFireStoreService _fireStoreService = PetFireStoreService();
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   void setPetName(String name) {

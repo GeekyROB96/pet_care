@@ -182,13 +182,13 @@ class PetProfile extends StatelessWidget {
                               ),
                               InfoCard(
                                 colors: Color.fromARGB(255, 197, 251, 199),
-                                title: '${pet['gender']}',
+                                title: 'Gender',
                                 titleTextStyle: TextStyle(
                                   color: Colors.black,
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
-                                content: 'sex',
+                                content: '${pet['gender']}',
                                 contentTextStyle: TextStyle(
                                   color:
                                       const Color.fromARGB(255, 121, 121, 121),

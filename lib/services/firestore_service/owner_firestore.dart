@@ -3,17 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FireStoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> saveUserDetails({
-    required String userId,
-    required String name,
-    required String email,
-    required String phoneNo,
-    required String age,
-    required String occupation,
-    required String role,
-    String? locationCity,
-    String? profileImageUrl,
-  }) async {
+  Future<void> saveUserDetails(
+      {required String userId,
+      required String name,
+      required String email,
+      required String phoneNo,
+      required String age,
+      required String occupation,
+      required String role,
+      String? locationCity,
+      String? profileImageUrl,
+      String? uid}) async {
     try {
       await _firestore
           .collection('users')
@@ -29,6 +29,7 @@ class FireStoreService {
         'role': role,
         'locationCity': locationCity,
         'profileImageUrl': profileImageUrl,
+        'uid': uid
       });
     } catch (e) {
       print("Error saving User Details $e");

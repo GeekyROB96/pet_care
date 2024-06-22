@@ -14,6 +14,7 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
   final FireStoreService _fireStoreService = FireStoreService();
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
+  String currentuid = '';
   String _name = '';
   String _email = '';
   String _phoneNo = '';
@@ -24,6 +25,9 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
   String? _imageUrl;
   String? _age;
   String? _occupation;
+
+  bool _providesHomeVisits = false;
+  bool _providesHouseSitting = false;
   int? _providesHomeVisitsPrice;
   int? _providesHouseSittingPrice;
 
@@ -32,9 +36,7 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
   bool _preferBird = false;
   bool _prefersRabbit = false;
   bool _prefersOthers = false;
-  bool _providesHomeVisits = false;
   bool _provideDogWalking = false;
-  bool _providesHouseSitting = false;
   String? _locationCity;
 
   Map<String, dynamic>? volunteerData;
@@ -52,6 +54,8 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
   int? get providesHomeVisitsPrice => _providesHomeVisitsPrice;
   int? get providesHouseSittingPrice => _providesHouseSittingPrice;
   String? get locationCity => _locationCity;
+  bool get providesHomeVisits => _providesHomeVisits;
+  bool get providesHouseSitting => _providesHouseSitting;
 
   VolunteerDetailsGetterProvider() {
     loadVolunteerDetails();
@@ -64,9 +68,10 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
         final volunteerData =
             await _fireStoreService.getVolunteerDetails(user.uid);
         _name = volunteerData?['name'] ?? '';
+        setName(_name);
         _email = volunteerData?['email'] ?? '';
         _phoneNo = volunteerData?['phoneNo'] ?? '';
-        _profileImageUrl = volunteerData?['profileImageUrl'];
+        _imageUrl = volunteerData?['profileImageUrl'];
         _aboutMe = volunteerData?['aboutMe'];
         _age = volunteerData?['age'];
         _occupation = volunteerData?['occupation'];
@@ -237,6 +242,7 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
     _providesHouseSittingPrice = null;
     _locationCity = '';
     notifyListeners();
+    currentuid = '';
   }
 
   @override

@@ -16,6 +16,7 @@ class OwnerEditProfileProvider extends ChangeNotifier {
   final FireStoreService _fireStoreService = FireStoreService();
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
+  String _uid = '';
   String _name = '';
   String _email = '';
   String _phoneNo = '';
@@ -31,6 +32,7 @@ class OwnerEditProfileProvider extends ChangeNotifier {
   File? get profileImageFile => _profileImageFile;
   String? get age => _age;
   String? get occupation => _occupation;
+  String? get uid => _uid;
 
   OwnerEditProfileProvider() {
     loadUserProfile(); // Load user profile details when initialized
@@ -53,6 +55,7 @@ class OwnerEditProfileProvider extends ChangeNotifier {
           _profileImageUrl = userDetails['profileImageUrl'];
           _age = userDetails['age'];
           _occupation = userDetails['occupation'];
+          _uid = userDetails['uid'];
 
           notifyListeners();
           print("User profile loaded successfully.");
@@ -116,7 +119,8 @@ class OwnerEditProfileProvider extends ChangeNotifier {
             age:
                 _age!, //added age, occupation to prevent it from being overwritten
             occupation: _occupation!,
-            role: 'owner');
+            role: 'owner',
+            uid: _uid);
         showSnackBar(context, "Profile details saved successfully!");
         print("Profile details saved successfully.");
       } catch (e) {

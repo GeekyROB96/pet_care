@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pet_care/provider/get_volunteer_details_provider.dart';
+import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
+import 'package:provider/provider.dart';
 
 import '../../constants/theme/light_colors.dart';
 
@@ -15,23 +18,35 @@ class VolunteerDetailsPage extends StatefulWidget {
 class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
   bool showAboutMeFull = false;
 
+  late final Map<String, dynamic> vData;
+
+  void navgateToBookingPage() {
+    Navigator.pushNamed(context, '/bookingPage');
+  }
+
   @override
   Widget build(BuildContext context) {
+    String currentuidd = widget.volunteer['uid'];
+
+    print(currentuidd);
+
+    String set = Provider.of<VolunteerDetailsGetterProvider>(context)
+        .currentuid = currentuidd;
+    print("Set is : $set ------------");
+
     return Scaffold(
-      //  backgroundColor: Color(0xFF4F7FFA).withOpacity(0.8),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            height: MediaQuery.of(context).size.height * 0.4,
+            height: MediaQuery.of(context).size.height * 0.38,
             child: Stack(
               children: [
                 widget.volunteer['profileImageUrl'] != null
                     ? Image.network(
                         widget.volunteer['profileImageUrl'],
                         width: double.infinity,
-                        height: 400,
-                        //height: double.infinity,
+                        height: double.infinity,
                         fit: BoxFit.cover,
                       )
                     : Image.asset(
@@ -88,6 +103,28 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
                             ),
                           ),
                           SizedBox(height: 10),
+                          Text(
+                            '${widget.volunteer['email']}',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: LightColors.textColor,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            '${widget.volunteer['uid']}',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: LightColors.textColor,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
                           Row(
                             children: [
                               Icon(Icons.location_on, color: Colors.black),
@@ -121,17 +158,20 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
                               ),
                               Expanded(
                                 child: _buildInfoCard(
-                                  'Fee',
-                                  '${widget.volunteer['minPrice'] ?? 'N/A'} INR',
+                                  'Location',
+                                  widget.volunteer['locationCity'] ?? 'N/A',
                                   Color(0xC1D3C9F6),
                                 ),
                               ),
                             ],
                           ),
+                          SizedBox(height: 10),
+                          _buildPriceCard(),
+                          SizedBox(height: 10),
                         ],
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 20),
                     _buildAboutMeSection(),
                     SizedBox(height: 20),
                     _buildPreferredPets(),
@@ -156,7 +196,7 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 20),
+        SizedBox(height: 10),
         Text(
           'About Me',
           style: TextStyle(
@@ -236,6 +276,103 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPriceCard() {
+    String homeVisitPrice = widget.volunteer['providesHomeVisitsPrice'] != null
+        ? '${widget.volunteer['providesHomeVisitsPrice']} \ INR'
+        : 'N/A';
+
+    String houseSittingPrice =
+        widget.volunteer['providesHouseSittingPrice'] != null
+            ? '${widget.volunteer['providesHouseSittingPrice']} \ INR'
+            : 'N/A';
+
+    return Container(
+      width: double.infinity,
+      //margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        color: Color(0xFFC8D3F8), // Background color
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Prices',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.home,
+                        color: LightColors.textColor,
+                        size: 20,
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        'Home Visit:',
+                        style: TextStyle(
+                            fontSize: 16, color: LightColors.textColor),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    homeVisitPrice,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: LightColors.textColor,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.house,
+                        color: LightColors.textColor,
+                        size: 20,
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        'House Sitting:',
+                        style: TextStyle(
+                            fontSize: 16, color: LightColors.textColor),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    houseSittingPrice,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: LightColors.textColor,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -364,9 +501,12 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: ElevatedButton.icon(
-              onPressed: () {},
-              icon: Icon(Icons.inbox_outlined),
-              label: Text('Request'),
+              onPressed: () {
+                //getvolunteerDataAndnavigate();
+                navgateToBookingPage();
+              },
+              icon: Icon(Icons.favorite_border),
+              label: Text('Booking'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF72B1F1),
                 padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
