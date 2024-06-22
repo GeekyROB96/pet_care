@@ -53,9 +53,8 @@ class OwnerDashboard extends StatelessWidget {
                                   height: 60,
                                   width: 60,
                                 )
-                              : Icon(Icons.person, color: Colors.blue),
+                              : Icon(Icons.person, color: Colors.black),
                         ),
-                        // backgroundImage: Colors.white,
                       );
                     },
                   ),

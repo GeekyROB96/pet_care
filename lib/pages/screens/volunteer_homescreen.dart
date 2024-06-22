@@ -6,6 +6,14 @@ import 'package:provider/provider.dart';
 import '../../provider/reminder_provider.dart';
 import 'notification_screen.dart';
 
+final images = [
+  'assets/sliding_images/sliding1.jpg',
+  'assets/sliding_images/sliding6.jpg',
+  'assets/sliding_images/sliding7.webp',
+  'assets/sliding_images/sliding4.jpg',
+  'assets/sliding_images/sliding4.webp',
+];
+
 class VolunteerDashboard extends StatelessWidget {
   const VolunteerDashboard({super.key});
 
@@ -14,42 +22,52 @@ class VolunteerDashboard extends StatelessWidget {
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Consumer<VolunteerDetailsGetterProvider>(
-                builder: (context, volunteerProvider, child) {
-              return Text(
-                'Hello ${volunteerProvider.name}',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              );
-            }),
-            GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, '/volunteerEditProfile');
-              },
-              child: Consumer<VolunteerDetailsGetterProvider>(
-                builder: (context, volunteerProvider, child) {
-                  return CircleAvatar(
-                    radius: 30,
-                    child: ClipOval(
-                      child: volunteerProvider.profileImageUrl != null
-                          ? Image.network(
-                              volunteerProvider.profileImageUrl!,
-                              fit: BoxFit.cover,
-                            )
-                          : Icon(Icons.person, color: Colors.white),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Consumer<VolunteerDetailsGetterProvider>(
+                    builder: (context, volunteerProvider, child) {
+                  return Text(
+                    'Hello ${volunteerProvider.name}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
-                    backgroundColor: Colors.black45,
                   );
-                },
-              ),
+                }),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/volunteerEditProfile');
+                  },
+                  child: Consumer<VolunteerDetailsGetterProvider>(
+                    builder: (context, volunteerProvider, child) {
+                      return CircleAvatar(
+                        radius: 30,
+                        child: ClipOval(
+                          child: volunteerProvider.imageUrl != null
+                              ? Image.network(
+                                  volunteerProvider.imageUrl!,
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                )
+                              : Icon(Icons.person, color: Colors.white),
+                        ),
+                        backgroundColor: Colors.black45,
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ]),
-        ]),
+            SizedBox(height: 20),
+            SlidingImagePage(),
+          ],
+        ),
       ),
       bottomNavigationBar: Stack(
         children: [
@@ -113,5 +131,84 @@ class CurvedPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return false;
+  }
+}
+
+class SlidingImagePage extends StatefulWidget {
+  const SlidingImagePage({Key? key}) : super(key: key);
+
+  @override
+  State<SlidingImagePage> createState() => _SlidingImagePageState();
+}
+
+class _SlidingImagePageState extends State<SlidingImagePage> {
+  late PageController _pageController;
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.9);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height *
+              0.4, // Adjust the height as needed
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: images.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: ImageCard(
+                  imgList: images[index],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class ImageCard extends StatelessWidget {
+  const ImageCard({Key? key, required this.imgList}) : super(key: key);
+  final String imgList;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            offset: const Offset(0, 6),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: AspectRatio(
+          aspectRatio: 16 / 9, // Maintain the aspect ratio to avoid slicing
+          child: Image.asset(
+            imgList,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -78,7 +78,7 @@ class VolunteerRegPage2 extends StatelessWidget {
                               ],
                             ),
                             Card(
-                              color: LightColors.backgroundColor,
+                              color: Colors.white.withOpacity(0.9),
                               child: SwitchListTile(
                                 title: Text('Cat'),
                                 value: provider.prefersCat,
@@ -88,7 +88,7 @@ class VolunteerRegPage2 extends StatelessWidget {
                               ),
                             ),
                             Card(
-                              color: LightColors.backgroundColor,
+                              color: Colors.white.withOpacity(0.9),
                               child: SwitchListTile(
                                 title: Text('Dog'),
                                 value: provider.prefersDog,
@@ -98,7 +98,7 @@ class VolunteerRegPage2 extends StatelessWidget {
                               ),
                             ),
                             Card(
-                              color: LightColors.backgroundColor,
+                              color: Colors.white.withOpacity(0.9),
                               child: SwitchListTile(
                                 title: Text('Bird'),
                                 value: provider.prefersBird,
@@ -108,7 +108,7 @@ class VolunteerRegPage2 extends StatelessWidget {
                               ),
                             ),
                             Card(
-                              color: LightColors.backgroundColor,
+                              color: Colors.white.withOpacity(0.9),
                               child: SwitchListTile(
                                 title: Text('Rabbit'),
                                 value: provider.prefersRabbit,
@@ -118,7 +118,7 @@ class VolunteerRegPage2 extends StatelessWidget {
                               ),
                             ),
                             Card(
-                              color: LightColors.backgroundColor,
+                              color: Colors.white.withOpacity(0.9),
                               child: SwitchListTile(
                                 title: Text('Others'),
                                 value: provider.prefersOthers,
@@ -152,7 +152,7 @@ class VolunteerRegPage2 extends StatelessWidget {
                               ],
                             ),
                             Card(
-                              color: LightColors.backgroundColor,
+                              color: Colors.white.withOpacity(0.9),
                               child: SwitchListTile(
                                 title: Text('Home Visits'),
                                 value: provider.providesHomeVisits,
@@ -162,7 +162,7 @@ class VolunteerRegPage2 extends StatelessWidget {
                               ),
                             ),
                             Card(
-                              color: LightColors.backgroundColor,
+                              color: Colors.white.withOpacity(0.9),
                               child: SwitchListTile(
                                 title: Text('Pet Walking'),
                                 value: provider.providesDogWalking,
@@ -172,7 +172,7 @@ class VolunteerRegPage2 extends StatelessWidget {
                               ),
                             ),
                             Card(
-                              color: LightColors.backgroundColor,
+                              color: Colors.white.withOpacity(0.9),
                               child: SwitchListTile(
                                 title: Text('House Sitting'),
                                 value: provider.providesHouseSitting,

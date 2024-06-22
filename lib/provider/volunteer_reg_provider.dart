@@ -228,7 +228,7 @@ class VolunteerRegistrationProvider extends ChangeNotifier {
   }
 
   void navigateToVolunteerReg(BuildContext context) {
-    Navigator.pushNamed(context, '/volunteerReg');
+    Navigator.pushNamed(context, '/volunteerRegister');
   }
 
   void navigateToVolunteerReg2(BuildContext context) {

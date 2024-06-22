@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FireStoreService {
+class PetFireStoreService {
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
   Future<bool> isPetNameDuplicate(String ownerEmail, String petName) async {

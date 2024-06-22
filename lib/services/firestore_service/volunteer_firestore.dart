@@ -50,12 +50,15 @@ class FireStoreServiceVolunteer {
         'prefersRabbit': prefersRabbit,
         'prefersOthers': prefersOthers,
         'providesHomeVisits': providesHomeVisits,
+        'providesHomeVisits': providesHomeVisits,
         'providesDogWalking': providesDogWalking,
         'providesHouseSitting': providesHouseSitting,
         'role': role,
         'profileImageUrl': profileImageUrl,
         'locationCity': locationCity,
         'providesHomeVisitsPrice': providesHomeVisitsPrice,
+        'providesHouseSittingPrice': providesHouseSittingPrice,
+        'uid': uid,
         'providesHouseSittingPrice': providesHouseSittingPrice,
         'uid': uid
       });
@@ -71,6 +74,7 @@ class FireStoreServiceVolunteer {
           .collection('users')
           .doc('volunteers')
           .collection('volunteers')
+          
           .doc(userId)
           .update({'imageUrl': imageUrl});
     } catch (e) {
@@ -94,6 +98,24 @@ class FireStoreServiceVolunteer {
   }
 
   Future<List<Map<String, dynamic>>> getAllVolunteers() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .doc('volunteers')
+          .collection('volunteers')
+          .get();
+      List<Map<String, dynamic>> volunteers = querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+      print("Fetched ${volunteers.length} volunteers");
+      return volunteers;
+    } catch (e) {
+      print("Error getting all volunteers $e");
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getAllVolunteersAsc() async {
     try {
       QuerySnapshot querySnapshot = await _firestore
           .collection('users')

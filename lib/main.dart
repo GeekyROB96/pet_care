@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pet_care/constants/theme/theme_provider.dart';
 import 'package:pet_care/firebase_options.dart';
 import 'package:pet_care/initial_screen.dart';
+import 'package:pet_care/pages/booking/booking_bottomsheet.dart';
 import 'package:pet_care/pages/owner&pet/owner_editprofile.dart';
 import 'package:pet_care/pages/owner&pet/owner_login.dart';
 import 'package:pet_care/pages/owner&pet/owner_signup.dart';
@@ -17,6 +18,8 @@ import 'package:pet_care/pages/volunteer/volunteer_editProfile.dart';
 import 'package:pet_care/pages/volunteer/volunteer_login_page.dart';
 import 'package:pet_care/pages/volunteer/volunteer_reg.dart';
 import 'package:pet_care/pages/volunteer/volunter_reg2.dart';
+import 'package:pet_care/provider/bookind_details_provider.dart';
+//import 'package:pet_care/provider/booking_details_provider.dart';
 import 'package:pet_care/provider/forgot_password_provider.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
@@ -34,7 +37,6 @@ import 'package:pet_care/provider/volunteer_login_provider.dart';
 import 'package:pet_care/provider/volunteer_reg_provider.dart';
 import 'package:pet_care/shared_pref_service.dart';
 import 'package:pet_care/widgets/forgot_screen.dart';
-import 'package:pet_care/widgets/splash_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -75,7 +77,8 @@ void main() async {
 
         ChangeNotifierProvider(create: (context) => PetSitterProvider()),
 
-        ChangeNotifierProvider(create: (context) => ReminderProvider())
+        ChangeNotifierProvider(create: (context) => ReminderProvider()),
+        ChangeNotifierProvider(create: (context) => BookingDetailsProvider())
       ],
       child: MyApp(),
     ),
@@ -108,7 +111,8 @@ class MyApp extends StatelessWidget {
         '/ownerEditProfile': (context) => OwnerEditProfilePage(),
         '/volunteerEditProfile': (context) => VolunteerEditProfilePage(),
         '/petSitters': (context) => PetSitters(),
-        '/petProfile': (context) => PetProfile()
+        '/petProfile': (context) => PetProfile(),
+        '/bookingPage': (context) => BookingDetailsPage()
       },
     );
   }

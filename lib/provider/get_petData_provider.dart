@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pet_care/services/firestore_service/pet_register.dart';
 
 class PetsDetailsGetterProvider extends ChangeNotifier {
-  final FireStoreService _fireStoreService = FireStoreService();
+  final PetFireStoreService _fireStoreService = PetFireStoreService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   bool _isDataLoaded = false;

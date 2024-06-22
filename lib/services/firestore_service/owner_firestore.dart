@@ -35,6 +35,7 @@ class FirestoreServiceOwner {
         'locationCity': locationCity,
         'profileImageUrl': profileImageUrl,
         'uid': uid
+        
       });
     } catch (e) {
       print("Error saving User Details $e");

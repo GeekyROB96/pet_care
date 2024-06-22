@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_care/constants/theme/light_colors.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
-import 'package:pet_care/provider/owner_editprofile_provider.dart';
 import 'package:provider/provider.dart';
 
 class OwnerEditProfilePage extends StatelessWidget {
@@ -50,33 +49,31 @@ class OwnerEditProfilePage extends StatelessWidget {
                       buildTextField(
                         label: 'Name',
                         initialValue: ownerDetailsProvider.name,
-                        onChanged: (value) =>
-                            Provider.of<OwnerEditProfileProvider>(context,
-                                    listen: false)
-                                .setName(value),
+                        enabled: false,
+                        prefixIcon: Icons.person_outline,
                       ),
-                      SizedBox(height: 10),
                       buildTextField(
                         label: 'Email',
                         initialValue: ownerDetailsProvider.email,
-                        enabled: false, // Make the email field non-editable
+                        enabled: false,
+                        prefixIcon: Icons.email_outlined,
                       ),
-                      SizedBox(height: 10),
                       buildTextField(
                         label: 'Phone Number',
                         initialValue: ownerDetailsProvider.phoneNo,
-                        onChanged: (value) =>
-                            Provider.of<OwnerEditProfileProvider>(context,
-                                    listen: false)
-                                .setPhoneNo(value),
+                        enabled: false,
+                        prefixIcon: Icons.phone_outlined,
                       ),
                       SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ElevatedButton(
-                            onPressed: () =>
-                                ownerDetailsProvider.saveProfile(context),
+                            onPressed: () async {
+                              await ownerDetailsProvider.saveProfile(context);
+                              Navigator.pop(
+                                  context); // Pop the edit profile page
+                            },
                             child: Text('Save'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: LightColors.primaryColor,
@@ -106,26 +103,42 @@ class OwnerEditProfilePage extends StatelessWidget {
   Widget buildTextField({
     required String label,
     required String initialValue,
-    ValueChanged<String>? onChanged,
     bool enabled = true,
+    IconData? prefixIcon,
   }) {
-    return TextField(
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(
-          color: LightColors.textColor,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          decoration: InputDecoration(
+            prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+            labelText: label,
+            labelStyle: TextStyle(
+              color: LightColors.textColor,
+              fontSize: 18,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade400),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: LightColors.primaryColor),
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          style: TextStyle(
+            fontSize: 16,
+            color: LightColors.textColor,
+          ),
+          enabled: enabled,
+          controller: TextEditingController(
+            text: initialValue,
+          ),
         ),
-      ),
-      style: TextStyle(
-        fontSize: 16,
-        color: LightColors.textColor,
-      ),
-      onChanged: onChanged,
-      enabled: enabled,
-      controller: TextEditingController(
-          text: initialValue), // Initialize controller with initialValue
+        if (label !=
+            'Phone Number') // Conditionally add divider except after Phone Number
+          SizedBox(height: 12),
+      ],
     );
   }
 

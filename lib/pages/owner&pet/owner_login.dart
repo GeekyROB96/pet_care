@@ -21,9 +21,8 @@ class OwnerLogin extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(height: 10),
-            // Image placed just above the container
             Image.asset(
-              'assets/images/img.png',
+              'assets/images/kutta.png',
               height: 150,
               width: 100,
               // fit: BoxFit.cover,

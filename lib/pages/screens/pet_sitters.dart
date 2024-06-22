@@ -4,9 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../volunteer/volunteer_details_page.dart';
 
-
-import '../volunteer/volunteer_details_page.dart';
-
 class PetSitters extends StatefulWidget {
   const PetSitters({Key? key}) : super(key: key);
 
@@ -49,14 +46,15 @@ class _PetSittersState extends State<PetSitters> {
                 // Implement pet type filtering logic if required
               }
               // Apply house sitting filter
-              if (showHouseSitting && volunteer['providesHouseSitting'] != true) {
+              if (showHouseSitting &&
+                  volunteer['providesHouseSitting'] != true) {
                 return false;
               }
               // Apply house visit filter
               if (showHouseVisit && volunteer['providesHomeVisits'] != true) {
                 return false;
               }
-              return true; // Include volunteer in the list
+              return true;
             }).toList();
 
             return Column(
@@ -177,8 +175,11 @@ class _PetSittersState extends State<PetSitters> {
                             MaterialPageRoute(
                               builder: (context) => VolunteerDetailsPage(
                                 volunteer: {
-                                  'profileImageUrl': volunteer['profileImageUrl'],
+                                  'profileImageUrl':
+                                      volunteer['profileImageUrl'],
                                   'name': volunteer['name'],
+                                  'email': volunteer['email'],
+                                  'uid': volunteer['uid'],
                                   'phoneNo': volunteer['phoneNo'],
                                   'aboutMe': volunteer['aboutMe'],
                                   'locationCity': volunteer['locationCity'],
@@ -189,17 +190,24 @@ class _PetSittersState extends State<PetSitters> {
                                   'age': volunteer['age'],
                                   'occupation': volunteer['occupation'],
                                   'minPrice': volunteer['minPrice'],
-                                  'providesDogWalking': volunteer['providesDogWalking'],
-                                  'providesHomeVisits': volunteer['providesHomeVisits'],
-                                  'providesHouseSitting': volunteer['providesHouseSitting'],
-                                  'providesHomeVisitsPrice': volunteer['providesHomeVisitsPrice'],
-                                  'providesHouseSittingPrice': volunteer['providesHouseSittingPrice'],
+                                  'providesDogWalking':
+                                      volunteer['providesDogWalking'],
+                                  'providesHomeVisits':
+                                      volunteer['providesHomeVisits'],
+                                  'providesHouseSitting':
+                                      volunteer['providesHouseSitting'],
+                                  'providesHomeVisitsPrice':
+                                      volunteer['providesHomeVisitsPrice'],
+                                  'providesHouseSittingPrice':
+                                      volunteer['providesHouseSittingPrice'],
                                 },
                               ),
                             ),
                           );
                         },
-                        child: VolunteerCard(volunteer: volunteer, showHouseSitting: showHouseSitting),
+                        child: VolunteerCard(
+                            volunteer: volunteer,
+                            showHouseSitting: showHouseSitting),
                       );
                     },
                   ),
@@ -270,12 +278,13 @@ class _PetSittersState extends State<PetSitters> {
   }
 }
 
-
 class VolunteerCard extends StatefulWidget {
   final Map<String, dynamic> volunteer;
   final bool showHouseSitting;
 
-  const VolunteerCard({Key? key, required this.volunteer, required this.showHouseSitting}) : super(key: key);
+  const VolunteerCard(
+      {Key? key, required this.volunteer, required this.showHouseSitting})
+      : super(key: key);
 
   @override
   _VolunteerCardState createState() => _VolunteerCardState();
@@ -313,7 +322,8 @@ class _VolunteerCardState extends State<VolunteerCard> {
                 radius: 30,
                 backgroundImage: widget.volunteer['profileImageUrl'] != null
                     ? NetworkImage(widget.volunteer['profileImageUrl'])
-                    : AssetImage('assets/images/default_profile.png') as ImageProvider,
+                    : AssetImage('assets/images/default_profile.png')
+                        as ImageProvider,
               ),
               SizedBox(width: 15),
               Expanded(
