@@ -12,6 +12,8 @@ import 'package:provider/provider.dart';
 import '../../constants/theme/light_colors.dart';
 
 class OwnerDashboard extends StatelessWidget {
+ 
+
   @override
   Widget build(BuildContext context) {
     final petsDetailsProvider = Provider.of<PetsDetailsGetterProvider>(context);
@@ -51,7 +53,7 @@ class OwnerDashboard extends StatelessWidget {
                                   height: 60,
                                   width: 60,
                                 )
-                              : Icon(Icons.person, color: Colors.white),
+                              : Icon(Icons.person, color: Colors.blue),
                         ),
                         // backgroundImage: Colors.white,
                       );

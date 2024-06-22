@@ -5,7 +5,7 @@ import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
 
 
 class PetSitterProvider with ChangeNotifier {
-  final FireStoreService _fireStoreService = FireStoreService();
+  final FireStoreServiceVolunteer _fireStoreService = FireStoreServiceVolunteer();
   List<Map<String, dynamic>> _volunteers = [];
   bool _isLoading = false;
   bool _sortByHomeVisiting = false; // Track if sorting by home visiting

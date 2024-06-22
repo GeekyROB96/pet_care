@@ -33,7 +33,7 @@ class VolunteerRegistrationProvider extends ChangeNotifier {
 
   final String _volunteerRole = 'volunteer';
   final AuthService _authService = AuthService();
-  final FireStoreService _fireStoreService = FireStoreService();
+  final FireStoreServiceVolunteer _fireStoreService = FireStoreServiceVolunteer();
   final SharedPreferencesService _prefsService = SharedPreferencesService();
 
   bool get isVolunteerLoggedIn => _isVolunteerLoggedIn;

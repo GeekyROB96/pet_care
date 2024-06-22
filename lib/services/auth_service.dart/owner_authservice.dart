@@ -14,6 +14,10 @@ class AuthService {
     }
   }
 
+  User? getOwnerUser() {
+    return _firebaseAuth.currentUser;
+  }
+
   Future<User?> signIn(String email, String password) async {
     try {
       UserCredential userCredential = await _firebaseAuth
@@ -26,7 +30,6 @@ class AuthService {
   }
 
   Future<void> forgotPassword(String email) async {
-
-      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 }

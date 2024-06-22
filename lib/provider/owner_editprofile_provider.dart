@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 
 class OwnerEditProfileProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FireStoreService _fireStoreService = FireStoreService();
+  final FirestoreServiceOwner _fireStoreService = FirestoreServiceOwner();
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   String _name = '';
@@ -43,7 +43,7 @@ class OwnerEditProfileProvider extends ChangeNotifier {
     if (user != null) {
       try {
         Map<String, dynamic>? userDetails =
-            await _fireStoreService.getUserDetails(user.uid);
+            await _fireStoreService.getOwnerDetails(user.uid);
 
         if (userDetails != null) {
           _name =

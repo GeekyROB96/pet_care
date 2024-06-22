@@ -8,13 +8,16 @@ class AuthService {
       UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
 
-        return userCredential.user;
+      return userCredential.user;
     } catch (e) {
       print("Error Signing up :  $e");
       return null;
     }
   }
 
+  User? getVolunteerUser() {
+    return _firebaseAuth.currentUser;
+  }
 
   Future<User?> signIn(String email, String password) async {
     try {
@@ -28,8 +31,7 @@ class AuthService {
     }
   }
 
-   Future<void> forgotPassword(String email) async {
-
-      await _firebaseAuth.sendPasswordResetEmail(email: email);
+  Future<void> forgotPassword(String email) async {
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 }

@@ -11,9 +11,11 @@ import 'package:provider/provider.dart';
 
 class VolunteerDetailsGetterProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FireStoreService _fireStoreService = FireStoreService();
+  final FireStoreServiceVolunteer _fireStoreService =
+      FireStoreServiceVolunteer();
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
+  String _uid = '';
   String _name = '';
   String _email = '';
   String _phoneNo = '';
@@ -39,6 +41,7 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
 
   Map<String, dynamic>? volunteerData;
 
+  String get uid => _uid;
   bool get isDataLoaded => _isDataLoaded;
   String get name => _name;
   String get email => _email;
@@ -85,6 +88,7 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
             volunteerData?['providesHouseSittingPrice'];
 
         _locationCity = volunteerData?['locationCity'];
+        _uid = volunteerData?['uid'];
 
         _isDataLoaded = true;
         notifyListeners();

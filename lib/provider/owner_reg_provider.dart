@@ -25,7 +25,7 @@ class OwnerRegistrationProvider with ChangeNotifier {
   String get locationCity => _locationCity;
 
   final AuthService _authService = AuthService();
-  final FireStoreService _fireStoreService = FireStoreService();
+  final FirestoreServiceOwner _fireStoreService = FirestoreServiceOwner();
   final SharedPreferencesService _prefsService = SharedPreferencesService();
 
   String get name => _name;
