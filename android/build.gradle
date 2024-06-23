@@ -9,6 +9,8 @@ buildscript {
         // NOTE: We should not  place the  application dependencies here; they belong
         // in the individual module build.gradle files
     }
+        ext.kotlin_version = '1.8.0'
+
 }
 
 allprojects {

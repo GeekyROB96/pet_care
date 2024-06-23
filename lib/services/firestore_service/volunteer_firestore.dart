@@ -29,8 +29,7 @@ class FireStoreServiceVolunteer {
     String? locationCity,
   }) async {
     try {
-      String? uid = _firebaseAuth
-          .currentUser?.uid; // Retrieve the UID of the current user
+      String? uid = _firebaseAuth.currentUser?.uid;
 
       await _firestore
           .collection('users')
@@ -50,7 +49,6 @@ class FireStoreServiceVolunteer {
         'prefersRabbit': prefersRabbit,
         'prefersOthers': prefersOthers,
         'providesHomeVisits': providesHomeVisits,
-        'providesHomeVisits': providesHomeVisits,
         'providesDogWalking': providesDogWalking,
         'providesHouseSitting': providesHouseSitting,
         'role': role,
@@ -59,8 +57,6 @@ class FireStoreServiceVolunteer {
         'providesHomeVisitsPrice': providesHomeVisitsPrice,
         'providesHouseSittingPrice': providesHouseSittingPrice,
         'uid': uid,
-        'providesHouseSittingPrice': providesHouseSittingPrice,
-        'uid': uid
       });
     } catch (e) {
       print("Error saving User Details $e");
@@ -74,7 +70,6 @@ class FireStoreServiceVolunteer {
           .collection('users')
           .doc('volunteers')
           .collection('volunteers')
-          
           .doc(userId)
           .update({'imageUrl': imageUrl});
     } catch (e) {
@@ -135,7 +130,6 @@ class FireStoreServiceVolunteer {
 
   Future<void> updateOwnerUserUIDs() async {
     try {
-      // Get all users in the pet_owners sub-collection
       QuerySnapshot userSnapshot = await _firestore
           .collection('users')
           .doc('volunteers')
@@ -143,8 +137,7 @@ class FireStoreServiceVolunteer {
           .get();
 
       for (QueryDocumentSnapshot userDoc in userSnapshot.docs) {
-        // Assuming UID can be retrieved or already known
-        String uid = userDoc.id; // Using document ID as UID
+        String uid = userDoc.id;
         await userDoc.reference.update({'uid': uid});
       }
       print('UIDs updated successfully');
@@ -166,8 +159,7 @@ class FireStoreServiceVolunteer {
     });
   }
 
-
-   Future<void> sendMessage(String recieverID, message) async {
+  Future<void> sendMessage(String receiverID, String message) async {
     final String currentUserId = _firebaseAuth.currentUser!.uid;
     final String currentUserEmail = _firebaseAuth.currentUser!.email!;
     final Timestamp timeStamp = Timestamp.now();
@@ -175,25 +167,23 @@ class FireStoreServiceVolunteer {
     Message newMessage = Message(
         senderId: currentUserId,
         senderEmail: currentUserEmail,
-        receiverId: recieverID,
+        receiverId: receiverID,
         timestamp: timeStamp,
         message: message);
 
-    List<String> ids = [currentUserId, recieverID];
+    List<String> ids = [currentUserId, receiverID];
     ids.sort();
 
     String chatRoomID = ids.join('_');
 
-    await _firestore
-        .collection('chat_rooms')
-        .doc(chatRoomID)
-        .collection('messages')
-        .add(newMessage.toMap());
+    await _firestore.collection('chat_rooms').doc(chatRoomID).set({
+      'messages': FieldValue.arrayUnion([newMessage.toMap()]),
+      'roomId': chatRoomID,
+    }, SetOptions(merge: true));
   }
 
-
-   Stream<QuerySnapshot> getMessages(String userID, otherUserID) {
-    //construct a chat room Id for two users
+  Stream<List<Map<String, dynamic>>> getMessages(
+      String userID, String otherUserID) {
     List<String> ids = [userID, otherUserID];
     ids.sort();
 
@@ -202,8 +192,51 @@ class FireStoreServiceVolunteer {
     return _firestore
         .collection('chat_rooms')
         .doc(chatRoomID)
-        .collection('messages')
-        .orderBy('timestamp', descending: false)
-        .snapshots();
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.exists && snapshot.data() != null) {
+        List<dynamic> messages = snapshot.data()!['messages'];
+        return messages.map((msg) => msg as Map<String, dynamic>).toList();
+      } else {
+        return [];
+      }
+    });
+  }
+
+  Future<List<String>> getChatRoomIdsForCurrentUser() async {
+    String currentUserId = _firebaseAuth.currentUser?.uid ?? '';
+
+    print("Current uid: $currentUserId");
+
+    if (currentUserId.isEmpty) {
+      throw Exception("Current user ID is not available.");
+    }
+
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+        .collection('chat_rooms')
+        .get(); // Retrieve all documents
+
+    List<String> chatRoomIds = [];
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc in querySnapshot.docs) {
+      Map<String, dynamic> data = doc.data();
+      if (data.containsKey('roomId')) {
+        String roomId = data['roomId'] as String;
+        print("Room ID: $roomId");
+
+        // Check if roomId contains currentUserId as a substring
+        if (roomId.contains(currentUserId)) {
+          List<String> ids = roomId.split('_');
+          String otherUserId =
+              ids.firstWhere((id) => id != currentUserId, orElse: () => '');
+
+          if (otherUserId.isNotEmpty) {
+            chatRoomIds.add(otherUserId);
+          }
+        }
+      }
+    }
+
+    return chatRoomIds;
   }
 }
