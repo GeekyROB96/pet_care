@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pet_care/pages/screens/chat_screen.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
-import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants/theme/light_colors.dart';
@@ -27,12 +27,8 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
   @override
   Widget build(BuildContext context) {
     String currentuidd = widget.volunteer['uid'];
-
-    print(currentuidd);
-
     String set = Provider.of<VolunteerDetailsGetterProvider>(context)
         .currentuid = currentuidd;
-    print("Set is : $set ------------");
 
     return Scaffold(
       body: Column(
@@ -43,17 +39,20 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
             child: Stack(
               children: [
                 widget.volunteer['profileImageUrl'] != null
-                    ? Image.network(
-                        widget.volunteer['profileImageUrl'],
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
+                    ? Center(
+                        child: CircleAvatar(
+                          radius: MediaQuery.of(context).size.width * 0.35,
+                          backgroundImage: NetworkImage(
+                            widget.volunteer['profileImageUrl'],
+                          ),
+                        ),
                       )
-                    : Image.asset(
-                        'assets/images/default_profile.png',
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
+                    : Center(
+                        child: CircleAvatar(
+                          radius: MediaQuery.of(context).size.width * 0.35,
+                          backgroundImage:
+                              AssetImage('assets/images/default_profile.png'),
+                        ),
                       ),
                 Positioned(
                   top: 20,
@@ -78,12 +77,19 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(40),
-                  topRight: Radius.circular(40),
-                ),
-              ),
+                  // color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(50),
+                    topRight: Radius.circular(50),
+                  ),
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFFD9E9FA).withOpacity(0.8),
+                      Colors.white,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )),
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(16),
                 child: Column(
@@ -103,28 +109,6 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
                             ),
                           ),
                           SizedBox(height: 10),
-                          Text(
-                            '${widget.volunteer['email']}',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: LightColors.textColor,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            '${widget.volunteer['uid']}',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: LightColors.textColor,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
                           Row(
                             children: [
                               Icon(Icons.location_on, color: Colors.black),
@@ -194,6 +178,7 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
     bool showSeeMore = aboutMe.length > 90;
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 10),
@@ -298,7 +283,7 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
-        color: Color(0xFFC8D3F8), // Background color
+        color: Color(0xFFBAC7F3), // Background color
         child: Padding(
           padding: EdgeInsets.all(16),
           child: Column(
@@ -474,50 +459,85 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
     );
   }
 
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Tooltip(
-              message: 'Know the time and availability',
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: Icon(Icons.chat),
-                label: Text('Chat'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF72B1F1),
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+ Widget _buildActionButtons() {
+    return Consumer<VolunteerDetailsGetterProvider>(
+      builder: (context, volunteerProvider, child) {
+        return Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Tooltip(
+                  message: 'Know the time and availability',
+                  child: ElevatedButton.icon( 
+                    onPressed: () {
+                              final String? receiverId = widget.volunteer['uid'];
+                              final String? receiverEmail = widget.volunteer['email'];
+                              final String? name = widget.volunteer['name'];
+                              final String? imageUrl = widget.volunteer['profileImageUrl'];
+
+                              print("Receiver Email is: $receiverEmail");
+                              print("Receiver ID is: $receiverId");
+
+                              if (receiverId != null && receiverEmail != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatScreen(
+                                      name: name ?? 'No Name',
+                                      profileImageUrl: imageUrl ?? 'assets/images/default_profile.png', // Provide a default image if null
+                                      receiverId: receiverId,
+                                      receiverEmail: receiverEmail,
+                                    ),
+                                  ),
+                                );
+                              }
+                            else {
+                                                    // Handle the case where receiverId or receiverEmail is null
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Volunteer ID or email is missing.'),
+                          ),
+                        );
+                      }
+                    },
+                    icon: Icon(Icons.chat),
+                    label: Text('Chat'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF72B1F1),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                //getvolunteerDataAndnavigate();
-                navgateToBookingPage();
-              },
-              icon: Icon(Icons.favorite_border),
-              label: Text('Booking'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF72B1F1),
-                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    // getvolunteerDataAndNavigate();
+                    navgateToBookingPage();
+                  },
+                  icon: Icon(Icons.favorite_border),
+                  label: Text('Booking'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF72B1F1),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }
