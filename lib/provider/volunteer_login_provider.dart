@@ -11,10 +11,10 @@ class VolunteerLoginProvider extends ChangeNotifier {
   String _volunteerEmail = '';
   String _volunteerPassword = '';
   bool _isVolunteerPasswordVisible = false;
+  bool _isVolunteerLoggedIn = false;
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-
-  bool _isVolunteerLoggedIn = false;
 
   String get volunteerEmail => _volunteerEmail;
   String get volunteerPassword => _volunteerPassword;
@@ -24,11 +24,6 @@ class VolunteerLoginProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final SharedPreferencesService _prefsService = SharedPreferencesService();
-
-  void setLoading(bool loading) {
-    _isLoading = loading;
-    notifyListeners();
-  }
 
   void setVolunteerEmail(String email) {
     _volunteerEmail = email;
@@ -71,7 +66,7 @@ class VolunteerLoginProvider extends ChangeNotifier {
       print("Email should be in correct format!");
       return;
     }
-
+    setLoading(true);
     User? user = await _authService.signIn(_volunteerEmail, _volunteerPassword);
 
     if (user != null) {
@@ -127,5 +122,10 @@ class VolunteerLoginProvider extends ChangeNotifier {
 
   void navigateToSplashScreen(BuildContext context) {
     Navigator.pushNamed(context, '/');
+  }
+
+  void setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
   }
 }

@@ -18,7 +18,7 @@ class VolunteerEditProfilePage extends StatelessWidget {
             height: MediaQuery.of(context).size.height / 3,
             child: Container(
               child: Image.asset(
-                'assets/images/pet-human.png',
+                'assets/images/nature.webp',
                 fit: BoxFit.cover,
               ),
             ),
@@ -30,13 +30,21 @@ class VolunteerEditProfilePage extends StatelessWidget {
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: Color(0xFF5F82F6),
+                //color: Color(0xFF5F82F6),
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(30.0),
                 ),
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFF7946EE).withOpacity(0.9),
+                    Colors.white,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black26,
+                    color: Colors.white,
                     blurRadius: 10.0,
                     spreadRadius: 5.0,
                     offset: Offset(0.0, 0.75),

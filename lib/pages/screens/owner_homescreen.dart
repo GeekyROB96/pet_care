@@ -12,8 +12,6 @@ import 'package:provider/provider.dart';
 import '../../constants/theme/light_colors.dart';
 
 class OwnerDashboard extends StatelessWidget {
- 
-
   @override
   Widget build(BuildContext context) {
     final petsDetailsProvider = Provider.of<PetsDetailsGetterProvider>(context);
@@ -220,7 +218,7 @@ class OwnerDashboard extends StatelessWidget {
                 Column(
                   children: [
                     IconButton(
-                      icon: Image.asset('assets/icons/bell.gif',
+                      icon: Image.asset('assets/icons/be.gif',
                           width: 30, height: 30),
                       onPressed: () {
                         Navigator.push(
@@ -249,7 +247,7 @@ class OwnerDashboard extends StatelessWidget {
                   children: [
                     IconButton(
                       icon: Image.asset(
-                        'assets/icons/home.gif',
+                        'assets/icons/ho.gif',
                         width: 30,
                         height: 30,
                       ),
@@ -271,7 +269,7 @@ class OwnerDashboard extends StatelessWidget {
                 Column(
                   children: [
                     IconButton(
-                      icon: Image.asset('assets/icons/sad.gif',
+                      icon: Image.asset('assets/icons/sa.gif',
                           width: 30, height: 30),
                       onPressed: () {
                         // Add your onPressed logic here
@@ -297,7 +295,7 @@ class OwnerDashboard extends StatelessWidget {
                 Column(
                   children: [
                     IconButton(
-                      icon: Image.asset('assets/icons/more.gif',
+                      icon: Image.asset('assets/icons/mo.gif',
                           width: 30, height: 30),
                       onPressed: () {
                         // Add your onPressed logic here

@@ -1,21 +1,28 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pet_care/model/message_model.dart';
 import 'package:pet_care/services/chat/chat_service.dart';
 import 'package:pet_care/services/firestore_service/owner_firestore.dart';
 import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
-import 'package:pet_care/services/auth_service.dart/owner_authservice.dart';
-import 'package:pet_care/services/auth_service.dart/volunteer_authservice.dart';
+
+import 'package:pet_care/widgets/components/chat_bubble.dart';
+import 'package:pet_care/widgets/components/textfield.dart';
 
 class ChatScreen extends StatefulWidget {
   final String receiverId;
   final String receiverEmail;
+  final String profileImageUrl;
+  final String name;
 
   ChatScreen({
     Key? key,
     required this.receiverId,
     required this.receiverEmail,
+    required this.name,
+    required this.profileImageUrl
   }) : super(key: key);
 
   @override
@@ -32,6 +39,12 @@ class _ChatScreenState extends State<ChatScreen> {
   String _currentUserId = '';
   String _currentUserRole = '';
 
+    Timer? _timer;
+
+
+
+    FocusNode myFocusMode = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +56,51 @@ class _ChatScreenState extends State<ChatScreen> {
         '';
 
     _getCurrentUserRole();
+
+    myFocusMode.addListener(() {
+      if (myFocusMode.hasFocus) {
+        Future.delayed(const Duration(milliseconds: 500), () => scrollDown());
+      }
+    });
+
+    Future.delayed(const Duration(milliseconds: 500), () => scrollDown());
+
+     _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+      setState(() {});
+    });
+  }
+
+
+
+  String _formatDate(Timestamp timestamp) {
+    DateTime date = timestamp.toDate();
+    DateTime now = DateTime.now();
+
+    if (DateFormat('yyyy-MM-dd').format(date) ==
+        DateFormat('yyyy-MM-dd').format(now)) {
+      return 'Today';
+    } else if (DateFormat('yyyy-MM-dd').format(date) ==
+        DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: 1)))) {
+      return 'Yesterday';
+    } else {
+      return DateFormat('d MMM yyyy').format(date);
+    }
+  }
+
+  String _formatTime(Timestamp timeStamp) {
+    DateTime date = timeStamp.toDate();
+
+    DateTime now = DateTime.now();
+
+    if (date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day &&
+        date.hour == now.hour &&
+        date.minute == now.minute) {
+      return 'now';
+    } else {
+      return DateFormat("HH:mm").format(date);
+    }
   }
 
   Future<void> _getCurrentUserRole() async {
@@ -63,47 +121,53 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  // void _sendMessage() {
-  //   String messageText = _messageController.text.trim();
-
-  //   if (messageText.isNotEmpty) {
-  //     String senderEmail = FirebaseAuth.instance.currentUser?.email ?? '';
-
-  //     Message newMessage = Message(
-  //         senderId: _currentUserId,
-  //         receiverId: widget.receiverId,
-  //         message: messageText,
-  //         timestamp: Timestamp.now(),
-  //         senderEmail: senderEmail);
-
-  //     if (_currentUserRole == 'owner') {
-  //       _firestoreServiceOwner.sendMessage(widget.receiverId, newMessage);
-  //     } else if (_currentUserRole == 'volunteer') {
-  //       _firestoreServiceVolunteer.sendMessage(widget.receiverId, newMessage);
-  //     }
-  //   }
-  // }
-
-
   void _sendMessage() {
-  String messageText = _messageController.text.trim();
-  if (messageText.isNotEmpty) {
-    if (_currentUserRole == 'owner') {
-      _firestoreServiceOwner.sendMessage(widget.receiverId, messageText);
-    } else if (_currentUserRole == 'volunteer') {
-      _firestoreServiceVolunteer.sendMessage(widget.receiverId, messageText);
+    String messageText = _messageController.text.trim();
+    if (messageText.isNotEmpty) {
+      if (_currentUserRole == 'owner') {
+        _firestoreServiceOwner.sendMessage(widget.receiverId, messageText);
+      } else if (_currentUserRole == 'volunteer') {
+        _firestoreServiceVolunteer.sendMessage(widget.receiverId, messageText);
+      }
+
+      _messageController.clear();
     }
-
-    _messageController.clear();
   }
-}
 
+  
+  @override
+  void dispose() {
+    _messageController.dispose();
+    myFocusMode.dispose();
+    _timer?.cancel(); // Cancel the timer when the widget is disposed
+
+    super.dispose();
+  }
+
+  final ScrollController _scrollController = ScrollController();
+
+  void scrollDown() {
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: const Duration(seconds: 1), curve: Curves.fastOutSlowIn);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat'),
+        title: Row(
+          children:[
+           CircleAvatar(
+            backgroundImage: widget.profileImageUrl.startsWith('http')
+              ? NetworkImage(widget.profileImageUrl)
+              : AssetImage(widget.profileImageUrl) as ImageProvider,
+           ),
+              SizedBox(width: 10,),
+             Text(widget.name)
+             ]),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.grey,
+        elevation: 5,
       ),
       body: Column(
         children: [
@@ -121,35 +185,76 @@ class _ChatScreenState extends State<ChatScreen> {
                     .map((doc) =>
                         Message.fromMap(doc.data() as Map<String, dynamic>))
                     .toList();
+
+                String? lastDisplayedDate;
                 return ListView.builder(
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     var message = messages[index];
-                    return ListTile(
-                      title: Text(message.senderEmail),
-                      subtitle: Text(message.message),
-                      trailing: Text(message.timestamp.toDate().toString()),
+                    bool isSender = message.senderId == _currentUserId;
+                    String messageDate = _formatDate(message.timestamp);
+                    String messageTime = _formatTime(message.timestamp);
+
+                    bool shouldDisplayDate = lastDisplayedDate != messageDate;
+                    lastDisplayedDate = messageDate;
+
+                    return Column(
+                      children: [
+                        if (shouldDisplayDate)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Center(
+                              child: Chip(
+                                label: Text(messageDate),
+                              ),
+                            ),
+                          ),
+                        ChatBubble(
+                          message: message.message,
+                          isSender: isSender,
+                          time: messageTime,
+                        ),
+                      ],
                     );
                   },
                 );
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(hintText: 'Enter Message'),
-                  ),
-                ),
+          _buildUserInput()
+        ],
+      ),
+    );
+  }
 
-                IconButton(onPressed: _sendMessage, icon: Icon(Icons.send))
-              ],
+  Widget _buildUserInput() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 22.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: MyTextField(
+              padding: const EdgeInsets.all(2),
+              margin: const EdgeInsets.only(left: 25, right: 10),
+              controller: _messageController,
+              hintText: "Type a message",
+              obsText: false,
+              focusNode: myFocusMode,
             ),
-          )
+          ),
+          Container(
+            padding: const EdgeInsets.all(0),
+            margin: const EdgeInsets.only(right: 10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(29), color: Colors.blue),
+            child: IconButton(
+              onPressed: _sendMessage,
+              icon: const Icon(
+                Icons.send,
+                color: Colors.black,
+              ),
+            ),
+          ),
         ],
       ),
     );

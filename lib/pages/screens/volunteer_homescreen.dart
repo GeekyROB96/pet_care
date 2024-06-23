@@ -84,15 +84,12 @@ class VolunteerDashboard extends StatelessWidget {
               Icon(Icons.home, size: 30, color: Colors.black),
               Icon(Icons.add_a_photo, size: 30, color: Colors.black),
               Icon(Icons.notifications, size: 30, color: Colors.black),
+              Icon(Icons.email_sharp, size: 30, color: Colors.black),
             ],
             onTap: (index) {
-              // Handle navigation to different pages based on the index
               if (index == 0) {
-                // Navigate to Home page
               } else if (index == 1) {
-                // Navigate to Like/Favorites page
               } else if (index == 2) {
-                // Navigate to Reminder page
                 Navigator.push(
                   context,
                   MaterialPageRoute(

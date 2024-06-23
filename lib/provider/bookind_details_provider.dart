@@ -15,20 +15,22 @@ class BookingDetailsProvider extends ChangeNotifier {
   String? _ownerEmail;
   DateTime? _fromDate, _toDate;
   Timestamp? _fromTime, _toTime;
-  int? _totalHours;
-  int? _totalPrice;
+  double? _totalHours;
+  double? _totalPrice;
   String? _status;
 
   Map<String, dynamic> vData = {};
   bool? get homeVisit => _homeVisit;
   bool? get houseSitting => _houseSitting;
+  int? get houseSittingPrice => _houseSittingPrice;
+  int? get homeVisitPrice => _homeVisitPrice;
   String? get ownerEmail => _ownerEmail;
   DateTime? get fromDate => _fromDate;
   DateTime? get toDate => _toDate;
   Timestamp? get fromTime => _fromTime;
   Timestamp? get toTime => _toTime;
-  int? get totalHours => _totalHours;
-  int? get totalPrice => _totalPrice;
+  double? get totalHours => _totalHours;
+  double? get totalPrice => _totalPrice;
   String? get status => _status;
   List<Map<String, dynamic>> get petList => _petList;
   String uid = '';
@@ -36,36 +38,28 @@ class BookingDetailsProvider extends ChangeNotifier {
   FireStoreServiceVolunteer _fireStoreService = FireStoreServiceVolunteer();
 
   Future<void> loadDetails(BuildContext context) async {
-    print("Before data ---------------");
     uid = Provider.of<VolunteerDetailsGetterProvider>(context, listen: false)
         .currentuid;
 
     print(uid);
     vData = (await _fireStoreService.getVolunteerDetails(uid))!;
     if (vData != null) {
-      print("Vol data is jhol data :  $vData");
-
       _houseSitting = vData['providesHouseSitting'];
       _houseSittingPrice = vData['providesHouseSittingPrice'];
-
-      print('HouseSitting type is $_houseSitting');
-      print("HouseSitting price is $_houseSittingPrice");
-
-      // Notify listeners to update the UI
+      _homeVisit = vData['providesHomeVisits'];
+      _homeVisitPrice = vData['providesHomeVisitsPrice'];
       notifyListeners();
-    } else {
-      print("Volunteer data is null");
-    }
+    } else {}
   }
 
-  void loadPetData(BuildContext context) async {
+  Future<void> loadPetData(BuildContext context) async {
     String ownerEmail =
-        await Provider.of<OwnerDetailsGetterProvider>(context, listen: false).email;
+        await Provider.of<OwnerDetailsGetterProvider>(context, listen: false)
+            .email;
 
     PetFireStoreService _petFireStore = PetFireStoreService();
 
     _petList = await _petFireStore.getPets(ownerEmail);
-
-    print(" Pet List is :   $_petList");
+    notifyListeners();
   }
 }

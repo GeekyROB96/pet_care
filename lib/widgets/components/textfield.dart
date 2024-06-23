@@ -10,9 +10,11 @@ class MyTextField extends StatefulWidget {
   final Widget? prefixIcon;
   final String? prefixTooltipMessage; // Added parameter for tooltip message
   final Widget? suffixIcon;
+  //final Widget? onSuffixIconPressed;
   final TextStyle? textStyle;
   final Color? fillColor;
   final ValueChanged<String>? onChanged;
+  final VoidCallback? onSuffixIconPressed;
 
   const MyTextField({
     Key? key,
@@ -23,11 +25,13 @@ class MyTextField extends StatefulWidget {
     required this.padding,
     this.focusNode,
     this.prefixIcon,
-    this.prefixTooltipMessage, // Added parameter for tooltip message
+    this.prefixTooltipMessage,
     this.suffixIcon,
+    //this.onSuffixIconPressed,
     this.textStyle,
     this.fillColor,
     this.onChanged,
+    this.onSuffixIconPressed,
   }) : super(key: key);
 
   @override

@@ -29,8 +29,15 @@ class _PetSittersState extends State<PetSitters> {
       value: _provider,
       child: Scaffold(
         appBar: AppBar(
+          elevation: 0.5,
           centerTitle: true,
-          title: Text('Pet Sitters'),
+          title: Text(
+            'Pet Sitters',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+            ),
+          ),
         ),
         body: Consumer<PetSitterProvider>(
           builder: (context, provider, child) {
@@ -291,7 +298,7 @@ class VolunteerCard extends StatefulWidget {
 }
 
 class _VolunteerCardState extends State<VolunteerCard> {
-  bool _isLiked = false; // Track whether the volunteer is liked or not
+  bool _isLiked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -300,7 +307,7 @@ class _VolunteerCardState extends State<VolunteerCard> {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.white,
             spreadRadius: 2,
             blurRadius: 5,
             offset: Offset(0, 3),
@@ -311,140 +318,154 @@ class _VolunteerCardState extends State<VolunteerCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
         ),
-        color: Colors.white,
+
+        //color: Colors.white,
         margin: EdgeInsets.symmetric(vertical: 10),
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundImage: widget.volunteer['profileImageUrl'] != null
-                    ? NetworkImage(widget.volunteer['profileImageUrl'])
-                    : AssetImage('assets/images/default_profile.png')
-                        as ImageProvider,
-              ),
-              SizedBox(width: 15),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFFA3BFF5).withOpacity(0.3),
+                  Colors.white,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )),
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: widget.volunteer['profileImageUrl'] != null
+                      ? NetworkImage(widget.volunteer['profileImageUrl'])
+                      : AssetImage('assets/images/default_profile.png')
+                          as ImageProvider,
+                ),
+                SizedBox(width: 15),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.volunteer['name'],
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, color: Colors.grey, size: 20),
+                          SizedBox(width: 5),
+                          Text(
+                            widget.volunteer['locationCity'] ?? 'Unknown',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          if (widget.volunteer['prefersDog'] == true)
+                            Container(
+                              width: 15,
+                              height: 18,
+                              child: Image.asset('assets/icons/dog.png'),
+                            ),
+                          if (widget.volunteer['prefersCat'] == true)
+                            Container(
+                              width: 15,
+                              height: 18,
+                              child: Image.asset('assets/icons/cat.png'),
+                            ),
+                          if (widget.volunteer['prefersRabbit'] == true)
+                            Container(
+                              width: 15,
+                              height: 18,
+                              child: Image.asset('assets/icons/rabbit.png'),
+                            ),
+                          if (widget.volunteer['prefersBird'] == true)
+                            Container(
+                              width: 20,
+                              height: 20,
+                              child: Image.asset('assets/icons/bird.png'),
+                            ),
+                          if (widget.volunteer['prefersDog'] == true ||
+                              widget.volunteer['prefersCat'] == true ||
+                              widget.volunteer['prefersRabbit'] == true ||
+                              widget.volunteer['prefersBird'] == true)
+                            Text(
+                              '|',
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.grey),
+                            ),
+                          if (widget.volunteer['providesDogWalking'] == true)
+                            Container(
+                              width: 20,
+                              height: 20,
+                              child: Image.asset('assets/icons/pet_walk.png'),
+                            ),
+                          if (widget.volunteer['providesHomeVisits'] == true)
+                            Container(
+                              width: 20,
+                              height: 20,
+                              child: Image.asset('assets/icons/pet_home.png'),
+                            ),
+                          if (widget.volunteer['providesHouseSitting'] == true)
+                            Container(
+                              width: 20,
+                              height: 20,
+                              child: Image.asset('assets/icons/pet_sitter.png'),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
                   children: [
                     Text(
-                      widget.volunteer['name'],
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      'From',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
-                    SizedBox(height: 5),
                     Row(
                       children: [
-                        Icon(Icons.location_on, color: Colors.grey, size: 20),
-                        SizedBox(width: 5),
                         Text(
-                          widget.volunteer['locationCity'] ?? 'Unknown',
+                          (widget.showHouseSitting == true)
+                              ? '${widget.volunteer['providesHouseSittingPrice'] ?? 0} INR'
+                              : '${widget.volunteer['providesHomeVisitsPrice'] ?? 0} INR',
                           style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
-                      ],
-                    ),
-                    SizedBox(height: 5),
-                    Row(
-                      children: [
-                        if (widget.volunteer['prefersDog'] == true)
-                          Container(
-                            width: 20,
-                            height: 20,
-                            child: Image.asset('assets/icons/dog.png'),
-                          ),
-                        if (widget.volunteer['prefersCat'] == true)
-                          Container(
-                            width: 20,
-                            height: 20,
-                            child: Image.asset('assets/icons/cat.png'),
-                          ),
-                        if (widget.volunteer['prefersRabbit'] == true)
-                          Container(
-                            width: 20,
-                            height: 20,
-                            child: Image.asset('assets/icons/rabbit.png'),
-                          ),
-                        if (widget.volunteer['prefersBird'] == true)
-                          Container(
-                            width: 20,
-                            height: 20,
-                            child: Image.asset('assets/icons/bird.png'),
-                          ),
-                        if (widget.volunteer['prefersDog'] == true ||
-                            widget.volunteer['prefersCat'] == true ||
-                            widget.volunteer['prefersRabbit'] == true ||
-                            widget.volunteer['prefersBird'] == true)
-                          Text(
-                            '|',
-                            style: TextStyle(fontSize: 20, color: Colors.grey),
-                          ),
-                        if (widget.volunteer['providesDogWalking'] == true)
-                          Container(
-                            width: 20,
-                            height: 20,
-                            child: Image.asset('assets/icons/pet_walk.png'),
-                          ),
-                        if (widget.volunteer['providesHomeVisits'] == true)
-                          Container(
-                            width: 20,
-                            height: 20,
-                            child: Image.asset('assets/icons/pet_home.png'),
-                          ),
-                        if (widget.volunteer['providesHouseSitting'] == true)
-                          Container(
-                            width: 20,
-                            height: 20,
-                            child: Image.asset('assets/icons/pet_sitter.png'),
-                          ),
+                        SizedBox(width: 5),
+                        IconButton(
+                          icon: _isLiked
+                              ? Icon(Icons.favorite)
+                              : Icon(Icons.favorite_border),
+                          color: Colors.red,
+                          onPressed: () {
+                            setState(() {
+                              _isLiked = !_isLiked; // Toggle liked state
+                            });
+                          },
+                        ),
                       ],
                     ),
                   ],
                 ),
-              ),
-              Column(
-                children: [
-                  Text(
-                    'From',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        (widget.showHouseSitting == true)
-                            ? '${widget.volunteer['providesHouseSittingPrice'] ?? 0} INR'
-                            : '${widget.volunteer['providesHomeVisitsPrice'] ?? 0} INR',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(width: 5),
-                      IconButton(
-                        icon: _isLiked
-                            ? Icon(Icons.favorite)
-                            : Icon(Icons.favorite_border),
-                        color: Colors.red,
-                        onPressed: () {
-                          setState(() {
-                            _isLiked = !_isLiked; // Toggle liked state
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_care/pages/screens/chat_screen.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -458,50 +459,85 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
     );
   }
 
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Tooltip(
-              message: 'Know the time and availability',
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: Icon(Icons.chat),
-                label: Text('Chat'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF72B1F1),
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+ Widget _buildActionButtons() {
+    return Consumer<VolunteerDetailsGetterProvider>(
+      builder: (context, volunteerProvider, child) {
+        return Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Tooltip(
+                  message: 'Know the time and availability',
+                  child: ElevatedButton.icon( 
+                    onPressed: () {
+                              final String? receiverId = widget.volunteer['uid'];
+                              final String? receiverEmail = widget.volunteer['email'];
+                              final String? name = widget.volunteer['name'];
+                              final String? imageUrl = widget.volunteer['profileImageUrl'];
+
+                              print("Receiver Email is: $receiverEmail");
+                              print("Receiver ID is: $receiverId");
+
+                              if (receiverId != null && receiverEmail != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatScreen(
+                                      name: name ?? 'No Name',
+                                      profileImageUrl: imageUrl ?? 'assets/images/default_profile.png', // Provide a default image if null
+                                      receiverId: receiverId,
+                                      receiverEmail: receiverEmail,
+                                    ),
+                                  ),
+                                );
+                              }
+                            else {
+                                                    // Handle the case where receiverId or receiverEmail is null
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Volunteer ID or email is missing.'),
+                          ),
+                        );
+                      }
+                    },
+                    icon: Icon(Icons.chat),
+                    label: Text('Chat'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF72B1F1),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                //getvolunteerDataAndnavigate();
-                navgateToBookingPage();
-              },
-              icon: Icon(Icons.favorite_border),
-              label: Text('Booking'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF72B1F1),
-                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    // getvolunteerDataAndNavigate();
+                    navgateToBookingPage();
+                  },
+                  icon: Icon(Icons.favorite_border),
+                  label: Text('Booking'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF72B1F1),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }
