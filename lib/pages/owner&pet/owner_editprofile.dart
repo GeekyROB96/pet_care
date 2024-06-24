@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pet_care/constants/theme/light_colors.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class OwnerEditProfilePage extends StatelessWidget {
   @override
@@ -80,8 +81,10 @@ class OwnerEditProfilePage extends StatelessWidget {
                             ),
                           ),
                           ElevatedButton(
-                            onPressed: () =>
-                                ownerDetailsProvider.ownerLogout(context),
+                            onPressed: () {
+                              onUserLogout();
+                              ownerDetailsProvider.ownerLogout(context);
+                            },
                             child: Text('Logout'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,
@@ -153,5 +156,11 @@ class OwnerEditProfilePage extends StatelessWidget {
         return AssetImage('assets/images/default.png');
       }
     }
+  }
+
+  void onUserLogout() {
+    /// 1.2.2. de-initialization ZegoUIKitPrebuiltCallInvitationService
+    /// when app's user is logged out
+    ZegoUIKitPrebuiltCallInvitationService().uninit();
   }
 }

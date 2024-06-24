@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pet_care/constants/theme/theme_provider.dart';
 import 'package:pet_care/firebase_options.dart';
 import 'package:pet_care/initial_screen.dart';
@@ -11,6 +12,7 @@ import 'package:pet_care/pages/owner&pet/pet_profile.dart';
 import 'package:pet_care/pages/owner&pet/pet_register.dart';
 import 'package:pet_care/pages/owner&pet/pet_register2.dart';
 import 'package:pet_care/pages/pets_page/pets.dart';
+import 'package:pet_care/pages/screens/call_page.dart';
 import 'package:pet_care/pages/screens/owner_homescreen.dart';
 import 'package:pet_care/pages/screens/pet_sitters.dart';
 import 'package:pet_care/pages/screens/volunteer_homescreen.dart';
@@ -19,7 +21,6 @@ import 'package:pet_care/pages/volunteer/volunteer_login_page.dart';
 import 'package:pet_care/pages/volunteer/volunteer_reg.dart';
 import 'package:pet_care/pages/volunteer/volunter_reg2.dart';
 import 'package:pet_care/provider/bookind_details_provider.dart';
-//import 'package:pet_care/provider/booking_details_provider.dart';
 import 'package:pet_care/provider/forgot_password_provider.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
@@ -38,52 +39,63 @@ import 'package:pet_care/provider/volunteer_reg_provider.dart';
 import 'package:pet_care/shared_pref_service.dart';
 import 'package:pet_care/widgets/forgot_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  final prefsService = SharedPreferencesService();
-  await prefsService.init(); //made changes
+  // Initialize Zego UIKit and set navigator key
+  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
+  ZegoUIKit().initLog().then((value) {
+    ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
+      [ZegoUIKitSignalingPlugin()],
+    );
 
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-            create: (context) => OwnerRegistrationProvider()),
-
-        ChangeNotifierProvider(create: (context) => OwnerLoginProvider()),
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        ChangeNotifierProvider(create: (context) => RegisterProvider()),
-
-        ChangeNotifierProvider(
-            create: (context) => VolunteerRegistrationProvider()),
-        ChangeNotifierProvider(create: (context) => VolunteerLoginProvider()),
-        ChangeNotifierProvider(create: (context) => ForgotPasswordProvider()),
-        //  ChangeNotifierProvider(create:  (context) =>OwnerEditProfileProvider()),
-        ChangeNotifierProvider(
-            create: (context) => OwnerDetailsGetterProvider()),
-        ChangeNotifierProvider(create: (context) => PetsProvider()),
-        ChangeNotifierProvider(create: (context) => PetRegistrationProvider()),
-        ChangeNotifierProvider(
-            create: (context) => PetsDetailsGetterProvider()),
-
-        // ChangeNotifierProvider(create: (context) =>OwnerDetailsGetterProvider()),
-        ChangeNotifierProvider(create: (context) => OwnerDashboardProvider()),
-        ChangeNotifierProvider(create: (context) => OwnerEditProfileProvider()),
-        ChangeNotifierProvider(
-          create: (context) => VolunteerDetailsGetterProvider(),
+    final prefsService = SharedPreferencesService();
+    prefsService.init().then((_) {
+      runApp(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+                create: (context) => OwnerRegistrationProvider()),
+            ChangeNotifierProvider(create: (context) => OwnerLoginProvider()),
+            ChangeNotifierProvider(create: (context) => ThemeProvider()),
+            ChangeNotifierProvider(create: (context) => RegisterProvider()),
+            ChangeNotifierProvider(
+                create: (context) => VolunteerRegistrationProvider()),
+            ChangeNotifierProvider(
+                create: (context) => VolunteerLoginProvider()),
+            ChangeNotifierProvider(
+                create: (context) => ForgotPasswordProvider()),
+            ChangeNotifierProvider(
+                create: (context) => OwnerDetailsGetterProvider()),
+            ChangeNotifierProvider(create: (context) => PetsProvider()),
+            ChangeNotifierProvider(
+                create: (context) => PetRegistrationProvider()),
+            ChangeNotifierProvider(
+                create: (context) => PetsDetailsGetterProvider()),
+            ChangeNotifierProvider(
+                create: (context) => OwnerDashboardProvider()),
+            ChangeNotifierProvider(
+                create: (context) => OwnerEditProfileProvider()),
+            ChangeNotifierProvider(
+                create: (context) => VolunteerDetailsGetterProvider()),
+            ChangeNotifierProvider(create: (context) => PetSitterProvider()),
+            ChangeNotifierProvider(create: (context) => ReminderProvider()),
+            ChangeNotifierProvider(
+                create: (context) => BookingDetailsProvider()),
+          ],
+          child: MyApp(),
         ),
-
-        ChangeNotifierProvider(create: (context) => PetSitterProvider()),
-
-        ChangeNotifierProvider(create: (context) => ReminderProvider()),
-        ChangeNotifierProvider(create: (context) => BookingDetailsProvider())
-      ],
-      child: MyApp(),
-    ),
-  );
+      );
+    });
+  });
 }
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -91,6 +103,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: Provider.of<ThemeProvider>(context).themeData,
       initialRoute: '/',
@@ -112,7 +125,7 @@ class MyApp extends StatelessWidget {
         '/volunteerEditProfile': (context) => VolunteerEditProfilePage(),
         '/petSitters': (context) => PetSitters(),
         '/petProfile': (context) => PetProfile(),
-        '/bookingPage': (context) => BookingDetailsPage()
+        '/bookingPage': (context) => BookingDetailsPage(),
       },
     );
   }

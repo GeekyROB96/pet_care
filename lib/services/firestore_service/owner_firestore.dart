@@ -17,8 +17,7 @@ class FirestoreServiceOwner {
     String? profileImageUrl,
   }) async {
     try {
-      String? uid = _firebaseAuth
-          .currentUser?.uid; // Retrieve the UID of the current user
+      String? uid = _firebaseAuth.currentUser?.uid;
 
       await _firestore
           .collection('users')
@@ -35,7 +34,6 @@ class FirestoreServiceOwner {
         'locationCity': locationCity,
         'profileImageUrl': profileImageUrl,
         'uid': uid
-        
       });
     } catch (e) {
       print("Error saving User Details $e");
@@ -72,9 +70,39 @@ class FirestoreServiceOwner {
     }
   }
 
+  Future<Map<String, dynamic>?> getOwnerUidemail(String userId) async {
+    try {
+      DocumentSnapshot userDoc = await _firestore
+          .collection('users')
+          .doc('pet_owners')
+          .collection('pet_owners')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        String userEmail = userData['email'] ?? '';
+        String profileImageUrl = userData['profileImageUrl'] ?? '';
+        String name = userData['name']; // Add this line
+        return {
+          'userId': userId,
+          'userEmail': userEmail,
+          'profileImageUrl':
+              profileImageUrl, 
+              // Include profileImageUrl in the returned map
+          'name' :name
+        };
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error getting user details $e");
+      return null;
+    }
+  }
+
   Future<void> updateOwnerUserUIDs() async {
     try {
-      // Get all users in the pet_owners sub-collection
       QuerySnapshot userSnapshot = await _firestore
           .collection('users')
           .doc('pet_owners')
@@ -82,8 +110,7 @@ class FirestoreServiceOwner {
           .get();
 
       for (QueryDocumentSnapshot userDoc in userSnapshot.docs) {
-        // Assuming UID can be retrieved or already known
-        String uid = userDoc.id; // Using document ID as UID
+        String uid = userDoc.id;
         await userDoc.reference.update({'uid': uid});
       }
       print('UIDs updated successfully');
@@ -105,7 +132,7 @@ class FirestoreServiceOwner {
     });
   }
 
-  Future<void> sendMessage(String recieverID, message) async {
+  Future<void> sendMessage(String receiverID, String message) async {
     final String currentUserId = _firebaseAuth.currentUser!.uid;
     final String currentUserEmail = _firebaseAuth.currentUser!.email!;
     final Timestamp timeStamp = Timestamp.now();
@@ -113,25 +140,23 @@ class FirestoreServiceOwner {
     Message newMessage = Message(
         senderId: currentUserId,
         senderEmail: currentUserEmail,
-        receiverId: recieverID,
+        receiverId: receiverID,
         timestamp: timeStamp,
         message: message);
 
-    List<String> ids = [currentUserId, recieverID];
+    List<String> ids = [currentUserId, receiverID];
     ids.sort();
 
     String chatRoomID = ids.join('_');
 
-    await _firestore
-        .collection('chat_rooms')
-        .doc(chatRoomID)
-        .collection('messages')
-        .add(newMessage.toMap());
+    await _firestore.collection('chat_rooms').doc(chatRoomID).set({
+      'messages': FieldValue.arrayUnion([newMessage.toMap()]),
+      'roomId': chatRoomID,
+    }, SetOptions(merge: true));
   }
 
-
-   Stream<QuerySnapshot> getMessages(String userID, otherUserID) {
-    //construct a chat room Id for two users
+  Stream<List<Map<String, dynamic>>> getMessages(
+      String userID, String otherUserID) {
     List<String> ids = [userID, otherUserID];
     ids.sort();
 
@@ -140,8 +165,14 @@ class FirestoreServiceOwner {
     return _firestore
         .collection('chat_rooms')
         .doc(chatRoomID)
-        .collection('messages')
-        .orderBy('timestamp', descending: false)
-        .snapshots();
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.exists && snapshot.data() != null) {
+        List<dynamic> messages = snapshot.data()!['messages'];
+        return messages.map((msg) => msg as Map<String, dynamic>).toList();
+      } else {
+        return [];
+      }
+    });
   }
 }

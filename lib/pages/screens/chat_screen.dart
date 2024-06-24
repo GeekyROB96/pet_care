@@ -3,18 +3,26 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pet_care/constants/zego_credentials.dart';
 import 'package:pet_care/model/message_model.dart';
+import 'package:pet_care/pages/screens/call_page.dart';
+import 'package:pet_care/provider/get_ownerData_provider.dart';
+import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:pet_care/services/chat/chat_service.dart';
 import 'package:pet_care/services/firestore_service/owner_firestore.dart';
 import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
 
 import 'package:pet_care/widgets/components/chat_bubble.dart';
 import 'package:pet_care/widgets/components/textfield.dart';
+import 'package:provider/provider.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 class ChatScreen extends StatefulWidget {
   final String receiverId;
   final String receiverEmail;
   final String profileImageUrl;
+
   final String name;
 
   ChatScreen({
@@ -22,7 +30,7 @@ class ChatScreen extends StatefulWidget {
     required this.receiverId,
     required this.receiverEmail,
     required this.name,
-    required this.profileImageUrl
+    required this.profileImageUrl,
   }) : super(key: key);
 
   @override
@@ -39,11 +47,12 @@ class _ChatScreenState extends State<ChatScreen> {
   String _currentUserId = '';
   String _currentUserRole = '';
 
-    Timer? _timer;
+  Timer? _timer;
+  FocusNode myFocusMode = FocusNode();
 
-
-
-    FocusNode myFocusMode = FocusNode();
+  String? currentUserName;
+  String? currentUserId;
+  String? callId;
 
   @override
   void initState() {
@@ -51,11 +60,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _authServiceOwner = AuthServiceOwner();
     _authServiceVolunteer = AuthServiceVolunteer();
 
-    _currentUserId = _authServiceOwner.getCurrentUserId() ??
-        _authServiceVolunteer.getCurrentUserId() ??
-        '';
-
-    _getCurrentUserRole();
+    _getCurrentUserId();
 
     myFocusMode.addListener(() {
       if (myFocusMode.hasFocus) {
@@ -65,12 +70,64 @@ class _ChatScreenState extends State<ChatScreen> {
 
     Future.delayed(const Duration(milliseconds: 500), () => scrollDown());
 
-     _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
       setState(() {});
+
+      ZegoUIKitPrebuiltCallInvitationService().init(
+        appID: ZegoCredentials.appID /*input your AppID*/,
+        appSign: ZegoCredentials.appSign /*input your AppSign*/,
+        userID: _currentUserId,
+        userName: currentUserName!,
+        plugins: [ZegoUIKitSignalingPlugin()],
+      );
     });
   }
 
+  Future<void> _getCurrentUserId() async {
+    _currentUserId = _authServiceOwner.getCurrentUserId() ??
+        _authServiceVolunteer.getCurrentUserId() ??
+        '';
 
+    await _getCurrentUserRole(); // Wait for user role before continuing
+    await callSetters(); // Wait for setters to complete before setting state
+
+    setState(() {}); // Update the UI after initialization
+  }
+
+  Future<void> callSetters() async {
+    final ownerProvider =
+        await Provider.of<OwnerDetailsGetterProvider>(context, listen: false);
+    final volunteerProvider = await Provider.of<VolunteerDetailsGetterProvider>(
+        context,
+        listen: false);
+
+    if (_currentUserRole == 'owner') {
+      ownerProvider.loadUserProfile();
+      currentUserName = ownerProvider.name;
+      currentUserId = ownerProvider.uid;
+    }
+
+    if (_currentUserRole == 'volunteer') {
+      volunteerProvider.loadVolunteerDetails();
+      currentUserName = volunteerProvider.name;
+      currentUserId = volunteerProvider.uid;
+    }
+
+    String? cId = currentUserId; // Use currentUserId directly
+    String? rId = widget.receiverId; // Or use widget.receiverId
+
+    // Create a list and filter out null values
+    List<String> ids = [];
+    if (cId != null) ids.add(cId);
+    if (rId != null) ids.add(rId);
+
+    // Sort the list
+    ids.sort();
+
+    callId = ids.join('_');
+
+    print(ids);
+  }
 
   String _formatDate(Timestamp timestamp) {
     DateTime date = timestamp.toDate();
@@ -114,8 +171,6 @@ class _ChatScreenState extends State<ChatScreen> {
       } else if (_currentUserRole == 'volunteer') {
         _firestoreServiceVolunteer = FireStoreServiceVolunteer();
       }
-
-      setState(() {});
     } catch (e) {
       print("Error getting user Role:  $e");
     }
@@ -134,11 +189,17 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  
+  void onUserLogout() {
+    /// 1.2.2. de-initialization ZegoUIKitPrebuiltCallInvitationService
+    /// when app's user is logged out
+    ZegoUIKitPrebuiltCallInvitationService().uninit();
+  }
+
   @override
   void dispose() {
     _messageController.dispose();
     myFocusMode.dispose();
+    onUserLogout();
     _timer?.cancel(); // Cancel the timer when the widget is disposed
 
     super.dispose();
@@ -155,16 +216,41 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children:[
-           CircleAvatar(
+        title: Row(children: [
+          CircleAvatar(
             backgroundImage: widget.profileImageUrl.startsWith('http')
-              ? NetworkImage(widget.profileImageUrl)
-              : AssetImage(widget.profileImageUrl) as ImageProvider,
-           ),
-              SizedBox(width: 10,),
-             Text(widget.name)
-             ]),
+                ? NetworkImage(widget.profileImageUrl)
+                : AssetImage(widget.profileImageUrl) as ImageProvider,
+          ),
+          SizedBox(width: 10),
+          Text(widget.name),
+          SizedBox(width: 20),
+          const Spacer(),
+
+          actionButton(true)
+          // IconButton(
+          //   onPressed: () {
+          //     // if (callId != null && currentUserName != null && currentUserId != null) {
+          //     //   Navigator.push(
+          //     //     context,
+          //     //     MaterialPageRoute(
+          //     //       builder: (context) => CallPage(
+          //     //         callID: callId!,
+          //     //         username: currentUserName!,
+          //     //         userId: currentUserId!,
+          //     //       ),
+          //     //     ),
+          //     //   );
+          //     // } else {
+          //     //   // Handle case where data is not yet available
+          //     //   print('Data not yet available');
+          //     // }
+
+             
+          //   },
+          //   icon: Icon(Icons.video_call),
+          // ),
+        ]),
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.grey,
         elevation: 5,
@@ -172,7 +258,7 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
+            child: StreamBuilder<List<Map<String, dynamic>>>(
               stream: _currentUserRole == 'owner'
                   ? _firestoreServiceOwner.getMessages(
                       _currentUserId, widget.receiverId)
@@ -181,13 +267,13 @@ class _ChatScreenState extends State<ChatScreen> {
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return CircularProgressIndicator();
 
-                var messages = snapshot.data!.docs
-                    .map((doc) =>
-                        Message.fromMap(doc.data() as Map<String, dynamic>))
+                var messages = snapshot.data!
+                    .map((msgData) => Message.fromMap(msgData))
                     .toList();
 
                 String? lastDisplayedDate;
                 return ListView.builder(
+                  controller: _scrollController,
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     var message = messages[index];
@@ -221,7 +307,7 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
-          _buildUserInput()
+          _buildUserInput(),
         ],
       ),
     );
@@ -246,7 +332,9 @@ class _ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.all(0),
             margin: const EdgeInsets.only(right: 10),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(29), color: Colors.blue),
+              borderRadius: BorderRadius.circular(29),
+              color: Colors.blue,
+            ),
             child: IconButton(
               onPressed: _sendMessage,
               icon: const Icon(
@@ -257,6 +345,21 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
+      
     );
+    
   }
+ZegoSendCallInvitationButton actionButton(bool isvideo) =>
+
+   ZegoSendCallInvitationButton(
+                isVideoCall: isvideo,
+                
+                resourceID: "pet_buddy",
+                invitees: [
+                  ZegoUIKitUser(
+                    id: widget.receiverId,
+                    name: widget.receiverEmail,
+                  ),
+                ],
+              );
 }

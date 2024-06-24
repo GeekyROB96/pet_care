@@ -1,5 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:pet_care/pages/screens/user_message_list_page.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -65,6 +66,7 @@ class VolunteerDashboard extends StatelessWidget {
               ],
             ),
             SizedBox(height: 20),
+           
             SlidingImagePage(),
           ],
         ),
@@ -99,6 +101,12 @@ class VolunteerDashboard extends StatelessWidget {
                     ),
                   ),
                 );
+              } else if (index == 3) {
+                 Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UserListMessage()),
+                );
+              
               }
             },
           ),

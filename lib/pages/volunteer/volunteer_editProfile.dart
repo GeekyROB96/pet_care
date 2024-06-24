@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pet_care/constants/theme/light_colors.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class VolunteerEditProfilePage extends StatelessWidget {
   const VolunteerEditProfilePage({Key? key}) : super(key: key);
@@ -271,8 +272,11 @@ class VolunteerEditProfilePage extends StatelessWidget {
                                       ),
                                     ),
                                     ElevatedButton(
-                                      onPressed: () => volunteerDetailsProvider
-                                          .volunteerLogout(context),
+                                      onPressed: () {
+                                        onUserLogout();
+                                        volunteerDetailsProvider
+                                            .volunteerLogout(context);
+                                      },
                                       child: Text('Logout'),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.red,
@@ -344,5 +348,11 @@ class VolunteerEditProfilePage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void onUserLogout() {
+    /// 1.2.2. de-initialization ZegoUIKitPrebuiltCallInvitationService
+    /// when app's user is logged out
+    ZegoUIKitPrebuiltCallInvitationService().uninit();
   }
 }
