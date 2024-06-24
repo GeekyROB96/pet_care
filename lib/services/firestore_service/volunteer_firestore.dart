@@ -50,15 +50,12 @@ class FireStoreServiceVolunteer {
         'prefersRabbit': prefersRabbit,
         'prefersOthers': prefersOthers,
         'providesHomeVisits': providesHomeVisits,
-        'providesHomeVisits': providesHomeVisits,
         'providesDogWalking': providesDogWalking,
         'providesHouseSitting': providesHouseSitting,
         'role': role,
         'profileImageUrl': profileImageUrl,
         'locationCity': locationCity,
         'providesHomeVisitsPrice': providesHomeVisitsPrice,
-        'providesHouseSittingPrice': providesHouseSittingPrice,
-        'uid': uid,
         'providesHouseSittingPrice': providesHouseSittingPrice,
         'uid': uid
       });
@@ -74,7 +71,6 @@ class FireStoreServiceVolunteer {
           .collection('users')
           .doc('volunteers')
           .collection('volunteers')
-          
           .doc(userId)
           .update({'imageUrl': imageUrl});
     } catch (e) {
@@ -166,8 +162,7 @@ class FireStoreServiceVolunteer {
     });
   }
 
-
-   Future<void> sendMessage(String recieverID, message) async {
+  Future<void> sendMessage(String recieverID, message) async {
     final String currentUserId = _firebaseAuth.currentUser!.uid;
     final String currentUserEmail = _firebaseAuth.currentUser!.email!;
     final Timestamp timeStamp = Timestamp.now();
@@ -191,8 +186,7 @@ class FireStoreServiceVolunteer {
         .add(newMessage.toMap());
   }
 
-
-   Stream<QuerySnapshot> getMessages(String userID, otherUserID) {
+  Stream<QuerySnapshot> getMessages(String userID, otherUserID) {
     //construct a chat room Id for two users
     List<String> ids = [userID, otherUserID];
     ids.sort();

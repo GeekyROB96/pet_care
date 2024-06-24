@@ -88,6 +88,9 @@ class OwnerDashboard extends StatelessWidget {
                                           const EdgeInsets.only(right: 8.0),
                                       child: CircleAvatar(
                                         radius: 30,
+                                        backgroundColor: imagePath == null
+                                            ? Colors.white.withOpacity(0.3)
+                                            : Colors.blueGrey.withOpacity(0.3),
                                         backgroundImage: imagePath != null
                                             ? (isNetworkImage
                                                     ? NetworkImage(imagePath)
@@ -140,8 +143,10 @@ class OwnerDashboard extends StatelessWidget {
                   final isNetworkImage =
                       Uri.tryParse(imagePath)?.hasAbsolutePath ?? false;
 
+                  bool isFlipped = false;
                   return GestureDetector(
                     onTap: () async {
+                      isFlipped = !isFlipped;
                       await petsDetailsProvider.navigateAndgetPetByName(
                           pet['petName'], pet['ownerEmail'], context);
                     },
@@ -154,15 +159,22 @@ class OwnerDashboard extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                            radius: 40,
-                            backgroundImage: imagePath != null
-                                ? (isNetworkImage
-                                        ? NetworkImage(imagePath)
-                                        : FileImage(File(imagePath)))
-                                    as ImageProvider
-                                : AssetImage('assets/images/cat.png')
-                                    as ImageProvider,
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              image: DecorationImage(
+                                image: imagePath != null
+                                    ? (isNetworkImage
+                                            ? NetworkImage(imagePath)
+                                            : FileImage(File(imagePath)))
+                                        as ImageProvider
+                                    : AssetImage('assets/images/cat.png')
+                                        as ImageProvider,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
                           SizedBox(width: 20),
                           Expanded(
