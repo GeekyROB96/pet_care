@@ -44,7 +44,7 @@ import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize Zego UIKit and set navigator key
@@ -59,23 +59,34 @@ void main() async {
       runApp(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider(create: (context) => OwnerRegistrationProvider()),
+            ChangeNotifierProvider(
+                create: (context) => OwnerRegistrationProvider()),
             ChangeNotifierProvider(create: (context) => OwnerLoginProvider()),
             ChangeNotifierProvider(create: (context) => ThemeProvider()),
             ChangeNotifierProvider(create: (context) => RegisterProvider()),
-            ChangeNotifierProvider(create: (context) => VolunteerRegistrationProvider()),
-            ChangeNotifierProvider(create: (context) => VolunteerLoginProvider()),
-            ChangeNotifierProvider(create: (context) => ForgotPasswordProvider()),
-            ChangeNotifierProvider(create: (context) => OwnerDetailsGetterProvider()),
+            ChangeNotifierProvider(
+                create: (context) => VolunteerRegistrationProvider()),
+            ChangeNotifierProvider(
+                create: (context) => VolunteerLoginProvider()),
+            ChangeNotifierProvider(
+                create: (context) => ForgotPasswordProvider()),
+            ChangeNotifierProvider(
+                create: (context) => OwnerDetailsGetterProvider()),
             ChangeNotifierProvider(create: (context) => PetsProvider()),
-            ChangeNotifierProvider(create: (context) => PetRegistrationProvider()),
-            ChangeNotifierProvider(create: (context) => PetsDetailsGetterProvider()),
-            ChangeNotifierProvider(create: (context) => OwnerDashboardProvider()),
-            ChangeNotifierProvider(create: (context) => OwnerEditProfileProvider()),
-            ChangeNotifierProvider(create: (context) => VolunteerDetailsGetterProvider()),
+            ChangeNotifierProvider(
+                create: (context) => PetRegistrationProvider()),
+            ChangeNotifierProvider(
+                create: (context) => PetsDetailsGetterProvider()),
+            ChangeNotifierProvider(
+                create: (context) => OwnerDashboardProvider()),
+            ChangeNotifierProvider(
+                create: (context) => OwnerEditProfileProvider()),
+            ChangeNotifierProvider(
+                create: (context) => VolunteerDetailsGetterProvider()),
             ChangeNotifierProvider(create: (context) => PetSitterProvider()),
             ChangeNotifierProvider(create: (context) => ReminderProvider()),
-            ChangeNotifierProvider(create: (context) => BookingDetailsProvider()),
+            ChangeNotifierProvider(
+                create: (context) => BookingDetailsProvider()),
           ],
           child: MyApp(),
         ),

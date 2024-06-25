@@ -218,7 +218,8 @@ class FireStoreServiceVolunteer {
 
     List<String> chatRoomIds = [];
 
-    for (QueryDocumentSnapshot<Map<String, dynamic>> doc in querySnapshot.docs) {
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+        in querySnapshot.docs) {
       Map<String, dynamic> data = doc.data();
       if (data.containsKey('roomId')) {
         String roomId = data['roomId'] as String;
