@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_care/constants/snackbar.dart';
-import 'package:pet_care/services/auth_service.dart/owner_authservice.dart';
+import 'package:pet_care/services/auth_service/owner_authservice.dart';
 
 class ForgotPasswordProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();

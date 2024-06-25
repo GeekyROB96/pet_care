@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pet_care/constants/snackbar.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
-import 'package:pet_care/services/auth_service.dart/owner_authservice.dart';
+import 'package:pet_care/services/auth_service/owner_authservice.dart';
 import 'package:pet_care/shared_pref_service.dart';
 import 'package:provider/provider.dart';
 
