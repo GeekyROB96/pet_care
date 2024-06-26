@@ -4,7 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pet_care/constants/theme/theme_provider.dart';
 import 'package:pet_care/firebase_options.dart';
 import 'package:pet_care/initial_screen.dart';
-import 'package:pet_care/pages/booking/booking_bottomsheet.dart';
+import 'package:pet_care/pages/booking/booking_page.dart';
 import 'package:pet_care/pages/owner&pet/owner_editprofile.dart';
 import 'package:pet_care/pages/owner&pet/owner_login.dart';
 import 'package:pet_care/pages/owner&pet/owner_signup.dart';
