@@ -4,6 +4,8 @@ import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
+import 'add__owner_address.dart';
+
 class OwnerEditProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -65,6 +67,7 @@ class OwnerEditProfilePage extends StatelessWidget {
                         enabled: false,
                         prefixIcon: Icons.phone_outlined,
                       ),
+                      buildAddressField(context),
                       SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -138,10 +141,47 @@ class OwnerEditProfilePage extends StatelessWidget {
             text: initialValue,
           ),
         ),
-        if (label !=
-            'Phone Number') // Conditionally add divider except after Phone Number
-          SizedBox(height: 12),
+        if (label != 'Phone Number') SizedBox(height: 12),
       ],
+    );
+  }
+
+  Widget buildAddressField(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OwnerAddressPage(),
+          ),
+        );
+        if (result != null) {
+          // Handle the address result here if needed
+        }
+      },
+      child: TextField(
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.home),
+          labelText: 'Address',
+          labelStyle: TextStyle(
+            color: LightColors.textColor,
+            fontSize: 18,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey.shade400),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: LightColors.primaryColor),
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        style: TextStyle(
+          fontSize: 16,
+          color: LightColors.textColor,
+        ),
+        enabled: false, // Make the TextField uneditable
+      ),
     );
   }
 

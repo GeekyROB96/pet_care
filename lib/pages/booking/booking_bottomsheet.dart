@@ -16,12 +16,13 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   final TextEditingController petTextController = TextEditingController();
   final TextEditingController dateTimeRangeController = TextEditingController();
   String selectedService = '';
-  String selectedPet = '';
+  List<String> selectedPets = []; // Changed to List<String>
   String selectedServicePrice = ''; // Added for displaying service price
   DateTime? startDate;
   DateTime? endDate;
   double totalHours = 0.0;
   double totalPrice = 0.0;
+  late final bookingDetailsProvider;
 
   @override
   void initState() {
@@ -30,7 +31,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   }
 
   void _loadDetailsAndPetData() async {
-    final bookingDetailsProvider =
+    bookingDetailsProvider =
         Provider.of<BookingDetailsProvider>(context, listen: false);
     await bookingDetailsProvider.loadDetails(context);
     await bookingDetailsProvider.loadPetData(context);
@@ -81,8 +82,6 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        final bookingDetailsProvider =
-            Provider.of<BookingDetailsProvider>(context, listen: false);
         return Container(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.8,
@@ -100,17 +99,22 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               separatorBuilder: (context, index) => Divider(),
               itemBuilder: (context, index) {
                 final pet = bookingDetailsProvider.petList[index];
-                bool isSelected = selectedPet == (pet['petName'] ?? '');
+                bool isSelected = selectedPets.contains(pet['petName']);
                 return _buildPetItem(
                   icon: Icons.pets,
                   pet: pet['petName'] ?? 'N/A',
                   isSelected: isSelected,
                   onTap: () {
                     setState(() {
-                      selectedPet = pet['petName'] ?? 'N/A';
-                      petTextController.text = selectedPet;
+                      if (isSelected) {
+                        selectedPets.remove(pet['petName']);
+                      } else {
+                        selectedPets.add(pet['petName']);
+                      }
+                      petTextController.text = selectedPets.join(', ');
+                      bookingDetailsProvider
+                          .setPet(selectedPets); // Update here
                     });
-                    Navigator.pop(context);
                   },
                 );
               },
@@ -157,14 +161,22 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     );
 
     if (picked != null && picked.length == 2) {
-      setState(() {
-        startDate = picked[0];
-        endDate = picked[1];
-        dateTimeRangeController.text =
-            '${DateFormat.yMMMd().add_jm().format(startDate!)} - ${DateFormat.yMMMd().add_jm().format(endDate!)}';
-        totalHours = endDate!.difference(startDate!).inHours.toDouble();
-        totalPrice = _calculateTotalPrice(selectedService, totalHours);
-      });
+      if (picked[1].isBefore(picked[0])) {
+        // Show an error message if the end date is before the start date
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('End date cannot be earlier than start date')),
+        );
+      } else {
+        setState(() {
+          startDate = picked[0];
+          endDate = picked[1];
+          dateTimeRangeController.text =
+              '${DateFormat.yMMMd().add_jm().format(startDate!)} - ${DateFormat.yMMMd().add_jm().format(endDate!)}';
+          totalHours = endDate!.difference(startDate!).inHours.toDouble();
+          bookingDetailsProvider.setTotalHours(totalHours!);
+          totalPrice = _calculateTotalPrice(selectedService, totalHours!);
+        });
+      }
     }
   }
 
@@ -200,6 +212,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               selectedService = title;
               serviceTextController.text = selectedService;
               selectedServicePrice = _getServicePrice(selectedService);
+
               totalPrice = _calculateTotalPrice(selectedService, totalHours);
             });
             Navigator.pop(context);
@@ -518,7 +531,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                         ),
                         _buildSummaryItem('Selected Service:', selectedService),
                         SizedBox(height: 12),
-                        _buildSummaryItem('Selected Pet:', selectedPet),
+                        _buildSummaryItem(
+                            'Selected Pet(s)', selectedPets.join(', ')),
                         SizedBox(height: 12),
                         _buildSummaryItem('Selected Date and Time Range:',
                             dateTimeRangeController.text),
@@ -538,7 +552,21 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   ),
                   SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      bookingDetailsProvider
+                          .setStartDate(startDate?.toIso8601String());
+                      bookingDetailsProvider
+                          .setEndDate(endDate?.toIso8601String());
+                      bookingDetailsProvider.setService(selectedService);
+                      bookingDetailsProvider
+                          .setServicePrice(selectedServicePrice);
+                      bookingDetailsProvider.setTotalHours(totalHours);
+                      bookingDetailsProvider.setTotalPrice(totalPrice);
+                      bookingDetailsProvider
+                          .setPet(selectedPets); // Update here
+
+                      bookingDetailsProvider.saveBooking(context);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           Color(0xFF94A5E8), // Background color of the button

@@ -96,7 +96,7 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 1),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -142,8 +142,8 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
                               ),
                               Expanded(
                                 child: _buildInfoCard(
-                                  'Location',
-                                  widget.volunteer['locationCity'] ?? 'N/A',
+                                  'Contact',
+                                  widget.volunteer['phoneNo'] ?? 'N/A',
                                   Color(0xC1D3C9F6),
                                 ),
                               ),
@@ -256,7 +256,7 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
             value,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               color: LightColors.textColor,
             ),
           ),
@@ -283,7 +283,7 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
-        color: Color(0xFFBAC7F3), // Background color
+        color: Color(0xFFBAC7F3).withOpacity(0.9), // Background color
         child: Padding(
           padding: EdgeInsets.all(16),
           child: Column(
@@ -459,7 +459,7 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
     );
   }
 
- Widget _buildActionButtons() {
+  Widget _buildActionButtons() {
     return Consumer<VolunteerDetailsGetterProvider>(
       builder: (context, volunteerProvider, child) {
         return Row(
@@ -469,31 +469,32 @@ class _VolunteerDetailsPageState extends State<VolunteerDetailsPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Tooltip(
                   message: 'Know the time and availability',
-                  child: ElevatedButton.icon( 
+                  child: ElevatedButton.icon(
                     onPressed: () {
-                              final String? receiverId = widget.volunteer['uid'];
-                              final String? receiverEmail = widget.volunteer['email'];
-                              final String? name = widget.volunteer['name'];
-                              final String? imageUrl = widget.volunteer['profileImageUrl'];
+                      final String? receiverId = widget.volunteer['uid'];
+                      final String? receiverEmail = widget.volunteer['email'];
+                      final String? name = widget.volunteer['name'];
+                      final String? imageUrl =
+                          widget.volunteer['profileImageUrl'];
 
-                              print("Receiver Email is: $receiverEmail");
-                              print("Receiver ID is: $receiverId");
+                      print("Receiver Email is: $receiverEmail");
+                      print("Receiver ID is: $receiverId");
 
-                              if (receiverId != null && receiverEmail != null) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ChatScreen(
-                                      name: name ?? 'No Name',
-                                      profileImageUrl: imageUrl ?? 'assets/images/default_profile.png', // Provide a default image if null
-                                      receiverId: receiverId,
-                                      receiverEmail: receiverEmail,
-                                    ),
-                                  ),
-                                );
-                              }
-                            else {
-                                                    // Handle the case where receiverId or receiverEmail is null
+                      if (receiverId != null && receiverEmail != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChatScreen(
+                              name: name ?? 'No Name',
+                              profileImageUrl: imageUrl ??
+                                  'assets/images/default_profile.png', // Provide a default image if null
+                              receiverId: receiverId,
+                              receiverEmail: receiverEmail,
+                            ),
+                          ),
+                        );
+                      } else {
+                        // Handle the case where receiverId or receiverEmail is null
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('Volunteer ID or email is missing.'),

@@ -5,13 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pet_care/constants/zego_credentials.dart';
 import 'package:pet_care/model/message_model.dart';
-import 'package:pet_care/pages/screens/call_page.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:pet_care/services/chat/chat_service.dart';
 import 'package:pet_care/services/firestore_service/owner_firestore.dart';
 import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
-
 import 'package:pet_care/widgets/components/chat_bubble.dart';
 import 'package:pet_care/widgets/components/textfield.dart';
 import 'package:provider/provider.dart';
@@ -226,30 +224,7 @@ class _ChatScreenState extends State<ChatScreen> {
           Text(widget.name),
           SizedBox(width: 20),
           const Spacer(),
-
           actionButton(true)
-          // IconButton(
-          //   onPressed: () {
-          //     // if (callId != null && currentUserName != null && currentUserId != null) {
-          //     //   Navigator.push(
-          //     //     context,
-          //     //     MaterialPageRoute(
-          //     //       builder: (context) => CallPage(
-          //     //         callID: callId!,
-          //     //         username: currentUserName!,
-          //     //         userId: currentUserId!,
-          //     //       ),
-          //     //     ),
-          //     //   );
-          //     // } else {
-          //     //   // Handle case where data is not yet available
-          //     //   print('Data not yet available');
-          //     // }
-
-             
-          //   },
-          //   icon: Icon(Icons.video_call),
-          // ),
         ]),
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.grey,
@@ -333,7 +308,7 @@ class _ChatScreenState extends State<ChatScreen> {
             margin: const EdgeInsets.only(right: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(29),
-              color: Colors.blue,
+              color: Colors.blue.withOpacity(0.2),
             ),
             child: IconButton(
               onPressed: _sendMessage,
@@ -345,21 +320,18 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-      
     );
-    
   }
-ZegoSendCallInvitationButton actionButton(bool isvideo) =>
 
-   ZegoSendCallInvitationButton(
-                isVideoCall: isvideo,
-                
-                resourceID: "pet_buddy",
-                invitees: [
-                  ZegoUIKitUser(
-                    id: widget.receiverId,
-                    name: widget.receiverEmail,
-                  ),
-                ],
-              );
+  ZegoSendCallInvitationButton actionButton(bool isvideo) =>
+      ZegoSendCallInvitationButton(
+        isVideoCall: isvideo,
+        resourceID: "pet_buddy",
+        invitees: [
+          ZegoUIKitUser(
+            id: widget.receiverId,
+            name: widget.receiverEmail,
+          ),
+        ],
+      );
 }

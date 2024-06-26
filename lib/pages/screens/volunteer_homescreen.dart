@@ -1,11 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:pet_care/pages/screens/booking_status.dart';
 import 'package:pet_care/pages/screens/user_message_list_page.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../../provider/reminder_provider.dart';
-import 'notification_screen.dart';
 
 final images = [
   'assets/sliding_images/sliding1.jpg',
@@ -66,7 +64,6 @@ class VolunteerDashboard extends StatelessWidget {
               ],
             ),
             SizedBox(height: 20),
-           
             SlidingImagePage(),
           ],
         ),
@@ -94,19 +91,13 @@ class VolunteerDashboard extends StatelessWidget {
               } else if (index == 2) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => ChangeNotifierProvider(
-                      create: (_) => ReminderProvider(),
-                      child: NotificationScreen(),
-                    ),
-                  ),
+                  MaterialPageRoute(builder: (context) => StatusPage()),
                 );
               } else if (index == 3) {
-                 Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => UserListMessage()),
                 );
-              
               }
             },
           ),

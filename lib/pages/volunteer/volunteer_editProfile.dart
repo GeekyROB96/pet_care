@@ -4,6 +4,8 @@ import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
+import 'add_address.dart';
+
 class VolunteerEditProfilePage extends StatelessWidget {
   const VolunteerEditProfilePage({Key? key}) : super(key: key);
 
@@ -37,7 +39,7 @@ class VolunteerEditProfilePage extends StatelessWidget {
                 ),
                 gradient: LinearGradient(
                   colors: [
-                    Color(0xFF7946EE).withOpacity(0.9),
+                    Color(0xFFC1D8EF).withOpacity(0.9),
                     Colors.white,
                   ],
                   begin: Alignment.topLeft,
@@ -168,6 +170,13 @@ class VolunteerEditProfilePage extends StatelessWidget {
                                         Icons.info_outline,
                                         'About Me:',
                                         volunteerDetailsProvider.aboutMe ?? '',
+                                      ),
+                                      _buildDetailRow(
+                                        context,
+                                        Icons.location_on,
+                                        'Address:',
+                                        volunteerDetailsProvider.locationCity ??
+                                            '',
                                       ),
                                       SizedBox(height: 20),
                                       Row(
@@ -302,50 +311,72 @@ class VolunteerEditProfilePage extends StatelessWidget {
 
   Widget _buildDetailRow(
       BuildContext context, IconData icon, String label, String value) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 8.0),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey.shade300,
-            width: 1.0,
-          ),
+    void navigateToVolunteerAddressPage(BuildContext context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              VolunteerAddressPage(), // Replace with your address page widget
         ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            icon,
-            color: LightColors.textColor,
-            size: 20,
-          ),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: LightColors.textColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: LightColors.textColor,
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
-              ],
+      );
+    }
+
+    void handleTap() {
+      // Check if the icon is the address icon
+      if (icon == Icons.location_on) {
+        navigateToVolunteerAddressPage(context);
+      }
+    }
+
+    return GestureDetector(
+      onTap: () {
+        handleTap(); // Call the function to handle tap
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8.0),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: Colors.grey.shade300,
+              width: 1.0,
             ),
           ),
-        ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              icon,
+              color: LightColors.textColor,
+              size: 20,
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: LightColors.textColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: LightColors.textColor,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
