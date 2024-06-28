@@ -4,6 +4,8 @@ import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/bookind_details_provider.dart';
+import '../../provider/get_ownerData_provider.dart';
+import '../../services/firestore_service/owner_firestore.dart';
 import '../../widgets/components/textfield.dart';
 
 class BookingDetailsPage extends StatefulWidget {
@@ -49,6 +51,11 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
+        final firestoreService =
+            Provider.of<FirestoreServiceOwner>(context, listen: false);
+        final ownerDetailsGetterProvider =
+            Provider.of<OwnerDetailsGetterProvider>(context, listen: false);
+
         return Container(
           padding: EdgeInsets.all(20.0),
           constraints: BoxConstraints(
@@ -63,6 +70,51 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 title: 'Home Visit',
                 description:
                     'The sitter visits your home to check on the pet,\nfeed your pet, and play with it.',
+                onTap: () async {
+                  try {
+                    String userId = ownerDetailsGetterProvider.uid ?? '';
+                    Map<String, dynamic>? ownerDetails =
+                        await firestoreService.getOwnerDetails(userId);
+                    if (ownerDetails != null &&
+                        ownerDetails.containsKey('address')) {
+                      _showAddressDialog(context, ownerDetails['address']);
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: Text('Error'),
+                          content: Text('Failed to load owner\'s address'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('OK'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    print('Error fetching owner details: $e');
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: Text('Error'),
+                        content: Text(
+                            'Failed to load owner\'s address. Please try again later.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
               ),
               Divider(),
               _buildServiceItem(
@@ -70,11 +122,74 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 title: 'House Sitting',
                 description:
                     'The pet sitter takes care of your pet in their house.',
+                onTap: () {
+                  // Placeholder for handling house sitting
+                },
               ),
             ],
           ),
         );
       },
+    );
+  }
+
+  void _showAddressDialog(
+      BuildContext context, List<Map<String, dynamic>> address) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text('Owner\'s Address'),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: address.map((addr) {
+            String area = addr['area_apartment_road'] ?? '';
+            String coordinates = addr['coordinates'] ?? '';
+            String directions = addr['description_directions'] ?? '';
+            String houseFlat = addr['house_flat_data'] ?? '';
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Area/Apartment/Road: $area'),
+                Text('Coordinates: $coordinates'),
+                Text('Directions: $directions'),
+                Text('House/Flat Data: $houseFlat'),
+                Divider(),
+              ],
+            );
+          }).toList(),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildServiceItem({
+    required IconData icon,
+    required String title,
+    required String description,
+    required VoidCallback onTap,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
+          contentPadding: EdgeInsets.all(0),
+          leading: Icon(icon),
+          title: Text(title),
+          subtitle: description.isNotEmpty ? Text(description) : null,
+          onTap: onTap,
+        ),
+        Divider(),
+      ],
     );
   }
 
@@ -193,36 +308,37 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     return price;
   }
 
-  Widget _buildServiceItem({
-    required IconData icon,
-    required String title,
-    required String description,
-  }) {
-    bool isSelected = selectedService == title;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ListTile(
-          contentPadding: EdgeInsets.all(0),
-          leading: Icon(icon),
-          title: Text(title),
-          subtitle: description.isNotEmpty ? Text(description) : null,
-          onTap: () {
-            setState(() {
-              selectedService = title;
-              serviceTextController.text = selectedService;
-              selectedServicePrice = _getServicePrice(selectedService);
-
-              totalPrice = _calculateTotalPrice(selectedService, totalHours);
-            });
-            Navigator.pop(context);
-          },
-          trailing: isSelected ? Icon(Icons.check, color: Colors.green) : null,
-        ),
-        Divider(),
-      ],
-    );
-  }
+  // Widget _buildServiceItem({
+  //   required IconData icon,
+  //   required String title,
+  //   required String description,
+  //   required Future<Null> Function() onTap,
+  // }) {
+  //   bool isSelected = selectedService == title;
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       ListTile(
+  //         contentPadding: EdgeInsets.all(0),
+  //         leading: Icon(icon),
+  //         title: Text(title),
+  //         subtitle: description.isNotEmpty ? Text(description) : null,
+  //         onTap: () {
+  //           setState(() {
+  //             selectedService = title;
+  //             serviceTextController.text = selectedService;
+  //             selectedServicePrice = _getServicePrice(selectedService);
+  //
+  //             totalPrice = _calculateTotalPrice(selectedService, totalHours);
+  //           });
+  //           Navigator.pop(context);
+  //         },
+  //         trailing: isSelected ? Icon(Icons.check, color: Colors.green) : null,
+  //       ),
+  //       Divider(),
+  //     ],
+  //   );
+  // }
 
   String _getServicePrice(String service) {
     final bookingDetailsProvider =

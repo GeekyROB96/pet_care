@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pet_care/constants/theme/theme_provider.dart';
 import 'package:pet_care/firebase_options.dart';
 import 'package:pet_care/initial_screen.dart';

@@ -27,6 +27,7 @@ class FireStoreServiceVolunteer {
     required String role,
     String? profileImageUrl,
     String? locationCity,
+    Map<String, dynamic>? address,
   }) async {
     try {
       String? uid = _firebaseAuth.currentUser?.uid;
@@ -56,10 +57,49 @@ class FireStoreServiceVolunteer {
         'locationCity': locationCity,
         'providesHomeVisitsPrice': providesHomeVisitsPrice,
         'providesHouseSittingPrice': providesHouseSittingPrice,
+        'address': address,
         'uid': uid,
       });
     } catch (e) {
       print("Error saving User Details $e");
+    }
+  }
+
+  Future<Map<String, dynamic>?> getVolAddressDetails(String userId) async {
+    try {
+      if (userId.isEmpty) {
+        print("Error: UserId is empty");
+        return null;
+      }
+      DocumentSnapshot userDoc = await _firestore
+          .collection('users')
+          .doc('volunteers')
+          .collection('volunteers')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        if (userData.containsKey('address') &&
+            userData['address'] != null &&
+            userData['address'].isNotEmpty) {
+          return {
+            'area_apartment_road': userData['address'][0]
+                ['area_apartment_road'],
+            'coordinates': userData['address'][0]['coordinates'],
+            'description_directions': userData['address'][0]
+                ['description_directions'],
+            'house_flat_data': userData['address'][0]['house_flat_data'],
+          };
+        } else {
+          print("Address details not found or empty for user $userId");
+          return null;
+        }
+      }
+      return null;
+    } catch (e) {
+      print("Error getting address details for user $userId: $e");
+      return null;
     }
   }
 
@@ -241,61 +281,35 @@ class FireStoreServiceVolunteer {
     return chatRoomIds;
   }
 
-
-  Future<void> saveAddress({
-    required String userId,
-    required String main,
-    required String areaApartmentRoad,
-    required String coordinates,
-    required String descriptionDirections,
-    required String city,
-    required String state,
-    required String pincode
-  }) async {
+  Future<Map<String, dynamic>?> getVolunteerAddressByEmail(String email) async {
     try {
-      await _firestore
-          .collection('users')
-          .doc('volunteers')
-          .collection('volunteers')
-          .doc(userId)
-          .update({
-        'Address': FieldValue.arrayUnion([
-          {
-            'main': main,
-            'area_apartment_road': areaApartmentRoad,
-            'coordinates': coordinates,
-            'description_directions': descriptionDirections,
-            'city': city,
-            'state': state,
-            'pincode': pincode
-          }
-        ])
-      });
-    } catch (e) {
-      print("Error saving Address Details $e");
-    }
-  }
-
-
-  Future<Map<String, dynamic>?> getVolunteerDetailsByEmail(String email) async {
-    try {
-      QuerySnapshot snapshot = await _firestore
+      QuerySnapshot querySnapshot = await _firestore
           .collection('users')
           .doc('volunteers')
           .collection('volunteers')
           .where('email', isEqualTo: email)
-          .limit(1)
           .get();
 
-      if (snapshot.docs.isNotEmpty) {
-        return snapshot.docs.first.data() as Map<String, dynamic>?;
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot userDoc = querySnapshot.docs.first;
+        Map<String, dynamic>? userData =
+            userDoc.data() as Map<String, dynamic>?;
+        if (userData != null &&
+            userData.containsKey('Address') &&
+            userData['Address'] != null &&
+            userData['Address'].isNotEmpty) {
+          return userData['Address'][0] as Map<String, dynamic>?;
+        } else {
+          print("No address found for volunteer with email $email");
+          return null;
+        }
       } else {
-        print("No volunteer found with email: $email");
+        print("No volunteer found with email $email");
         return null;
       }
     } catch (e) {
-      print("Error getting volunteer details: $e");
-      throw e;
+      print("Error getting volunteer address by email $e");
+      return null;
     }
   }
 }

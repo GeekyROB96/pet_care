@@ -32,6 +32,7 @@ class MyTextField extends StatefulWidget {
     this.fillColor,
     this.onChanged,
     this.onSuffixIconPressed,
+    BoxDecoration? decoration,
   }) : super(key: key);
 
   @override

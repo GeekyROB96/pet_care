@@ -33,7 +33,8 @@ class VolunteerRegistrationProvider extends ChangeNotifier {
 
   final String _volunteerRole = 'volunteer';
   final AuthService _authService = AuthService();
-  final FireStoreServiceVolunteer _fireStoreService = FireStoreServiceVolunteer();
+  final FireStoreServiceVolunteer _fireStoreService =
+      FireStoreServiceVolunteer();
   final SharedPreferencesService _prefsService = SharedPreferencesService();
 
   bool get isVolunteerLoggedIn => _isVolunteerLoggedIn;
@@ -173,23 +174,24 @@ class VolunteerRegistrationProvider extends ChangeNotifier {
 
     if (user != null) {
       await _fireStoreService.saveVolunteerDetails(
-          userId: user.uid,
-          name: volunteerName,
-          email: volunteerEmail,
-          phoneNo: volunteerPhoneNo,
-          age: volunteerAge,
-          occupation: volunteerOccupation,
-          aboutMe: volunteerAboutMe,
-          prefersCat: prefersCat,
-          prefersDog: prefersDog,
-          prefersBird: prefersBird,
-          prefersRabbit: prefersRabbit,
-          prefersOthers: prefersOthers,
-          providesHomeVisits: providesHomeVisits,
-          providesDogWalking: providesDogWalking,
-          providesHouseSitting: providesHouseSitting,
-          role: _volunteerRole,
-          locationCity: _locationCity);
+        userId: user.uid,
+        name: volunteerName,
+        email: volunteerEmail,
+        phoneNo: volunteerPhoneNo,
+        age: volunteerAge,
+        occupation: volunteerOccupation,
+        aboutMe: volunteerAboutMe,
+        prefersCat: prefersCat,
+        prefersDog: prefersDog,
+        prefersBird: prefersBird,
+        prefersRabbit: prefersRabbit,
+        prefersOthers: prefersOthers,
+        providesHomeVisits: providesHomeVisits,
+        providesDogWalking: providesDogWalking,
+        providesHouseSitting: providesHouseSitting,
+        role: _volunteerRole,
+        locationCity: _locationCity,
+      );
 
       await _prefsService.setBool('isVolunteerLoggedIn', true);
       _isVolunteerLoggedIn = true;
