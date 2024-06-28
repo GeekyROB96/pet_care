@@ -29,7 +29,7 @@ class BookingDetailsProvider extends ChangeNotifier {
 
   String _volEmail = '';
   List<String>? _pet;
-
+  //String? _ownerAddress;
   Map<String, dynamic> vData = {};
 
   bool? get homeVisit => _homeVisit;
@@ -52,7 +52,9 @@ class BookingDetailsProvider extends ChangeNotifier {
   String? get service => _service;
   List<String>? get pet => _pet;
 
-  FireStoreServiceVolunteer _fireStoreService = FireStoreServiceVolunteer();
+  var vDataAddress;
+  FireStoreServiceVolunteer _fireStoreServiceVolunteer =
+      FireStoreServiceVolunteer();
   BookingFirestore _bookingFirestore = BookingFirestore();
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
@@ -61,12 +63,23 @@ class BookingDetailsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void getVaddress() async {
+    vDataAddress =
+        await _fireStoreServiceVolunteer.getVolunteerAddressByEmail(volEmail);
+    print(" Volunteer Address : $vDataAddress");
+    if (vDataAddress != null) {
+      print("Volunteer Address: $vDataAddress");
+    } else {
+      print("No address found for the volunteer with email $volEmail");
+    }
+  }
+
   Future<void> loadDetails(BuildContext context) async {
     uid = Provider.of<VolunteerDetailsGetterProvider>(context, listen: false)
         .currentuid;
 
     print(uid);
-    vData = (await _fireStoreService.getVolunteerDetails(uid))!;
+    vData = (await _fireStoreServiceVolunteer.getVolunteerDetails(uid))!;
     if (vData != null) {
       _volEmail = vData['email'];
       _houseSitting = vData['providesHouseSitting'];
@@ -173,19 +186,22 @@ class BookingDetailsProvider extends ChangeNotifier {
             mainAxisSize: MainAxisSize.min,
             children: [
               Image.asset(
-                'assets/images/tick_mark.gif', // Make sure you have this asset in your project
+                'assets/icons/tick.gif',
                 height: 100,
                 width: 100,
               ),
               SizedBox(height: 20),
               Text(
                 'Booking ID: $bookingId',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87),
               ),
               SizedBox(height: 10),
               Text(
-                'Your booking is sent .Please check for status ',
-                style: TextStyle(fontSize: 16),
+                'Your booking is sent .Please check for status 🎉',
+                style: TextStyle(fontSize: 16, color: Colors.black87),
               ),
             ],
           ),

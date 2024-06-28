@@ -191,26 +191,27 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
         }
 
         await _fireStoreService.saveVolunteerDetails(
-            userId: user.uid,
-            name: _name,
-            email: _email,
-            phoneNo: _phoneNo,
-            age: _age ?? '',
-            occupation: _occupation ?? '',
-            aboutMe: _aboutMe,
-            prefersCat: _preferCat,
-            prefersDog: _preferDog,
-            prefersBird: _preferBird,
-            prefersRabbit: _prefersRabbit,
-            prefersOthers: _prefersOthers,
-            providesHomeVisits: _providesHomeVisits,
-            providesDogWalking: _provideDogWalking,
-            providesHouseSitting: _providesHouseSitting,
-            role: 'volunteer',
-            profileImageUrl: _imageUrl,
-            providesHomeVisitsPrice: _providesHomeVisitsPrice,
-            providesHouseSittingPrice: _providesHouseSittingPrice,
-            locationCity: _locationCity);
+          userId: user.uid,
+          name: _name,
+          email: _email,
+          phoneNo: _phoneNo,
+          age: _age ?? '',
+          occupation: _occupation ?? '',
+          aboutMe: _aboutMe,
+          prefersCat: _preferCat,
+          prefersDog: _preferDog,
+          prefersBird: _preferBird,
+          prefersRabbit: _prefersRabbit,
+          prefersOthers: _prefersOthers,
+          providesHomeVisits: _providesHomeVisits,
+          providesDogWalking: _provideDogWalking,
+          providesHouseSitting: _providesHouseSitting,
+          role: 'volunteer',
+          profileImageUrl: _imageUrl,
+          providesHomeVisitsPrice: _providesHomeVisitsPrice,
+          providesHouseSittingPrice: _providesHouseSittingPrice,
+          locationCity: _locationCity,
+        );
 
         showSnackBar(context, "Profile details saved successfully!");
       } catch (e) {

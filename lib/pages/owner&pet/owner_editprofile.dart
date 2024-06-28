@@ -155,9 +155,7 @@ class OwnerEditProfilePage extends StatelessWidget {
             builder: (context) => OwnerAddressPage(),
           ),
         );
-        if (result != null) {
-          // Handle the address result here if needed
-        }
+        if (result != null) {}
       },
       child: TextField(
         decoration: InputDecoration(

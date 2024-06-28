@@ -15,6 +15,7 @@ class FirestoreServiceOwner {
     required String role,
     String? locationCity,
     String? profileImageUrl,
+    Map<String, dynamic>? address,
   }) async {
     try {
       String? uid = _firebaseAuth.currentUser?.uid;
@@ -33,10 +34,38 @@ class FirestoreServiceOwner {
         'role': role,
         'locationCity': locationCity,
         'profileImageUrl': profileImageUrl,
+        'address': address,
         'uid': uid
       });
     } catch (e) {
       print("Error saving User Details $e");
+    }
+  }
+
+  Future<Map<String, dynamic>?> getAddressDetails(String userId) async {
+    try {
+      DocumentSnapshot userDoc = await _firestore
+          .collection('users')
+          .doc('pet_owners')
+          .collection('pet_owners')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        return {
+          'area_apartment_road': userData['address'][0]['area_apartment_road'],
+          'coordinates': userData['address'][0]['coordinates'],
+          'description_directions': userData['address'][0]
+              ['description_directions'],
+          'house_flat_data': userData['address'][0]['house_flat_data'],
+        };
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error getting address details $e");
+      return null;
     }
   }
 
@@ -87,10 +116,9 @@ class FirestoreServiceOwner {
         return {
           'userId': userId,
           'userEmail': userEmail,
-          'profileImageUrl':
-              profileImageUrl, 
-              // Include profileImageUrl in the returned map
-          'name' :name
+          'profileImageUrl': profileImageUrl,
+          // Include profileImageUrl in the returned map
+          'name': name
         };
       } else {
         return null;

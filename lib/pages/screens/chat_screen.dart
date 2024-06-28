@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pet_care/constants/zego_credentials.dart';
 import 'package:pet_care/model/message_model.dart';
+import 'package:pet_care/pages/screens/chat_bubble.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:pet_care/services/chat/chat_service.dart';
 import 'package:pet_care/services/firestore_service/owner_firestore.dart';
 import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
-import 'package:pet_care/widgets/components/chat_bubble.dart';
+//import 'package:pet_care/widgets/components/chat_bubble.dart';
 import 'package:pet_care/widgets/components/textfield.dart';
 import 'package:provider/provider.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
@@ -226,77 +227,82 @@ class _ChatScreenState extends State<ChatScreen> {
           const Spacer(),
           actionButton(true)
         ]),
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.grey,
+        backgroundColor: Color(0xFFC5B4EC).withOpacity(0.2),
+        foregroundColor: Colors.black,
         elevation: 5,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<List<Map<String, dynamic>>>(
-              stream: _currentUserRole == 'owner'
-                  ? _firestoreServiceOwner.getMessages(
-                      _currentUserId, widget.receiverId)
-                  : _firestoreServiceVolunteer.getMessages(
-                      _currentUserId, widget.receiverId),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return CircularProgressIndicator();
+      body: Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Expanded(
+              child: StreamBuilder<List<Map<String, dynamic>>>(
+                stream: _currentUserRole == 'owner'
+                    ? _firestoreServiceOwner.getMessages(
+                        _currentUserId, widget.receiverId)
+                    : _firestoreServiceVolunteer.getMessages(
+                        _currentUserId, widget.receiverId),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return CircularProgressIndicator();
 
-                var messages = snapshot.data!
-                    .map((msgData) => Message.fromMap(msgData))
-                    .toList();
+                  var messages = snapshot.data!
+                      .map((msgData) => Message.fromMap(msgData))
+                      .toList();
 
-                String? lastDisplayedDate;
-                return ListView.builder(
-                  controller: _scrollController,
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    var message = messages[index];
-                    bool isSender = message.senderId == _currentUserId;
-                    String messageDate = _formatDate(message.timestamp);
-                    String messageTime = _formatTime(message.timestamp);
+                  String? lastDisplayedDate;
+                  return ListView.builder(
+                    controller: _scrollController,
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      var message = messages[index];
+                      bool isSender = message.senderId == _currentUserId;
 
-                    bool shouldDisplayDate = lastDisplayedDate != messageDate;
-                    lastDisplayedDate = messageDate;
+                      String messageDate = _formatDate(message.timestamp);
+                      String messageTime = _formatTime(message.timestamp);
 
-                    return Column(
-                      children: [
-                        if (shouldDisplayDate)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Center(
-                              child: Chip(
-                                label: Text(messageDate),
+                      bool shouldDisplayDate = lastDisplayedDate != messageDate;
+                      lastDisplayedDate = messageDate;
+
+                      return Column(
+                        children: [
+                          if (shouldDisplayDate)
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Center(
+                                child: Chip(
+                                  label: Text(messageDate),
+                                ),
                               ),
                             ),
+                          ChatBubble(
+                            message: message.message,
+                            isSender: isSender,
+                            time: messageTime,
                           ),
-                        ChatBubble(
-                          message: message.message,
-                          isSender: isSender,
-                          time: messageTime,
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-          _buildUserInput(),
-        ],
+            _buildUserInput(),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildUserInput() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 22.0),
+      padding: const EdgeInsets.only(bottom: 20.0),
       child: Row(
         children: [
           Expanded(
             child: MyTextField(
               padding: const EdgeInsets.all(2),
-              margin: const EdgeInsets.only(left: 25, right: 10),
+              margin: const EdgeInsets.only(left: 20, right: 10),
               controller: _messageController,
               hintText: "Type a message",
               obsText: false,
@@ -304,17 +310,18 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(0),
-            margin: const EdgeInsets.only(right: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(29),
-              color: Colors.blue.withOpacity(0.2),
-            ),
+            //   padding: const EdgeInsets.all(0),
+            //   margin: const EdgeInsets.only(right: 10),
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(29),
+            //     color: Colors.deepPurple.withOpacity(0.2),
+            //   ),
             child: IconButton(
               onPressed: _sendMessage,
               icon: const Icon(
                 Icons.send,
-                color: Colors.black,
+                color: Color(0xFF0C39EE),
+                size: 30,
               ),
             ),
           ),

@@ -4,12 +4,14 @@ class ChatBubble extends StatelessWidget {
   final String message;
   final bool isSender;
   final String time;
+  final Color backgroundColor;
 
   const ChatBubble({
     Key? key,
     required this.message,
     required this.isSender,
     required this.time,
+    required this.backgroundColor,
   }) : super(key: key);
 
   @override
@@ -26,7 +28,9 @@ class ChatBubble extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: isSender ? Colors.blue : Color(0xFF202C33),
+                  color: isSender
+                      ? Color(0xFF500AD2).withOpacity(0.7)
+                      : Color(0xFFFFFFFF),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
@@ -56,7 +60,7 @@ class ChatBubble extends StatelessWidget {
                           child: Text(
                             time,
                             style: TextStyle(
-                              color: Colors.grey[700],
+                              color: Colors.black87,
                               fontSize: 12,
                             ),
                           ),

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -62,6 +63,7 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
           _locationCity = userDetails['locationCity'];
           _isDataLoaded = true;
           _uid = userDetails['uid'];
+
           // Set data loaded to true
           notifyListeners();
         }
