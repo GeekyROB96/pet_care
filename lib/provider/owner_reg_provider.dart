@@ -121,7 +121,6 @@ class OwnerRegistrationProvider with ChangeNotifier {
             role: _role,
             locationCity: _locationCity);
 
-        // Update local state after successful signup
         setName(_name);
         setEmail(_email);
         _isOwnerLoggedIn = true;
@@ -129,11 +128,9 @@ class OwnerRegistrationProvider with ChangeNotifier {
 
         showSnackBar(context, "Owner signed up and details saved");
 
-        // Load user profile details (if needed)
         Provider.of<OwnerDetailsGetterProvider>(context, listen: false)
             .loadUserProfile();
 
-        // Navigate to the next screen after successful signup
         navigateToPets(context);
 
         print('Owner signed up and details saved');
@@ -142,7 +139,7 @@ class OwnerRegistrationProvider with ChangeNotifier {
       print('Error signing up: $e');
       showSnackBar(context, 'Failed to sign up. Please try again later.');
     } finally {
-      setLoading(false); // Set loading to false in any case
+      setLoading(false); 
     }
   }
 
@@ -159,7 +156,7 @@ class OwnerRegistrationProvider with ChangeNotifier {
   }
 
   Future<void> checkOwnerLoginStatus() async {
-    _isOwnerLoggedIn = _prefsService.getBool('isLoggedIn') ?? false;
+    _isOwnerLoggedIn = _prefsService.getBool('isLoggedIn') ;
     notifyListeners();
   }
 

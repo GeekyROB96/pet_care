@@ -13,9 +13,9 @@ import 'package:pet_care/pages/owner&pet/pet_register.dart';
 import 'package:pet_care/pages/owner&pet/pet_register2.dart';
 import 'package:pet_care/pages/pets_page/pets.dart';
 import 'package:pet_care/pages/screens/call_page.dart';
-import 'package:pet_care/pages/screens/owner_homescreen.dart';
+import 'package:pet_care/pages/owner&pet/owner_homescreen.dart';
 import 'package:pet_care/pages/screens/pet_sitters.dart';
-import 'package:pet_care/pages/screens/volunteer_homescreen.dart';
+import 'package:pet_care/pages/volunteer/volunteer_homescreen.dart';
 import 'package:pet_care/pages/volunteer/volunteer_editProfile.dart';
 import 'package:pet_care/pages/volunteer/volunteer_login_page.dart';
 import 'package:pet_care/pages/volunteer/volunteer_reg.dart';
@@ -29,6 +29,7 @@ import 'package:pet_care/provider/owner_dashboard_provider.dart';
 import 'package:pet_care/provider/owner_editprofile_provider.dart';
 import 'package:pet_care/provider/owner_login_provider.dart';
 import 'package:pet_care/provider/owner_reg_provider.dart';
+import 'package:pet_care/provider/payment_page_provider.dart';
 import 'package:pet_care/provider/pet_reg_provider.dart';
 import 'package:pet_care/provider/pet_sitter_provider.dart';
 import 'package:pet_care/provider/pets_provider.dart';
@@ -87,6 +88,8 @@ void main() async {
             ChangeNotifierProvider(create: (context) => ReminderProvider()),
             ChangeNotifierProvider(
                 create: (context) => BookingDetailsProvider()),
+
+            ChangeNotifierProvider(create: (context) => PaymentPageProvider())
           ],
           child: MyApp(),
         ),

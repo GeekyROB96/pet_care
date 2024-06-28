@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pet_care/pages/screens/owner_homescreen.dart';
-import 'package:pet_care/pages/screens/volunteer_homescreen.dart';
+import 'package:pet_care/pages/owner&pet/owner_homescreen.dart';
+import 'package:pet_care/pages/volunteer/volunteer_homescreen.dart';
 import 'package:pet_care/provider/owner_login_provider.dart';
 import 'package:pet_care/provider/volunteer_login_provider.dart';
 import 'package:pet_care/widgets/splash_screen.dart';

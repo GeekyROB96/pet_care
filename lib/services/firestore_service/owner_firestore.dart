@@ -175,4 +175,39 @@ class FirestoreServiceOwner {
       }
     });
   }
+
+
+  Future<void> saveAddress({
+    required String userId,
+    required String main,
+    required String areaApartmentRoad,
+    required String coordinates,
+    required String descriptionDirections,
+    required String city,
+    required String state,
+    required String pincode
+  }) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc('pet_owners')
+          .collection('pet_owners')
+          .doc(userId)
+          .update({
+        'Address': FieldValue.arrayUnion([
+          {
+            'main': main,
+            'area_apartment_road': areaApartmentRoad,
+            'coordinates': coordinates,
+            'description_directions': descriptionDirections,
+            'city': city,
+            'state': state,
+            'pincode': pincode
+          }
+        ])
+      });
+    } catch (e) {
+      print("Error saving Address Details $e");
+    }
+  }
 }

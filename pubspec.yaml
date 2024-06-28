@@ -51,6 +51,11 @@ dependencies:
   chat_bubbles: ^1.6.0
   zego_uikit_prebuilt_call: ^4.12.8
   zego_uikit_signaling_plugin: ^2.7.14
+  google_maps_flutter: ^2.6.1
+  
+  geocoding: ^3.0.0
+  geolocator: ^12.0.0
+  toastification: ^2.0.0
 
 dev_dependencies:
   flutter_test:

@@ -7,18 +7,18 @@ import 'package:flutter/widgets.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:pet_care/services/firestore_service/owner_firestore.dart';
-import 'package:toastification/toastification.dart';
+import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import '../../widgets/components/textfield.dart';
 
-class OwnerAddressPage extends StatefulWidget {
-  const OwnerAddressPage({Key? key}) : super(key: key);
+class VolunteerAddressPage extends StatefulWidget {
+  const VolunteerAddressPage({Key? key}) : super(key: key);
 
   @override
-  State<OwnerAddressPage> createState() => _OwnerAddressPageState();
+  State<VolunteerAddressPage> createState() => _VolunteerAddressPageState();
 }
 
-class _OwnerAddressPageState extends State<OwnerAddressPage> {
+class _VolunteerAddressPageState extends State<VolunteerAddressPage> {
   late final TextEditingController _directionsController =
       TextEditingController();
   late final TextEditingController _addressMainController =
@@ -44,10 +44,10 @@ class _OwnerAddressPageState extends State<OwnerAddressPage> {
   int _characterCount = 0;
 
   final Completer<GoogleMapController> _controller = Completer();
-  late FirestoreServiceOwner _ownerFireStore;
+  late FireStoreServiceVolunteer _volunteerFireStore;
   @override
   void initState() {
-    _ownerFireStore = FirestoreServiceOwner();
+    _volunteerFireStore = FireStoreServiceVolunteer();
     super.initState();
     loadData();
   }
@@ -353,7 +353,7 @@ class _OwnerAddressPageState extends State<OwnerAddressPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(' Address Update'),
+        title: Text(' Address Page'),
       ),
       body: Expanded(
         child: Column(
@@ -519,7 +519,7 @@ class _OwnerAddressPageState extends State<OwnerAddressPage> {
   Future<void> saveAddress() async {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
-      await _ownerFireStore.saveAddress(
+      await _volunteerFireStore.saveAddress(
           userId: userId,
           main: _addressMainController.text,
           areaApartmentRoad: _apartmentController.text,
@@ -529,22 +529,9 @@ class _OwnerAddressPageState extends State<OwnerAddressPage> {
           state: _stateController.text,
           pincode: _pincodeController.text);
 
-        toastification.show(
-  context: context, // optional if you use ToastificationWrapper
-  title: Text('Address Updated Successfully!'),
-  backgroundColor:Colors.green,
-  autoCloseDuration: const Duration(seconds: 5),
-);
-
       print("Address Save successful!");
     } catch (e) {
       print("Error saving address $e");
-          toastification.show(
-  context: context, // optional if you use ToastificationWrapper
-  title: Text('Error $e!'),
-  backgroundColor:Colors.red,
-  autoCloseDuration: const Duration(seconds: 5),
-);
     }
   }
 }

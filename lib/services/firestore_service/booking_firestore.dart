@@ -36,4 +36,34 @@ class BookingFirestore {
       throw e;
     }
   }
+
+  
+   Future<void> addVpaToBooking(String bookingId, String vpa) async {
+    try {
+      DocumentReference bookingRef = _firestore.collection('bookings').doc(bookingId);
+      await bookingRef.update({'vpa': vpa});
+      print('VPA added to booking successfully');
+    } catch (e) {
+      print('Error adding VPA to booking: $e');
+      throw e;
+    }
+  }
+
+
+    Future<Map<String, dynamic>?> getBookingById(String bookingId) async {
+    try {
+      DocumentSnapshot documentSnapshot =
+          await _firestore.collection('bookings').doc(bookingId).get();
+
+      if (documentSnapshot.exists) {
+        return documentSnapshot.data() as Map<String, dynamic>?;
+      } else {
+        print("No bookings found");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting booking: $e");
+      throw e;
+    }
+  }
 }

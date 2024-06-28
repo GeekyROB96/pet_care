@@ -4,7 +4,7 @@ import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
-import 'add_address.dart';
+import 'volunteer_address_page.dart';
 
 class VolunteerEditProfilePage extends StatelessWidget {
   const VolunteerEditProfilePage({Key? key}) : super(key: key);
