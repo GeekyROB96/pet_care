@@ -281,6 +281,29 @@ class FireStoreServiceVolunteer {
     return chatRoomIds;
   }
 
+
+  Future<Map<String, dynamic>?> getVolunteerDetailsByEmail(String email) async {
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .doc('volunteers')
+          .collection('volunteers')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs.first.data() as Map<String, dynamic>?;
+      } else {
+        print("No volunteer found with email: $email");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting volunteer details: $e");
+      throw e;
+    }
+  }
+
   Future<Map<String, dynamic>?> getVolunteerAddressByEmail(String email) async {
     try {
       QuerySnapshot querySnapshot = await _firestore
@@ -312,4 +335,38 @@ class FireStoreServiceVolunteer {
       return null;
     }
   }
+  Future<void> saveAddress({
+    required String userId,
+    required String main,
+    required String areaApartmentRoad,
+    required String coordinates,
+    required String descriptionDirections,
+    required String city,
+    required String state,
+    required String pincode
+  }) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc('volunteers')
+          .collection('volunteers')
+          .doc(userId)
+          .update({
+        'Address': FieldValue.arrayUnion([
+          {
+            'main': main,
+            'area_apartment_road': areaApartmentRoad,
+            'coordinates': coordinates,
+            'description_directions': descriptionDirections,
+            'city': city,
+            'state': state,
+            'pincode': pincode
+          }
+        ])
+      });
+    } catch (e) {
+      print("Error saving Address Details $e");
+    }
+  }
 }
+
