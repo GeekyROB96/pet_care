@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pet_care/constants/snackbar.dart';
+import 'package:pet_care/constants/custom_toast.dart';
 import 'package:pet_care/provider/volunteer_login_provider.dart';
 import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
 import 'package:provider/provider.dart';
@@ -42,6 +42,23 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
   String? _locationCity;
 
   Map<String, dynamic>? volunteerData;
+
+  String? _area_apartment_road;
+  String? _city;
+  String? _coordinates;
+  String? _description_directions;
+  String? _main;
+  String? _pincode;
+  String? _state;
+
+
+   String? get area_apartment_road => _area_apartment_road;
+  String? get city => _city;
+  String? get coordinates => _coordinates;
+  String? get description_directions => _description_directions;
+  String? get main => _main;
+  String? get pincode => _pincode;
+  String? get state => _state;
 
   String get uid => _uid;
   bool get isDataLoaded => _isDataLoaded;
@@ -95,6 +112,18 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
         _locationCity = volunteerData?['locationCity'];
         _uid = volunteerData?['uid'];
 
+
+          if (volunteerData?['Address'] != null && volunteerData?['Address'] is List && volunteerData?['Address'].isNotEmpty) {
+            final address = volunteerData?['Address'][0];
+            _area_apartment_road = address['area_apartment_road'];
+            _city = address['city'];
+            _coordinates = address['coordinates'];
+            _description_directions = address['description_directions'];
+            _main = address['main'];
+            _pincode = address['pincode'];
+            _state = address['state'];
+          }
+
         _isDataLoaded = true;
         notifyListeners();
       } catch (e) {
@@ -147,10 +176,12 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
     if (pickedFile != null) {
       _profileImageFile = File(pickedFile.path);
       notifyListeners();
-      showSnackBar(context, 'Profile Image picked successfully!');
+
+      ToastNotification.showToast(context,
+          message: "Profile Image picked Successfuly.", type: ToastType.positive);
     } else {
-      showSnackBar(context, "No profile image selected!");
-    }
+  ToastNotification.showToast(context,
+          message: "No Image Selected!", type: ToastType.normal);    }
   }
 
   Future<void> saveProfile(BuildContext context) async {
@@ -178,15 +209,15 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
 // Perform save operation
         if (updatedVolunteerData?['providesHomeVisits'] == false &&
             _providesHomeVisitsPrice != null) {
-          showSnackBar(
-              context, 'You have not opted for HomeVisits Service option');
+            ToastNotification.showToast(context,
+          message: "You have not opted for Home Visits Service.", type: ToastType.normal);
           return;
         }
 
         if (updatedVolunteerData?['providesHouseSitting'] == false &&
             _providesHouseSittingPrice != null) {
-          showSnackBar(
-              context, 'You have not opted for House Sitting Service option');
+           ToastNotification.showToast(context,
+          message: "You have not opted for House  Sitting Service.", type: ToastType.normal);
           return;
         }
 
@@ -213,13 +244,17 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
           locationCity: _locationCity,
         );
 
-        showSnackBar(context, "Profile details saved successfully!");
-      } catch (e) {
-        showSnackBar(context, e.toString());
-        print("Error Saving Profile: $e");
+ ToastNotification.showToast(context,
+          message: "Profile details updated Succesfully!.", type: ToastType.positive);  
+              } catch (e) {
+ ToastNotification.showToast(context,
+          message: "Error Saving Profile $e", type: ToastType.error);
+                  print("Error Saving Profile: $e");
       }
     } else {
-      showSnackBar(context, "No user logged in");
+
+       ToastNotification.showToast(context,
+          message: "No User Logged In", type: ToastType.error);
     }
   }
 
@@ -227,11 +262,12 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
     try {
       await Provider.of<VolunteerLoginProvider>(context, listen: false)
           .volunteerLogout(context);
-      showSnackBar(context, "Logout Successful!");
+           ToastNotification.showToast(context,
+          message: "Logout Successful", type: ToastType.normal);
       clearData();
     } catch (e) {
-      print("Error logging out $e");
-      showSnackBar(context, "Error logging out $e");
+       ToastNotification.showToast(context,
+          message: "Error Logging Out $e", type: ToastType.error);
     }
   }
 

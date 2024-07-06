@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:pet_care/constants/zego_credentials.dart';
 import 'package:pet_care/model/message_model.dart';
@@ -53,6 +56,8 @@ class _ChatScreenState extends State<ChatScreen> {
   String? currentUserId;
   String? callId;
 
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+
   @override
   void initState() {
     super.initState();
@@ -93,6 +98,87 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {}); // Update the UI after initialization
   }
 
+  Future<File?> pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    return image != null ? File(image.path) : null;
+  }
+
+  Future<String?> uploadImage(File image) async {
+    try {
+      if (image != null) {
+        String image_path =
+            'chat_images/${DateTime.now().millisecondsSinceEpoch}.png';
+
+        UploadTask uploadTask = _storage.ref().child(image_path).putFile(image);
+
+        TaskSnapshot taskSnapshot = await uploadTask;
+
+        String downloadURL = await taskSnapshot.ref.getDownloadURL();
+
+        return downloadURL;
+      }
+    } catch (e) {
+      print("Error sending image $e");
+      return null;
+    }
+  }
+
+ Future<void> _sendImage() async {
+    File? image = await pickImage();
+
+    if (image != null) {
+      bool? confirmSend = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Send Image"),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.file(image),
+                  SizedBox(height: 20),
+                  Text("Do you want to send this image?"),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: Text("Send"),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (confirmSend == true) {
+        String? imageUrl = await uploadImage(image);
+
+          if (imageUrl != null) {
+        if (_currentUserRole == 'owner')
+          await _firestoreServiceOwner.sendMessage(widget.receiverId, "",
+              imageUrl: imageUrl);
+        
+
+        else if (_currentUserRole == 'volunteer') 
+        await _firestoreServiceVolunteer.sendMessage(widget.receiverId, "", imageUrl: imageUrl);
+      
+      }
+        }
+      }
+    }
+  
+
   Future<void> callSetters() async {
     final ownerProvider =
         await Provider.of<OwnerDetailsGetterProvider>(context, listen: false);
@@ -101,7 +187,7 @@ class _ChatScreenState extends State<ChatScreen> {
         listen: false);
 
     if (_currentUserRole == 'owner') {
-      ownerProvider.loadUserProfile();
+      ownerProvider.loadUserProfile(); // : .'
       currentUserName = ownerProvider.name;
       currentUserId = ownerProvider.uid;
     }
@@ -115,7 +201,7 @@ class _ChatScreenState extends State<ChatScreen> {
     String? cId = currentUserId; // Use currentUserId directly
     String? rId = widget.receiverId; // Or use widget.receiverId
 
-    // Create a list and filter out null values
+    // Create a list and filter out null values :(
     List<String> ids = [];
     if (cId != null) ids.add(cId);
     if (rId != null) ids.add(rId);
@@ -275,6 +361,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                 ),
                               ),
                             ),
+                          if (message.imageUrl != null)
+                          ChatBubble(
+                            message: message.message,
+                            isSender: isSender,
+                            time: messageTime,
+                            imageUrl: message.imageUrl,
+                          )
+                        else
                           ChatBubble(
                             message: message.message,
                             isSender: isSender,
@@ -309,21 +403,13 @@ class _ChatScreenState extends State<ChatScreen> {
               focusNode: myFocusMode,
             ),
           ),
-          Container(
-            //   padding: const EdgeInsets.all(0),
-            //   margin: const EdgeInsets.only(right: 10),
-            //   decoration: BoxDecoration(
-            //     borderRadius: BorderRadius.circular(29),
-            //     color: Colors.deepPurple.withOpacity(0.2),
-            //   ),
-            child: IconButton(
-              onPressed: _sendMessage,
-              icon: const Icon(
-                Icons.send,
-                color: Color(0xFF0C39EE),
-                size: 30,
-              ),
-            ),
+          IconButton(
+            icon: Icon(Icons.photo, color: Color(0xFF0C39EE), size: 30),
+            onPressed: _sendImage,
+          ),
+          IconButton(
+            icon: Icon(Icons.send, color: Color(0xFF0C39EE), size: 30),
+            onPressed: _sendMessage,
           ),
         ],
       ),
