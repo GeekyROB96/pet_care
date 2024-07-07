@@ -50,7 +50,7 @@ class BookingDetailsProvider extends ChangeNotifier {
   String get volEmail => _volEmail;
   String? get service => _service;
   List<String>? get pet => _pet;
-
+  //FirestoreServiceOwner _firestoreServiceOwner = FirestoreServiceOwner();
   FireStoreServiceVolunteer _fireStoreServiceVolunteer =
       FireStoreServiceVolunteer();
   BookingFirestore _bookingFirestore = BookingFirestore();

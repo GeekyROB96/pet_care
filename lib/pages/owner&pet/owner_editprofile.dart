@@ -22,86 +22,87 @@ class OwnerEditProfilePage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Consumer<OwnerDetailsGetterProvider>(
-          builder: (context, ownerDetailsProvider, child) {
-            return ownerDetailsProvider.isDataLoaded
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Stack(
+        child: SingleChildScrollView(
+          child: Consumer<OwnerDetailsGetterProvider>(
+            builder: (context, ownerDetailsProvider, child) {
+              return ownerDetailsProvider.isDataLoaded
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Stack(
+                            children: [
+                              CircleAvatar(
+                                radius: 50,
+                                backgroundImage:
+                                    getImageProvider(ownerDetailsProvider),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: () => ownerDetailsProvider
+                                      .pickProfileImage(context),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        buildTextField(
+                          label: 'Name',
+                          initialValue: ownerDetailsProvider.name,
+                          enabled: false,
+                          prefixIcon: Icons.person_outline,
+                        ),
+                        buildTextField(
+                          label: 'Email',
+                          initialValue: ownerDetailsProvider.email,
+                          enabled: false,
+                          prefixIcon: Icons.email_outlined,
+                        ),
+                        buildTextField(
+                          label: 'Phone Number',
+                          initialValue: ownerDetailsProvider.phoneNo,
+                          enabled: false,
+                          prefixIcon: Icons.phone_outlined,
+                        ),
+                        buildAddressField(context, ownerDetailsProvider),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            CircleAvatar(
-                              radius: 50,
-                              backgroundImage:
-                                  getImageProvider(ownerDetailsProvider),
+                            ElevatedButton(
+                              onPressed: () async {
+                                await ownerDetailsProvider.saveProfile(context);
+                                Navigator.pop(
+                                    context); // Pop the edit profile page
+                              },
+                              child: Text('Save'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: LightColors.primaryColor,
+                              ),
                             ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: IconButton(
-                                icon: Icon(Icons.edit),
-                                onPressed: () => ownerDetailsProvider
-                                    .pickProfileImage(context),
+                            ElevatedButton(
+                              onPressed: () {
+                                onUserLogout();
+                                ownerDetailsProvider.ownerLogout(context);
+                              },
+                              child: Text('Logout'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      SizedBox(height: 20),
-                      buildTextField(
-                        label: 'Name',
-                        initialValue: ownerDetailsProvider.name,
-                        enabled: false,
-                        prefixIcon: Icons.person_outline,
-                      ),
-                      buildTextField(
-                        label: 'Email',
-                        initialValue: ownerDetailsProvider.email,
-                        enabled: false,
-                        prefixIcon: Icons.email_outlined,
-                      ),
-                      buildTextField(
-                        label: 'Phone Number',
-                        initialValue: ownerDetailsProvider.phoneNo,
-                        enabled: false,
-                        prefixIcon: Icons.phone_outlined,
-                      ),
-                      buildAddressField(context,ownerDetailsProvider),
-                      SizedBox(height: 20),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () async {
-                              await ownerDetailsProvider.saveProfile(context);
-                              Navigator.pop(
-                                  context); // Pop the edit profile page
-                            },
-                            child: Text('Save'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: LightColors.primaryColor,
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              onUserLogout();
-                              ownerDetailsProvider.ownerLogout(context);
-                            },
-                            child: Text('Logout'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                : Center(
-                    child: CircularProgressIndicator(),
-                  );
-          },
+                      ],
+                    )
+                  : Center(
+                      child: CircularProgressIndicator(),
+                    );
+            },
+          ),
         ),
       ),
     );
@@ -147,7 +148,8 @@ class OwnerEditProfilePage extends StatelessWidget {
     );
   }
 
-  Widget buildAddressField(BuildContext context , OwnerDetailsGetterProvider ownerDetailsProvider) {
+  Widget buildAddressField(
+      BuildContext context, OwnerDetailsGetterProvider ownerDetailsProvider) {
     return GestureDetector(
       onTap: () async {
         final result = await Navigator.push(
@@ -162,22 +164,24 @@ class OwnerEditProfilePage extends StatelessWidget {
         children: [
           TextField(
             decoration: InputDecoration(
-              prefixIcon: Icon(Icons.home),
-              labelText: 'Address',
-              labelStyle: TextStyle(
-                color: LightColors.textColor,
-                fontSize: 18,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey.shade400),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: LightColors.primaryColor),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              suffixIcon: Icon(Icons.edit , color: Colors.black,)
-            ),
+                prefixIcon: Icon(Icons.home),
+                labelText: 'Address',
+                labelStyle: TextStyle(
+                  color: LightColors.textColor,
+                  fontSize: 18,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade400),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: LightColors.primaryColor),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                suffixIcon: Icon(
+                  Icons.edit,
+                  color: Colors.black,
+                )),
             style: TextStyle(
               fontSize: 16,
               color: LightColors.textColor,
@@ -214,138 +218,137 @@ class OwnerEditProfilePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-         Text.rich(
-  TextSpan(
-    children: [
-      TextSpan(
-        text: 'Area/Apartment/Road: ',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: LightColors.textColor,
-        ),
-      ),
-      TextSpan(
-        text: '${ownerDetailsProvider.area_apartment_road ?? ''}',
-        style: TextStyle(
-          fontSize: 16,
-          color: LightColors.textColor,
-        ),
-      ),
-    ],
-  ),
-),
-SizedBox(height: 8),
-Text.rich(
-  TextSpan(
-    children: [
-      TextSpan(
-        text: 'City: ',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: LightColors.textColor,
-        ),
-      ),
-      TextSpan(
-        text: '${ownerDetailsProvider.city ?? ''}',
-        style: TextStyle(
-          fontSize: 16,
-          color: LightColors.textColor,
-        ),
-      ),
-    ],
-  ),
-),
-SizedBox(height: 8),
-Text.rich(
-  TextSpan(
-    children: [
-      TextSpan(
-        text: 'Directions: ',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: LightColors.textColor,
-        ),
-      ),
-      TextSpan(
-        text: '${ownerDetailsProvider.description_directions ?? ''}',
-        style: TextStyle(
-          fontSize: 16,
-          color: LightColors.textColor,
-        ),
-      ),
-    ],
-  ),
-),
-SizedBox(height: 8),
-Text.rich(
-  TextSpan(
-    children: [
-      TextSpan(
-        text: 'Description: ',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: LightColors.textColor,
-        ),
-      ),
-      TextSpan(
-        text: '${ownerDetailsProvider.main ?? ''}',
-        style: TextStyle(
-          fontSize: 16,
-          color: LightColors.textColor,
-        ),
-      ),
-    ],
-  ),
-),
-SizedBox(height: 8),
-Text.rich(
-  TextSpan(
-    children: [
-      TextSpan(
-        text: 'Pincode: ',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: LightColors.textColor,
-        ),
-      ),
-      TextSpan(
-        text: '${ownerDetailsProvider.pincode ?? ''}',
-        style: TextStyle(
-          fontSize: 16,
-          color: LightColors.textColor,
-        ),
-      ),
-    ],
-  ),
-),
-SizedBox(height: 8),
-Text.rich(
-  TextSpan(
-    children: [
-      TextSpan(
-        text: 'State: ',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: LightColors.textColor,
-        ),
-      ),
-      TextSpan(
-        text: '${ownerDetailsProvider.state ?? ''}',
-        style: TextStyle(
-          fontSize: 16,
-          color: LightColors.textColor,
-        ),
-      ),
-    ],
-  ),
-),
-
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Area/Apartment/Road: ',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: LightColors.textColor,
+                  ),
+                ),
+                TextSpan(
+                  text: '${ownerDetailsProvider.area_apartment_road ?? ''}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: LightColors.textColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 8),
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'City: ',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: LightColors.textColor,
+                  ),
+                ),
+                TextSpan(
+                  text: '${ownerDetailsProvider.city ?? ''}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: LightColors.textColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 8),
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Directions: ',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: LightColors.textColor,
+                  ),
+                ),
+                TextSpan(
+                  text: '${ownerDetailsProvider.description_directions ?? ''}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: LightColors.textColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 8),
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Description: ',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: LightColors.textColor,
+                  ),
+                ),
+                TextSpan(
+                  text: '${ownerDetailsProvider.main ?? ''}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: LightColors.textColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 8),
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Pincode: ',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: LightColors.textColor,
+                  ),
+                ),
+                TextSpan(
+                  text: '${ownerDetailsProvider.pincode ?? ''}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: LightColors.textColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 8),
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'State: ',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: LightColors.textColor,
+                  ),
+                ),
+                TextSpan(
+                  text: '${ownerDetailsProvider.state ?? ''}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: LightColors.textColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

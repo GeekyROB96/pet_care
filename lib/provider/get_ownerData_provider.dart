@@ -10,10 +10,14 @@ import 'package:pet_care/provider/owner_login_provider.dart';
 import 'package:pet_care/services/firestore_service/owner_firestore.dart';
 import 'package:provider/provider.dart';
 
+import '../services/firestore_service/pet_register.dart';
+
 class OwnerDetailsGetterProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirestoreServiceOwner _fireStoreService = FirestoreServiceOwner();
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  final PetFireStoreService _petFireStoreService =
+      PetFireStoreService(); // Instance of PetFireStoreService
 
   String _name = '';
   String _email = '';
@@ -24,8 +28,7 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
   String? _imageUrl;
   String? _uid;
 
-
-   String? _area_apartment_road;
+  String? _area_apartment_road;
   String? _city;
   String? _coordinates;
   String? _description_directions;
@@ -33,8 +36,7 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
   String? _pincode;
   String? _state;
 
-
-   String? get area_apartment_road => _area_apartment_road;
+  String? get area_apartment_road => _area_apartment_road;
   String? get city => _city;
   String? get coordinates => _coordinates;
   String? get description_directions => _description_directions;
@@ -81,7 +83,9 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
           _locationCity = userDetails['locationCity'];
           _isDataLoaded = true;
           _uid = userDetails['uid'];
-             if (userDetails['Address'] != null && userDetails['Address'] is List && userDetails['Address'].isNotEmpty) {
+          if (userDetails['Address'] != null &&
+              userDetails['Address'] is List &&
+              userDetails['Address'].isNotEmpty) {
             final address = userDetails['Address'][0];
             _area_apartment_road = address['area_apartment_road'];
             _city = address['city'];
@@ -95,8 +99,7 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
           // Set data loaded to true
           notifyListeners();
         }
-      } catch (e) {   
-        
+      } catch (e) {
         print("Error loading user profile: $e");
       }
     }
@@ -122,10 +125,10 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
       _profileImageFile = File(pickedFile.path);
       notifyListeners();
 
-        ToastNotification.showToast(context,
-          message: "Profile image picked successfully!", type: ToastType.positive);
+      ToastNotification.showToast(context,
+          message: "Profile image picked successfully!",
+          type: ToastType.positive);
     } else {
-
       ToastNotification.showToast(context,
           message: "No profile image selected!", type: ToastType.normal);
     }
@@ -147,28 +150,27 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
         }
 
         await _fireStoreService.saveUserDetails(
-            userId: user.uid,
-            name: _name,
-            email: _email,
-            phoneNo: _phoneNo,
-            age: _age ?? '',
-            occupation: _occupation ?? '',
-            locationCity: _locationCity ?? '',
-            profileImageUrl: _imageUrl,
-            role: 'owner',
-            );
-
+          userId: user.uid,
+          name: _name,
+          email: _email,
+          phoneNo: _phoneNo,
+          age: _age ?? '',
+          occupation: _occupation ?? '',
+          locationCity: _locationCity ?? '',
+          profileImageUrl: _imageUrl,
+          role: 'owner',
+        );
 
         ToastNotification.showToast(context,
-          message: "Profile details saved successfully!", type: ToastType.positive);
-
+            message: "Profile details saved successfully!",
+            type: ToastType.positive);
       } catch (e) {
-       ToastNotification.showToast(context,
-          message: "Error Saving profile  : $e!", type: ToastType.error);
+        ToastNotification.showToast(context,
+            message: "Error Saving profile  : $e!", type: ToastType.error);
         print("Error saving profile: $e");
       }
     } else {
-         ToastNotification.showToast(context,
+      ToastNotification.showToast(context,
           message: "No user logged In", type: ToastType.normal);
     }
   }
@@ -184,10 +186,26 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
           message: "User logged out successfully.", type: ToastType.normal);
       Navigator.pushNamed(context, '/splashScreen');
     } catch (e) {
-
       ToastNotification.showToast(context,
           message: "Error logging Out $e", type: ToastType.error);
       print("Error logging out: $e");
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getPets() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      try {
+        List<Map<String, dynamic>> pets =
+            await _petFireStoreService.getPets(user.email!);
+        return pets;
+      } catch (e) {
+        print("Error fetching pets: $e");
+        return [];
+      }
+    } else {
+      print("User not logged in.");
+      return [];
     }
   }
 

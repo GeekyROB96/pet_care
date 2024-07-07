@@ -65,4 +65,22 @@ class BookingFirestore {
       throw e;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getBookings(
+      String volEmail, String status) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('bookings')
+          .where('volEmail', isEqualTo: volEmail)
+          .where('status', isEqualTo: status)
+          .get();
+
+      return querySnapshot.docs
+          .map((DocumentSnapshot doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      print("Error getting bookings: $e");
+      throw e;
+    }
+  }
 }

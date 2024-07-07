@@ -1,62 +1,28 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:pet_care/provider/booking_details_getter.dart';
+import 'package:provider/provider.dart';
 
-class StatusPage extends StatefulWidget {
-  @override
-  _StatusPageState createState() => _StatusPageState();
-}
-
-class _StatusPageState extends State<StatusPage> {
-  final List<String> tabTitles = [
-    'Request',
-    'Accepted',
-    'Rejected',
-    'Completed'
-  ];
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  String? _volunteerEmail;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchCurrentUserEmail();
-  }
-
-  Future<void> _fetchCurrentUserEmail() async {
-    User? user = _auth.currentUser;
-    if (user != null) {
-      setState(() {
-        _volunteerEmail = user.email;
-      });
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> getBookings(
-      String volEmail, String status) async {
-    QuerySnapshot querySnapshot = await _firestore
-        .collection('bookings')
-        .where('volEmail', isEqualTo: volEmail)
-        .where('status', isEqualTo: status)
-        .get();
-
-    return querySnapshot.docs
-        .map((DocumentSnapshot doc) => doc.data() as Map<String, dynamic>)
-        .toList();
-  }
+class StatusPage extends StatelessWidget {
+  final Map<String, String> statusMapping = {
+    'Request': 'booked',
+    'Accepted': 'Accepted',
+    'Rejected': 'Rejected',
+    'Completed': 'Completed'
+  };
 
   @override
   Widget build(BuildContext context) {
+    final bookingProvider = Provider.of<BookingDetailsGetterProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Bookings'),
         centerTitle: true,
       ),
-      body: _volunteerEmail != null
+      body: bookingProvider.volunteerEmail != null
           ? DefaultTabController(
-              length: tabTitles.length,
+              length: statusMapping.keys.length,
               child: Column(
                 children: [
                   Container(
@@ -72,7 +38,9 @@ class _StatusPageState extends State<StatusPage> {
                     ),
                     child: TabBar(
                       isScrollable: true,
-                      tabs: tabTitles.map((title) => Tab(text: title)).toList(),
+                      tabs: statusMapping.keys
+                          .map((title) => Tab(text: title))
+                          .toList(),
                       labelColor: Colors.deepPurple,
                       unselectedLabelColor: Colors.black,
                       indicator: BoxDecoration(
@@ -87,12 +55,9 @@ class _StatusPageState extends State<StatusPage> {
                   ),
                   Expanded(
                     child: TabBarView(
-                      children: [
-                        _buildTab('booked'),
-                        _buildTab('accepted'),
-                        _buildTab('rejected'),
-                        _buildTab('completed'),
-                      ],
+                      children: statusMapping.values
+                          .map((status) => _buildTab(context, status))
+                          .toList(),
                     ),
                   ),
                 ],
@@ -102,9 +67,11 @@ class _StatusPageState extends State<StatusPage> {
     );
   }
 
-  Widget _buildTab(String status) {
-    return FutureBuilder(
-      future: getBookings(_volunteerEmail!, status),
+  Widget _buildTab(BuildContext context, String status) {
+    final bookingProvider =
+        Provider.of<BookingDetailsGetterProvider>(context, listen: false);
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: bookingProvider.getBookings(status),
       builder: (BuildContext context,
           AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -119,27 +86,158 @@ class _StatusPageState extends State<StatusPage> {
             itemCount: bookings.length,
             itemBuilder: (BuildContext context, int index) {
               Map<String, dynamic> booking = bookings[index];
+              List<Map<String, dynamic>> petDetails =
+                  booking['petDetails'] ?? [];
+              if (bookingProvider.ownerDetails == null) {
+                String ownerEmail = booking['ownerEmail'];
+                bookingProvider.fetchOwnerDetailsByEmail(ownerEmail);
+              }
+
+              String ownerName =
+                  bookingProvider.ownerDetails?['name'] ?? 'Loading...';
+              String profileImageUrl =
+                  bookingProvider.ownerDetails?['profileImageUrl'] ?? '';
+              String totalPrice = '${booking['totalPrice']} ₹';
+              String locationCity =
+                  bookingProvider.ownerDetails?['locationCity'] ?? '';
+
+              // Format the start date
+              String formattedStartDate = DateFormat('MMMM dd, yyyy')
+                  .format(DateTime.parse(booking['startDate']));
+
               return Card(
                 elevation: 3,
                 margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: ListTile(
-                  title: Text('Booking ID: ${booking['bookingId']}'),
-                  subtitle: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Service: ${booking['service']}'),
-                      Text('Owner Email: ${booking['ownerEmail']}'),
-                      Text('Start Date: ${booking['startDate']}'),
-                      Text('End Date: ${booking['endDate']}'),
-                      Text('Total Hours: ${booking['totalHours']}'),
-                      Text('Total Price: ${booking['totalPrice']}'),
-                    ],
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xFFCED8F5).withOpacity(0.8),
+                        Color(0xFFD7E2EE),
+                        Color(0xFFDCE2F6)
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  //trailing: Text('Status: ${booking['status']}'),
-                  onTap: () {
-                    // Handle tapping on a booking item
-                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(18),
+                    child: Stack(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(profileImageUrl),
+                                  radius: 30,
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Owner: $ownerName',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        'Service: ${booking['service']}',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        'Location: $locationCity', // Display location city
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        'Start Date: $formattedStartDate',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        'Total Hours: ${booking['totalHours']}',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Pets:',
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                          SizedBox(width: 5),
+                                          Row(
+                                            children: petDetails.map((pet) {
+                                              String petType =
+                                                  pet['selectedPetType'];
+                                              String petIconPath =
+                                                  _getPetIcon(petType);
+                                              return petIconPath.isNotEmpty
+                                                  ? Padding(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 2),
+                                                      child: Image.asset(
+                                                        petIconPath,
+                                                        height: 24,
+                                                        width: 24,
+                                                      ),
+                                                    )
+                                                  : SizedBox.shrink();
+                                            }).toList(),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      totalPrice,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Color(0xFF062483),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Text(
+                            '$status',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               );
             },
@@ -147,5 +245,20 @@ class _StatusPageState extends State<StatusPage> {
         }
       },
     );
+  }
+
+  String _getPetIcon(String petType) {
+    switch (petType.toLowerCase()) {
+      case 'dog':
+        return 'assets/icons/dog.png';
+      case 'cat':
+        return 'assets/icons/cat.png';
+      case 'bird':
+        return 'assets/icons/bird.png';
+      case 'rabbit':
+        return 'assets/icons/bunny.png';
+      default:
+        return '';
+    }
   }
 }
