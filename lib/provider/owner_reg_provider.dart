@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_care/constants/snackbar.dart';
+import 'package:pet_care/constants/custom_toast.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/services/auth_service/owner_authservice.dart';
 import 'package:pet_care/services/firestore_service/owner_firestore.dart';
@@ -87,20 +87,24 @@ class OwnerRegistrationProvider with ChangeNotifier {
         _password.isEmpty ||
         _phoneNo.isEmpty ||
         _age.isEmpty) {
-      showSnackBar(context, 'All fields are required!');
+
+          ToastNotification.showToast(context,
+          message: "All fields are required", type: ToastType.normal);
       print("All fields are required!");
       return;
     }
 
     if (_password.length < 8) {
-      showSnackBar(context, 'Password should be at least 8 characters!');
+      ToastNotification.showToast(context,
+          message: "Password should be atleast 8 characters", type: ToastType.normal);
       print("Password should be at least 8 characters");
       return;
     }
 
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(_email)) {
-      showSnackBar(context, "Email should be in correct format!");
+      ToastNotification.showToast(context,
+          message: "Email should be in correct format", type: ToastType.positive);
       print("Email should be in correct format!");
       return;
     }
@@ -126,8 +130,8 @@ class OwnerRegistrationProvider with ChangeNotifier {
         _isOwnerLoggedIn = true;
         await _prefsService.setBool('isLoggedIn', true);
 
-        showSnackBar(context, "Owner signed up and details saved");
-
+ToastNotification.showToast(context,
+          message: "Sign up success ", type: ToastType.positive);
         Provider.of<OwnerDetailsGetterProvider>(context, listen: false)
             .loadUserProfile();
 
@@ -137,7 +141,8 @@ class OwnerRegistrationProvider with ChangeNotifier {
       }
     } catch (e) {
       print('Error signing up: $e');
-      showSnackBar(context, 'Failed to sign up. Please try again later.');
+      ToastNotification.showToast(context,
+          message: "Signup Failed $e", type: ToastType.error);
     } finally {
       setLoading(false); 
     }

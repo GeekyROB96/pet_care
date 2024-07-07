@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pet_care/constants/snackbar.dart';
+import 'package:pet_care/constants/custom_toast.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
 import 'package:pet_care/provider/pets_provider.dart';
@@ -131,9 +131,11 @@ class PetRegistrationProvider with ChangeNotifier {
     if (pickedFile != null) {
       _profileImageFile = File(pickedFile.path);
       notifyListeners();
-      showSnackBar(context, 'Profile image picked successfully!');
+      ToastNotification.showToast(context,
+          message: "Profile image picked!", type: ToastType.normal);
     } else {
-      showSnackBar(context, 'No profile image selected!');
+      ToastNotification.showToast(context,
+          message: "No profile image selected", type: ToastType.normal);
     }
   }
 
@@ -175,8 +177,8 @@ class PetRegistrationProvider with ChangeNotifier {
             await _fireStoreService.isPetNameDuplicate(ownerEmail, _petName!);
 
         if (isDuplicate) {
-          showSnackBar(context,
-              "Pet name already exists. Please choose a different name.");
+          ToastNotification.showToast(context,
+          message: "You already have a pet with that name", type: ToastType.error);
           setLoading(false);
           return;
         }
@@ -219,11 +221,12 @@ class PetRegistrationProvider with ChangeNotifier {
             Provider.of<PetsDetailsGetterProvider>(context, listen: false);
         await petsDetailsProvider.loadPets();
 
-        showSnackBar(context, "Pet Registration Successful");
-        navigateToOwnerDashboard(context);
+ToastNotification.showToast(context,
+          message: "Pet registration success", type: ToastType.positive);  
+                navigateToOwnerDashboard(context);
       } catch (e) {
-        showSnackBar(context, "Error! Something went wrong!");
-        print(
+ToastNotification.showToast(context,
+          message: "Something went wrong $e", type: ToastType.error);        print(
             'Pet Name: $_petName, Breed: $_breed, Age: $_age, Gender: $_gender, Image Path: ${_image?.path}');
 
         print('Error registering pet: $e');
@@ -231,8 +234,9 @@ class PetRegistrationProvider with ChangeNotifier {
         setLoading(false);
       }
     } else {
-      showSnackBar(context, "Please fill all the fields and upload an image");
-      print('Please fill all the fields and upload an image');
+ToastNotification.showToast(context,
+          message: "Please fill all the field and upload image", type: ToastType.error);   
+             print('Please fill all the fields and upload an image');
       setLoading(false);
     }
   }

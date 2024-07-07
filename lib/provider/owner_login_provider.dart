@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_care/constants/snackbar.dart';
+import 'package:pet_care/constants/custom_toast.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
 import 'package:pet_care/services/auth_service/owner_authservice.dart';
@@ -48,14 +48,17 @@ class OwnerLoginProvider extends ChangeNotifier {
 
     if (_ownerEmail.isEmpty || _ownerPassword.isEmpty) {
       setLoading(false);
-      showSnackBar(context, "All fields are required!");
+      ToastNotification.showToast(context,
+          message: "All fields are required", type: ToastType.error);
       print("All fields are required!");
       return;
     }
 
     if (_ownerPassword.length < 8) {
       setLoading(false);
-      showSnackBar(context, "Password should be at least 8 characters");
+
+      ToastNotification.showToast(context,
+          message: "Password must be at least 8 characters", type: ToastType.normal);
       print("Password should be at least 8 characters");
       return;
     }
@@ -63,7 +66,8 @@ class OwnerLoginProvider extends ChangeNotifier {
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(_ownerEmail)) {
       setLoading(false);
-      showSnackBar(context, "Email should be in correct format!");
+      ToastNotification.showToast(context,
+          message: "Email should be in correct format", type: ToastType.normal);
       print("Email should be in correct format!");
       return;
     }
@@ -98,20 +102,23 @@ class OwnerLoginProvider extends ChangeNotifier {
           print('email at sign in is : ' + userDoc['email']);
 
           navigateToOwnerDashboard(context);
-          showSnackBar(context, "Sign in successful!");
-          print("Shared Value is $_isOwnerLoggedIn");
+ToastNotification.showToast(context,
+          message: "Sign in successful", type: ToastType.positive);  
+                  print("Shared Value is $_isOwnerLoggedIn");
         } else {
-          showSnackBar(context, "You are not authorized to log in as an owner");
-          print('You are not authorized to log in as an owner');
+          ToastNotification.showToast(context,
+          message: "You are not authorized to log in as owner", type: ToastType.error);
           await FirebaseAuth.instance.signOut();
         }
       } else {
-        showSnackBar(context, "Login Failed!");
+        ToastNotification.showToast(context,
+          message: "Login Failed ", type: ToastType.error);
         print('Login failed');
       }
     } catch (e) {
       print("Error logging in: $e");
-      showSnackBar(context, "Error logging in. Please try again later.");
+      ToastNotification.showToast(context,
+          message: "Error logging in $e", type: ToastType.error);
     } finally {
       setLoading(false);
     }

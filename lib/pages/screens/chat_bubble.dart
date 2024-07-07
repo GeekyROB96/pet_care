@@ -4,12 +4,14 @@ class ChatBubble extends StatelessWidget {
   final String message;
   final bool isSender;
   final String time;
+  final String? imageUrl;
 
   const ChatBubble({
     Key? key,
     required this.message,
     required this.isSender,
     required this.time,
+    this.imageUrl
   }) : super(key: key);
 
   @override
@@ -33,9 +35,17 @@ class ChatBubble extends StatelessWidget {
         ),
         child: Stack(
           children: [
+
+             if (imageUrl != null) 
+              Padding(
+                padding: EdgeInsets.only(bottom: 8.0),
+                child: Image.network(imageUrl!),
+              ),
             Padding(
-              padding: EdgeInsets.only(bottom: 15.0), // Add space for the time
-              child: Text(
+              padding: EdgeInsets.only(bottom: 15.0), 
+              child: 
+              
+              Text(
                 message,
                 style: TextStyle(
                   color: isSender ? Colors.white : Color(0xFF012DBE),

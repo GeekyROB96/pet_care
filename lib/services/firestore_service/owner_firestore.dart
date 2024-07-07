@@ -5,6 +5,7 @@ import 'package:pet_care/model/message_model.dart';
 class FirestoreServiceOwner {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
   Future<void> saveUserDetails({
     required String userId,
     required String name,
@@ -173,7 +174,7 @@ class FirestoreServiceOwner {
     });
   }
 
-  Future<void> sendMessage(String receiverID, String message) async {
+  Future<void> sendMessage(String receiverID, String message, {String? imageUrl}) async {
     final String currentUserId = _firebaseAuth.currentUser!.uid;
     final String currentUserEmail = _firebaseAuth.currentUser!.email!;
     final Timestamp timeStamp = Timestamp.now();
@@ -233,20 +234,19 @@ class FirestoreServiceOwner {
           .collection('pet_owners')
           .doc(userId)
           .update({
-        'Address': FieldValue.arrayUnion([
-          {
-            'main': main,
-            'area_apartment_road': areaApartmentRoad,
-            'coordinates': coordinates,
-            'description_directions': descriptionDirections,
-            'city': city,
-            'state': state,
-            'pincode': pincode
-          }
-        ])
+        'Address': {
+          'main': main,
+          'area_apartment_road': areaApartmentRoad,
+          'coordinates': coordinates,
+          'description_directions': descriptionDirections,
+          'city': city,
+          'state': state,
+          'pincode': pincode
+        }
       });
     } catch (e) {
       print("Error saving Address Details $e");
     }
   }
-}
+
+  }

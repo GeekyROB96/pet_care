@@ -67,8 +67,9 @@ class OwnerEditProfilePage extends StatelessWidget {
                         enabled: false,
                         prefixIcon: Icons.phone_outlined,
                       ),
-                      buildAddressField(context),
+                      buildAddressField(context,ownerDetailsProvider),
                       SizedBox(height: 20),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -146,7 +147,7 @@ class OwnerEditProfilePage extends StatelessWidget {
     );
   }
 
-  Widget buildAddressField(BuildContext context) {
+  Widget buildAddressField(BuildContext context , OwnerDetailsGetterProvider ownerDetailsProvider) {
     return GestureDetector(
       onTap: () async {
         final result = await Navigator.push(
@@ -157,28 +158,34 @@ class OwnerEditProfilePage extends StatelessWidget {
         );
         if (result != null) {}
       },
-      child: TextField(
-        decoration: InputDecoration(
-          prefixIcon: Icon(Icons.home),
-          labelText: 'Address',
-          labelStyle: TextStyle(
-            color: LightColors.textColor,
-            fontSize: 18,
+      child: Column(
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              prefixIcon: Icon(Icons.home),
+              labelText: 'Address',
+              labelStyle: TextStyle(
+                color: LightColors.textColor,
+                fontSize: 18,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: LightColors.primaryColor),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              suffixIcon: Icon(Icons.edit , color: Colors.black,)
+            ),
+            style: TextStyle(
+              fontSize: 16,
+              color: LightColors.textColor,
+            ),
+            enabled: false, // Make the TextField uneditable
           ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade400),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: LightColors.primaryColor),
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        style: TextStyle(
-          fontSize: 16,
-          color: LightColors.textColor,
-        ),
-        enabled: false, // Make the TextField uneditable
+          buildAddressDetails(ownerDetailsProvider)
+        ],
       ),
     );
   }
@@ -194,6 +201,154 @@ class OwnerEditProfilePage extends StatelessWidget {
         return AssetImage('assets/images/default.png');
       }
     }
+  }
+
+  Widget buildAddressDetails(OwnerDetailsGetterProvider ownerDetailsProvider) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+         Text.rich(
+  TextSpan(
+    children: [
+      TextSpan(
+        text: 'Area/Apartment/Road: ',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: LightColors.textColor,
+        ),
+      ),
+      TextSpan(
+        text: '${ownerDetailsProvider.area_apartment_road ?? ''}',
+        style: TextStyle(
+          fontSize: 16,
+          color: LightColors.textColor,
+        ),
+      ),
+    ],
+  ),
+),
+SizedBox(height: 8),
+Text.rich(
+  TextSpan(
+    children: [
+      TextSpan(
+        text: 'City: ',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: LightColors.textColor,
+        ),
+      ),
+      TextSpan(
+        text: '${ownerDetailsProvider.city ?? ''}',
+        style: TextStyle(
+          fontSize: 16,
+          color: LightColors.textColor,
+        ),
+      ),
+    ],
+  ),
+),
+SizedBox(height: 8),
+Text.rich(
+  TextSpan(
+    children: [
+      TextSpan(
+        text: 'Directions: ',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: LightColors.textColor,
+        ),
+      ),
+      TextSpan(
+        text: '${ownerDetailsProvider.description_directions ?? ''}',
+        style: TextStyle(
+          fontSize: 16,
+          color: LightColors.textColor,
+        ),
+      ),
+    ],
+  ),
+),
+SizedBox(height: 8),
+Text.rich(
+  TextSpan(
+    children: [
+      TextSpan(
+        text: 'Description: ',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: LightColors.textColor,
+        ),
+      ),
+      TextSpan(
+        text: '${ownerDetailsProvider.main ?? ''}',
+        style: TextStyle(
+          fontSize: 16,
+          color: LightColors.textColor,
+        ),
+      ),
+    ],
+  ),
+),
+SizedBox(height: 8),
+Text.rich(
+  TextSpan(
+    children: [
+      TextSpan(
+        text: 'Pincode: ',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: LightColors.textColor,
+        ),
+      ),
+      TextSpan(
+        text: '${ownerDetailsProvider.pincode ?? ''}',
+        style: TextStyle(
+          fontSize: 16,
+          color: LightColors.textColor,
+        ),
+      ),
+    ],
+  ),
+),
+SizedBox(height: 8),
+Text.rich(
+  TextSpan(
+    children: [
+      TextSpan(
+        text: 'State: ',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: LightColors.textColor,
+        ),
+      ),
+      TextSpan(
+        text: '${ownerDetailsProvider.state ?? ''}',
+        style: TextStyle(
+          fontSize: 16,
+          color: LightColors.textColor,
+        ),
+      ),
+    ],
+  ),
+),
+
+        ],
+      ),
+    );
   }
 
   void onUserLogout() {

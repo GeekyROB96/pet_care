@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_care/constants/snackbar.dart';
+import 'package:pet_care/constants/custom_toast.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:pet_care/services/auth_service/owner_authservice.dart';
 import 'package:pet_care/shared_pref_service.dart';
@@ -49,21 +49,22 @@ class VolunteerLoginProvider extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
     if (_volunteerEmail.isEmpty || _volunteerPassword.isEmpty) {
-      showSnackBar(context, "All fields are required!");
-      print("All fields are required!");
+ToastNotification.showToast(context,
+          message: "All fields required", type: ToastType.normal);  
+              print("All fields are required!");
       return;
     }
 
     if (_volunteerPassword.length < 8) {
-      showSnackBar(context, "Password should be at least 8 characters!");
-      print("Password should be at least 8 characters");
+ToastNotification.showToast(context,
+          message: "password should atleast be 8 characters", type: ToastType.normal);      print("Password should be at least 8 characters");
       return;
     }
 
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(_volunteerEmail)) {
-      showSnackBar(context, "E-Mail should be in correct format");
-      print("Email should be in correct format!");
+ToastNotification.showToast(context,
+          message: "Email should be in correct format", type: ToastType.normal);      print("Email should be in correct format!");
       return;
     }
     setLoading(true);
@@ -85,17 +86,19 @@ class VolunteerLoginProvider extends ChangeNotifier {
         Provider.of<VolunteerDetailsGetterProvider>(context, listen: false)
             .loadVolunteerDetails();
         navigateToVolunteerDashboard(context);
-        showSnackBar(context, "Sign In Successful!");
-        print('User signed in successfully');
+ToastNotification.showToast(context,
+          message: "Signin Successful", type: ToastType.positive);   
+               print('User signed in successfully');
       } else {
-        showSnackBar(
-            context, "You are not authorized to log in as a volunteer");
+       ToastNotification.showToast(context,
+          message: "You are not authorized to log in as volunteer", type: ToastType.normal);
         print('You are not authorized to log in as a volunteer');
         await FirebaseAuth.instance.signOut();
       }
     } else {
-      showSnackBar(context, "Login Failed!");
-      print('Login failed');
+ToastNotification.showToast(context,
+          message: "Login failed ", type: ToastType.error); 
+               print('Login failed');
     }
   }
 

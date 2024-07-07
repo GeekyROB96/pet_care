@@ -171,13 +171,16 @@ class VolunteerEditProfilePage extends StatelessWidget {
                                         'About Me:',
                                         volunteerDetailsProvider.aboutMe ?? '',
                                       ),
+
                                       _buildDetailRow(
                                         context,
                                         Icons.location_on,
                                         'Address:',
-                                        volunteerDetailsProvider.locationCity ??
-                                            '',
-                                      ),
+                                        volunteerDetailsProvider.city??''
+                                         ),
+
+                                      buildAddressDetails(volunteerDetailsProvider),
+                                    
                                       SizedBox(height: 20),
                                       Row(
                                         children: [
@@ -377,6 +380,135 @@ class VolunteerEditProfilePage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+
+  
+  Widget buildAddressDetails(VolunteerDetailsGetterProvider volDetailsProvider) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+         Text.rich(
+  TextSpan(
+    children: [
+      TextSpan(
+        text: 'Area/Apartment/Road: ',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: LightColors.textColor,
+        ),
+      ),
+      TextSpan(
+        text: '${volDetailsProvider.area_apartment_road ?? ''}',
+        style: TextStyle(
+          fontSize: 16,
+          color: LightColors.textColor,
+        ),
+      ),
+    ],
+  ),
+),
+SizedBox(height: 8),
+
+Text.rich(
+  TextSpan(
+    children: [
+      TextSpan(
+        text: 'Directions: ',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: LightColors.textColor,
+        ),
+      ),
+      TextSpan(
+        text: '${volDetailsProvider.description_directions ?? ''}',
+        style: TextStyle(
+          fontSize: 16,
+          color: LightColors.textColor,
+        ),
+      ),
+    ],
+  ),
+),
+SizedBox(height: 8),
+Text.rich(
+  TextSpan(
+    children: [
+      TextSpan(
+        text: 'Description: ',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: LightColors.textColor,
+        ),
+      ),
+      TextSpan(
+        text: '${volDetailsProvider.main ?? ''}',
+        style: TextStyle(
+          fontSize: 16,
+          color: LightColors.textColor,
+        ),
+      ),
+    ],
+  ),
+),
+SizedBox(height: 8),
+Text.rich(
+  TextSpan(
+    children: [
+      TextSpan(
+        text: 'Pincode: ',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: LightColors.textColor,
+        ),
+      ),
+      TextSpan(
+        text: '${volDetailsProvider.pincode ?? ''}',
+        style: TextStyle(
+          fontSize: 16,
+          color: LightColors.textColor,
+        ),
+      ),
+    ],
+  ),
+),
+SizedBox(height: 8),
+Text.rich(
+  TextSpan(
+    children: [
+      TextSpan(
+        text: 'State: ',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: LightColors.textColor,
+        ),
+      ),
+      TextSpan(
+        text: '${volDetailsProvider.state ?? ''}',
+        style: TextStyle(
+          fontSize: 16,
+          color: LightColors.textColor,
+        ),
+      ),
+    ],
+  ),
+),
+
+        ],
       ),
     );
   }

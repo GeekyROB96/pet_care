@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pet_care/constants/snackbar.dart';
+import 'package:pet_care/constants/custom_toast.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
 import 'package:pet_care/provider/owner_login_provider.dart';
@@ -25,6 +25,14 @@ class OwnerEditProfileProvider extends ChangeNotifier {
   String? _age;
   String? _occupation;
 
+  String? _area_apartment_road;
+  String? _city;
+  String? _coordinates;
+  String? _description_directions;
+  String? _main;
+  String? _pincode;
+  String? _state;
+
   String get name => _name;
   String get email => _email;
   String get phoneNo => _phoneNo;
@@ -33,6 +41,14 @@ class OwnerEditProfileProvider extends ChangeNotifier {
   String? get age => _age;
   String? get occupation => _occupation;
   String? get uid => _uid;
+
+  String? get area_apartment_road => _area_apartment_road;
+  String? get city => _city;
+  String? get coordinates => _coordinates;
+  String? get description_directions => _description_directions;
+  String? get main => _main;
+  String? get pincode => _pincode;
+  String? get state => _state;
 
   OwnerEditProfileProvider() {
     loadUserProfile(); // Load user profile details when initialized
@@ -56,6 +72,15 @@ class OwnerEditProfileProvider extends ChangeNotifier {
           _age = userDetails['age'];
           _occupation = userDetails['occupation'];
           _uid = userDetails['uid'];
+          _area_apartment_road = userDetails['area_apartment_road'];
+          _city = userDetails['city'];
+          _coordinates = userDetails['coordinates'];
+          _description_directions = userDetails['description_directions'];
+          _main = userDetails['main'];
+          _pincode = userDetails['pincode'];
+          _state = userDetails['state'];
+
+
 
           notifyListeners();
           print("User profile loaded successfully.");
@@ -81,10 +106,13 @@ class OwnerEditProfileProvider extends ChangeNotifier {
     if (pickedFile != null) {
       _profileImageFile = File(pickedFile.path);
       notifyListeners();
-      showSnackBar(context, 'Profile image picked successfully!');
+      ToastNotification.showToast(context,
+          message: "Profile Image picked successfully",
+          type: ToastType.positive);
       print("Profile image picked successfully.");
     } else {
-      showSnackBar(context, 'No profile image selected!');
+      ToastNotification.showToast(context,
+          message: "No profile image selected", type: ToastType.normal);
       print("No profile image selected.");
     }
   }
@@ -106,8 +134,9 @@ class OwnerEditProfileProvider extends ChangeNotifier {
 
           await _fireStoreService.updateProfileImage(
               userId: user.uid, imageUrl: _profileImageUrl!);
-          showSnackBar(
-              context, "Profile image uploaded and URL updated successfully");
+          ToastNotification.showToast(context,
+              message: "Profile image uploaded and URL updated successfully.",
+              type: ToastType.positive);
           print("Profile image uploaded and URL updated successfully.");
         }
 
@@ -121,14 +150,19 @@ class OwnerEditProfileProvider extends ChangeNotifier {
           occupation: _occupation!,
           role: 'owner',
         );
-        showSnackBar(context, "Profile details saved successfully!");
+
+        ToastNotification.showToast(context,
+            message: "Profile details saved successfully",
+            type: ToastType.positive);
         print("Profile details saved successfully.");
       } catch (e) {
-        showSnackBar(context, "Error saving profile");
+        ToastNotification.showToast(context,
+            message: "Error Saving Profile $e", type: ToastType.error);
         print("Error saving profile: $e");
       }
     } else {
-      showSnackBar(context, "No user logged in");
+      ToastNotification.showToast(context,
+          message: "No User logged In.", type: ToastType.error);
       print("No user logged in.");
     }
   }
@@ -142,10 +176,12 @@ class OwnerEditProfileProvider extends ChangeNotifier {
           .clearData();
       Provider.of<OwnerDetailsGetterProvider>(context, listen: false)
           .clearData();
-      showSnackBar(context, "User logged out successfully.");
+      ToastNotification.showToast(context,
+          message: "Logout Successfull", type: ToastType.normal);
       print("User logged out successfully.");
     } catch (e) {
-      showSnackBar(context, "Error logging out");
+      ToastNotification.showToast(context,
+          message: "Error logging Out $e", type: ToastType.error);
       print("Error logging out: $e");
     }
   }

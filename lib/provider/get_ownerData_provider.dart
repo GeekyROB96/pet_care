@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pet_care/constants/snackbar.dart';
+import 'package:pet_care/constants/custom_toast.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
 import 'package:pet_care/provider/owner_login_provider.dart';
 import 'package:pet_care/services/firestore_service/owner_firestore.dart';
@@ -23,6 +23,24 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
   String? _occupation;
   String? _imageUrl;
   String? _uid;
+
+
+   String? _area_apartment_road;
+  String? _city;
+  String? _coordinates;
+  String? _description_directions;
+  String? _main;
+  String? _pincode;
+  String? _state;
+
+
+   String? get area_apartment_road => _area_apartment_road;
+  String? get city => _city;
+  String? get coordinates => _coordinates;
+  String? get description_directions => _description_directions;
+  String? get main => _main;
+  String? get pincode => _pincode;
+  String? get state => _state;
 
   bool _isDataLoaded = false;
   File? _profileImageFile;
@@ -63,11 +81,22 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
           _locationCity = userDetails['locationCity'];
           _isDataLoaded = true;
           _uid = userDetails['uid'];
+             if (userDetails['Address'] != null && userDetails['Address'] is List && userDetails['Address'].isNotEmpty) {
+            final address = userDetails['Address'][0];
+            _area_apartment_road = address['area_apartment_road'];
+            _city = address['city'];
+            _coordinates = address['coordinates'];
+            _description_directions = address['description_directions'];
+            _main = address['main'];
+            _pincode = address['pincode'];
+            _state = address['state'];
+          }
 
           // Set data loaded to true
           notifyListeners();
         }
-      } catch (e) {
+      } catch (e) {   
+        
         print("Error loading user profile: $e");
       }
     }
@@ -92,9 +121,13 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
     if (pickedFile != null) {
       _profileImageFile = File(pickedFile.path);
       notifyListeners();
-      showSnackBar(context, 'Profile image picked successfully!');
+
+        ToastNotification.showToast(context,
+          message: "Profile image picked successfully!", type: ToastType.positive);
     } else {
-      showSnackBar(context, 'No profile image selected!');
+
+      ToastNotification.showToast(context,
+          message: "No profile image selected!", type: ToastType.normal);
     }
   }
 
@@ -122,15 +155,21 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
             occupation: _occupation ?? '',
             locationCity: _locationCity ?? '',
             profileImageUrl: _imageUrl,
-            role: 'owner');
+            role: 'owner',
+            );
 
-        showSnackBar(context, "Profile details saved successfully!");
+
+        ToastNotification.showToast(context,
+          message: "Profile details saved successfully!", type: ToastType.positive);
+
       } catch (e) {
-        showSnackBar(context, "Error saving profile");
+       ToastNotification.showToast(context,
+          message: "Error Saving profile  : $e!", type: ToastType.error);
         print("Error saving profile: $e");
       }
     } else {
-      showSnackBar(context, "No user logged in");
+         ToastNotification.showToast(context,
+          message: "No user logged In", type: ToastType.normal);
     }
   }
 
@@ -141,11 +180,13 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
       Provider.of<PetsDetailsGetterProvider>(context, listen: false)
           .clearData();
       clearData();
-
-      showSnackBar(context, "User logged out successfully.");
+      ToastNotification.showToast(context,
+          message: "User logged out successfully.", type: ToastType.normal);
       Navigator.pushNamed(context, '/splashScreen');
     } catch (e) {
-      showSnackBar(context, "Error logging out");
+
+      ToastNotification.showToast(context,
+          message: "Error logging Out $e", type: ToastType.error);
       print("Error logging out: $e");
     }
   }

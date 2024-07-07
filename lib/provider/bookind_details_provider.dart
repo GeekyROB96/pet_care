@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_care/constants/snackbar.dart';
+import 'package:pet_care/constants/custom_toast.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:pet_care/services/firestore_service/booking_firestore.dart';
@@ -191,8 +191,11 @@ class BookingDetailsProvider extends ChangeNotifier {
         _pet == null ||
         _totalHours == null ||
         _totalPrice == null) {
-      showSnackBar(
-          context, "Either service or pet or totalHours or totalPrice is null");
+      ToastNotification.showToast(
+        context,
+        message: 'Please fill every field',
+        type: ToastType.normal,
+      );
       return;
     }
 

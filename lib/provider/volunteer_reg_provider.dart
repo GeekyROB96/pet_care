@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_care/constants/snackbar.dart';
+import 'package:pet_care/constants/custom_toast.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:pet_care/services/auth_service/owner_authservice.dart';
 import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
@@ -152,20 +152,24 @@ class VolunteerRegistrationProvider extends ChangeNotifier {
         _volunteerPassword.isEmpty ||
         _volunteerPhoneNo.isEmpty ||
         _volunteerAge.isEmpty) {
-      showSnackBar(context, "All fields are required!");
+      ToastNotification.showToast(context,
+          message: "All fields are required", type: ToastType.normal);
       print("All fields are required!");
       return;
     }
 
     if (_volunteerPassword.length < 8) {
-      showSnackBar(context, "Password should be at least 8 characters");
+      ToastNotification.showToast(context,
+          message: "Password should be atleast 8 characters",
+          type: ToastType.normal);
       print("Password should be at least 8 characters");
       return;
     }
 
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(_volunteerEmail)) {
-      showSnackBar(context, "Email should be in correct format");
+      ToastNotification.showToast(context,
+          message: "Enail should be in correct format", type: ToastType.normal);
       print("Email should be in correct format!");
       return;
     }
@@ -196,7 +200,8 @@ class VolunteerRegistrationProvider extends ChangeNotifier {
       await _prefsService.setBool('isVolunteerLoggedIn', true);
       _isVolunteerLoggedIn = true;
       notifyListeners();
-      showSnackBar(context, "Volunteer Signup Successful");
+      ToastNotification.showToast(context,
+          message: "Signup Successful", type: ToastType.positive);
       Provider.of<VolunteerDetailsGetterProvider>(context, listen: false)
           .loadVolunteerDetails();
 
@@ -204,7 +209,8 @@ class VolunteerRegistrationProvider extends ChangeNotifier {
       print('Volunteer signed up and details saved');
     } else {
       print("Sign Up Failed!");
-      showSnackBar(context, "SignUp Failed!");
+      ToastNotification.showToast(context,
+          message: "Sign Up Failed", type: ToastType.error);
     }
   }
 
