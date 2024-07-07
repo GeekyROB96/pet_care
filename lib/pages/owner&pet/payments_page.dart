@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:pet_care/provider/payment_page_provider.dart';
+import 'package:provider/provider.dart';
 
 class PaymentPage extends StatelessWidget {
   final String bookingId;
@@ -11,7 +11,6 @@ class PaymentPage extends StatelessWidget {
   Future<void> _showConfirmationDialog(BuildContext context) async {
     var provider = Provider.of<PaymentPageProvider>(context, listen: false);
     await provider.loadData(bookingId, context);
-    // provider.confirmPayment(); // Remove this line, it's already called in onPressed
 
     return showDialog(
       context: context,
@@ -19,11 +18,12 @@ class PaymentPage extends StatelessWidget {
         return AlertDialog(
           title: Text('Confirm Payment'),
           content: Text(
-              'I confirm that I have paid the booking amount to the mentioned receiver VPA'),
+            'I confirm that I have paid the booking amount to the mentioned receiver VPA',
+            style: TextStyle(color: Colors.black),
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () async {
-                // Set all necessary variables before confirming payment
                 provider.setBookingId(this.bookingId);
                 provider.setOrderStatus('Payment Completed');
 
@@ -50,7 +50,7 @@ class PaymentPage extends StatelessWidget {
       create: (_) => PaymentPageProvider()..loadData(bookingId, context),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Booking Payment'),
+          title: Text('Payment Details'),
           centerTitle: true,
         ),
         body: Consumer<PaymentPageProvider>(
@@ -61,37 +61,84 @@ class PaymentPage extends StatelessWidget {
               String vpa =
                   provider.vpa ?? 'VPA'; // Assuming provider.vpa is a String
 
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            child: CircleAvatar(
-                              radius: 50,
-                              backgroundImage: provider.vImageUrl != null
-                                  ? NetworkImage(provider.vImageUrl!)
-                                  : AssetImage(
-                                          'assets/images/default_profile.png')
-                                      as ImageProvider,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Card(
-                      color: Color.fromARGB(142, 255, 255, 252),
-                      elevation: 4,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+              // Determine the icon and color based on payment status
+              Icon paymentIcon;
+              Color paymentColor;
+              String paymentStatusText;
+
+              if (provider.orderStatus == 'Payment Completed') {
+                paymentIcon =
+                    Icon(Icons.check_circle, color: Colors.green, size: 36);
+                paymentColor = Colors.green;
+                paymentStatusText = 'Payment Completed';
+              } else {
+                paymentIcon = Icon(Icons.warning, color: Colors.red, size: 36);
+                paymentColor = Colors.red;
+                paymentStatusText = 'Payment Pending';
+              }
+
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            SizedBox(
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundImage: provider.vImageUrl != null
+                                    ? NetworkImage(provider.vImageUrl!)
+                                    : AssetImage(
+                                            'assets/images/default_profile.png')
+                                        as ImageProvider,
+                              ),
+                            ),
+                            SizedBox(height: 16),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '₹ ${provider.amount?.toString() ?? '0.00'}',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                paymentIcon,
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              paymentStatusText,
+                              style:
+                                  TextStyle(fontSize: 18, color: paymentColor),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Container(
+                        height: 280, // Increase card height
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xFFAECAFA), Color(0xFFBFC9EF)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Card(
+                          //color: Colors.transparent, // Transparent for gradient
+                          elevation: 4,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'Payee Name: ${provider.vName}',
@@ -100,11 +147,7 @@ class PaymentPage extends StatelessWidget {
                                     color: Colors.black,
                                   ),
                                 ),
-                              ],
-                            ),
-                            SizedBox(height: 16),
-                            Row(
-                              children: [
+                                SizedBox(height: 16),
                                 Text(
                                   'Booking ID: ${provider.bookingId}',
                                   style: TextStyle(
@@ -112,126 +155,128 @@ class PaymentPage extends StatelessWidget {
                                     color: Colors.black,
                                   ),
                                 ),
-                              ],
-                            ),
-                            SizedBox(height: 16),
-                            SingleChildScrollView(
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'VPA:',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      overflow: TextOverflow.clip,
-                                      color: Colors.black,
+                                SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'VPA:',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                      ),
                                     ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Clipboard.setData(
-                                          ClipboardData(text: vpa));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content:
-                                              Text('VPA copied to clipboard'),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Clipboard.setData(
+                                              ClipboardData(text: vpa));
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'VPA copied to clipboard'),
+                                            ),
+                                          );
+                                        },
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                vpa,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Icon(Icons.copy, size: 24),
+                                          ],
                                         ),
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          vpa,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Amount:',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    Consumer<PaymentPageProvider>(
+                                      builder: (context, provider, child) {
+                                        return Text(
+                                          '₹ ${provider.amount?.toString() ?? '0.00'}',
                                           style: TextStyle(
                                             fontSize: 16,
                                             color: Colors.black,
                                           ),
-                                        ),
-                                        SizedBox(width: 8),
-                                        Icon(Icons.copy, size: 24),
-                                      ],
+                                        );
+                                      },
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Amount:',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
+                                  ],
                                 ),
-                                Consumer<PaymentPageProvider>(
-                                  builder: (context, provider, child) {
-                                    return Text(
-                                      '₹ ${provider.amount?.toString() ?? '0.00'}',
+                                SizedBox(height: 16),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Order Status:',
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: Colors.black,
                                       ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Order Status:',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                Consumer<PaymentPageProvider>(
-                                  builder: (context, provider, child) {
-                                    return Text(
-                                      '${provider.orderStatus?.toString() ?? 'Payment Pending'}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        '${provider.orderStatus?.toString() ?? 'Payment Pending'}',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black,
+                                        ),
+                                        overflow: TextOverflow.visible,
                                       ),
-                                    );
-                                  },
+                                    ),
+                                  ],
                                 ),
+                                SizedBox(height: 30),
                               ],
                             ),
-                            SizedBox(height: 30),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 50),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _showConfirmationDialog(
-                              context); // Call the function here
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text(
-                          'Confirm Payment',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                      SizedBox(height: 50),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _showConfirmationDialog(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF7492F5),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            'Confirm Payment',
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             }

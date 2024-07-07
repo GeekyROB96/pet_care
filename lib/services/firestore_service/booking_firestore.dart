@@ -37,10 +37,10 @@ class BookingFirestore {
     }
   }
 
-  
-   Future<void> addVpaToBooking(String bookingId, String vpa) async {
+  Future<void> addVpaToBooking(String bookingId, String vpa) async {
     try {
-      DocumentReference bookingRef = _firestore.collection('bookings').doc(bookingId);
+      DocumentReference bookingRef =
+          _firestore.collection('bookings').doc(bookingId);
       await bookingRef.update({'vpa': vpa});
       print('VPA added to booking successfully');
     } catch (e) {
@@ -49,8 +49,7 @@ class BookingFirestore {
     }
   }
 
-
-    Future<Map<String, dynamic>?> getBookingById(String bookingId) async {
+  Future<Map<String, dynamic>?> getBookingById(String bookingId) async {
     try {
       DocumentSnapshot documentSnapshot =
           await _firestore.collection('bookings').doc(bookingId).get();

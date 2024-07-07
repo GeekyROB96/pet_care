@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:pet_care/model/reminder_model.dart';
 import 'package:uuid/uuid.dart';
 
-
 class ReminderProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<Reminder> _reminders = [];

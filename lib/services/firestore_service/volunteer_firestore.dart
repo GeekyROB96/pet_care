@@ -65,44 +65,6 @@ class FireStoreServiceVolunteer {
     }
   }
 
-  Future<Map<String, dynamic>?> getVolAddressDetails(String userId) async {
-    try {
-      if (userId.isEmpty) {
-        print("Error: UserId is empty");
-        return null;
-      }
-      DocumentSnapshot userDoc = await _firestore
-          .collection('users')
-          .doc('volunteers')
-          .collection('volunteers')
-          .doc(userId)
-          .get();
-
-      if (userDoc.exists) {
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-        if (userData.containsKey('address') &&
-            userData['address'] != null &&
-            userData['address'].isNotEmpty) {
-          return {
-            'area_apartment_road': userData['address'][0]
-                ['area_apartment_road'],
-            'coordinates': userData['address'][0]['coordinates'],
-            'description_directions': userData['address'][0]
-                ['description_directions'],
-            'house_flat_data': userData['address'][0]['house_flat_data'],
-          };
-        } else {
-          print("Address details not found or empty for user $userId");
-          return null;
-        }
-      }
-      return null;
-    } catch (e) {
-      print("Error getting address details for user $userId: $e");
-      return null;
-    }
-  }
-
   Future<void> updateVolunteerProfileImage(
       {required String userId, required String imageUrl}) async {
     try {
@@ -281,7 +243,6 @@ class FireStoreServiceVolunteer {
     return chatRoomIds;
   }
 
-
   Future<Map<String, dynamic>?> getVolunteerDetailsByEmail(String email) async {
     try {
       QuerySnapshot snapshot = await _firestore
@@ -335,16 +296,16 @@ class FireStoreServiceVolunteer {
       return null;
     }
   }
-  Future<void> saveAddress({
-    required String userId,
-    required String main,
-    required String areaApartmentRoad,
-    required String coordinates,
-    required String descriptionDirections,
-    required String city,
-    required String state,
-    required String pincode
-  }) async {
+
+  Future<void> saveAddress(
+      {required String userId,
+      required String main,
+      required String areaApartmentRoad,
+      required String coordinates,
+      required String descriptionDirections,
+      required String city,
+      required String state,
+      required String pincode}) async {
     try {
       await _firestore
           .collection('users')
@@ -369,4 +330,3 @@ class FireStoreServiceVolunteer {
     }
   }
 }
-

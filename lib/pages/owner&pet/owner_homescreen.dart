@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_care/pages/owner&pet/payments_page.dart';
@@ -28,7 +29,7 @@ class OwnerDashboard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Hello Hooman',
+                  'Hello Hooman 👋',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -75,9 +76,10 @@ class OwnerDashboard extends StatelessWidget {
                                 itemBuilder: (context, index) {
                                   final pet = petsDetailsProvider.pets[index];
                                   final imagePath = pet['imagePath'];
-                                  final isNetworkImage = Uri.tryParse(imagePath)
-                                          ?.hasAbsolutePath ??
-                                      false;
+                                  final isNetworkImage =
+                                      Uri.tryParse(imagePath ?? '')
+                                              ?.hasAbsolutePath ??
+                                          false;
 
                                   return GestureDetector(
                                     onTap: () {
@@ -87,20 +89,26 @@ class OwnerDashboard extends StatelessWidget {
                                     child: Padding(
                                       padding:
                                           const EdgeInsets.only(right: 8.0),
-                                      child: CircleAvatar(
-                                        radius: 30,
-                                        backgroundColor: imagePath == null
-                                            ? Colors.white.withOpacity(0.3)
-                                            : Colors.blueGrey.withOpacity(0.3),
-                                        backgroundImage: imagePath != null
-                                            ? (isNetworkImage
-                                                    ? NetworkImage(imagePath)
-                                                    : FileImage(
-                                                        File(imagePath)))
-                                                as ImageProvider
-                                            : AssetImage(
-                                                    'assets/images/cat.png')
-                                                as ImageProvider,
+                                      child: AnimatedOpacity(
+                                        duration: Duration(milliseconds: 500),
+                                        opacity: ownerDashboardProvider
+                                                    .selectedPetIndex ==
+                                                index
+                                            ? 0.5
+                                            : 1.0,
+                                        child: CircleAvatar(
+                                          radius: 30,
+                                          backgroundColor:
+                                              Colors.blueGrey.withOpacity(0.3),
+                                          backgroundImage: imagePath != null
+                                              ? (isNetworkImage
+                                                      ? NetworkImage(imagePath)
+                                                      : FileImage(
+                                                          File(imagePath)))
+                                                  as ImageProvider
+                                              : AssetImage(
+                                                  'assets/images/cat.png'),
+                                        ),
                                       ),
                                     ),
                                   );
@@ -142,71 +150,83 @@ class OwnerDashboard extends StatelessWidget {
                       .pets[ownerDashboardProvider.selectedPetIndex];
                   final imagePath = pet['imagePath'];
                   final isNetworkImage =
-                      Uri.tryParse(imagePath)?.hasAbsolutePath ?? false;
+                      Uri.tryParse(imagePath ?? '')?.hasAbsolutePath ?? false;
 
-                  bool isFlipped = false;
-                  return GestureDetector(
-                    onTap: () async {
-                      isFlipped = !isFlipped;
-                      await petsDetailsProvider.navigateAndgetPetByName(
-                          pet['petName'], pet['ownerEmail'], context);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.black),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                image: imagePath != null
-                                    ? (isNetworkImage
-                                            ? NetworkImage(imagePath)
-                                            : FileImage(File(imagePath)))
-                                        as ImageProvider
-                                    : AssetImage('assets/images/cat.png')
-                                        as ImageProvider,
-                                fit: BoxFit.cover,
+                  return AnimatedSwitcher(
+                    duration: Duration(milliseconds: 500),
+                    child: GestureDetector(
+                      key: ValueKey<String>(
+                          pet['petName']), // Unique key for each pet
+                      onTap: () async {
+                        await petsDetailsProvider.navigateAndgetPetByName(
+                            pet['petName'], pet['ownerEmail'], context);
+                      },
+                      child: Container(
+                        key: ValueKey<String>(
+                            pet['petName']), // Unique key for each pet
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(color: Colors.black),
+                          gradient: LinearGradient(
+                            colors: [
+                              Color(0xFFB6D4F3),
+                              Color(0xFFD5B7E8),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image: imagePath != null
+                                      ? (isNetworkImage
+                                              ? NetworkImage(imagePath)
+                                              : FileImage(File(imagePath)))
+                                          as ImageProvider
+                                      : AssetImage('assets/images/cat.png'),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 20),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Name: ${pet['petName']}',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black,
+                            SizedBox(width: 20),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Name: ${pet['petName']}',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  'Breed: ${pet['breed']}',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black,
+                                  Text(
+                                    'Breed: ${pet['breed']}',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  'Age: ${pet['age']}',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black,
+                                  Text(
+                                    'Age: ${pet['age']}',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -214,6 +234,46 @@ class OwnerDashboard extends StatelessWidget {
                   return Center(child: CircularProgressIndicator());
                 }
               },
+            ),
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Image.asset(
+                  'assets/images/poster3.jpg',
+                  width: 100,
+                  height: 120,
+                  fit: BoxFit.cover,
+                ),
+                SizedBox(width: 20),
+                Expanded(
+                  child: AnimatedTextKit(
+                    animatedTexts: [
+                      TypewriterAnimatedText(
+                        'Explore our services!',
+                        textStyle: TextStyle(
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurple,
+                        ),
+                        speed: Duration(milliseconds: 200),
+                      ),
+                      TypewriterAnimatedText(
+                        'We provide the best service at hand.',
+                        textStyle: TextStyle(
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurpleAccent,
+                        ),
+                        speed: Duration(milliseconds: 200),
+                      ),
+                    ],
+                    totalRepeatCount: 1,
+                    pause: Duration(milliseconds: 1000),
+                    displayFullTextOnTap: true,
+                    stopPauseOnTap: true,
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 20),
             Text(
@@ -259,11 +319,8 @@ class OwnerDashboard extends StatelessWidget {
                 Column(
                   children: [
                     IconButton(
-                      icon: Image.asset(
-                        'assets/icons/ho.gif',
-                        width: 30,
-                        height: 30,
-                      ),
+                      icon: Image.asset('assets/icons/ho.gif',
+                          width: 30, height: 30),
                       onPressed: () {
                         Navigator.pushNamed(context, '/petSitters');
                       },
@@ -352,18 +409,15 @@ class OwnerDashboard extends StatelessWidget {
                 Navigator.pushNamed(context, '/');
               } else if (index == 1) {
                 // Navigate to Favorites page
-
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                builder: (context) {
-                          return PaymentPage(bookingId: "9VLTRRMDQOvP44YkOWca"
-                              );
-                                  },
-                                ),
-                              );
-
-              }       else if (index == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return PaymentPage(bookingId: "9VLTRRMDQOvP44YkOWca");
+                    },
+                  ),
+                );
+              } else if (index == 2) {
                 // Navigate to Notifications page
                 Navigator.pushNamed(context, '/notifications');
               }

@@ -1,10 +1,11 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_care/pages/screens/booking_status.dart';
 import 'package:pet_care/pages/screens/user_message_list_page.dart';
 import 'package:pet_care/pages/volunteer/volunteer_payment_page.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../screens/booking_status.dart';
 
 final images = [
   'assets/sliding_images/sliding1.jpg',
@@ -89,15 +90,15 @@ class VolunteerDashboard extends StatelessWidget {
             onTap: (index) {
               if (index == 0) {
               } else if (index == 1) {
-                 Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                builder: (context) {
-                          return PaymentPageVolunteer(bookingId: "9VLTRRMDQOvP44YkOWca"
-                              );
-                                  },
-                                ),
-                              );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return PaymentPageVolunteer(
+                          bookingId: "9VLTRRMDQOvP44YkOWca");
+                    },
+                  ),
+                );
               } else if (index == 2) {
                 Navigator.push(
                   context,
@@ -106,7 +107,8 @@ class VolunteerDashboard extends StatelessWidget {
               } else if (index == 3) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => UserListMessage()),
+                  MaterialPageRoute(
+                      builder: (context) => StatusAndMessagesPage()),
                 );
               }
             },
@@ -166,8 +168,7 @@ class _SlidingImagePageState extends State<SlidingImagePage> {
     return Column(
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height *
-              0.4, // Adjust the height as needed
+          height: MediaQuery.of(context).size.height * 0.4,
           child: PageView.builder(
             controller: _pageController,
             itemCount: images.length,

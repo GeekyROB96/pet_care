@@ -53,18 +53,31 @@ class FirestoreServiceOwner {
 
       if (userDoc.exists) {
         Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-        return {
-          'area_apartment_road': userData['address'][0]['area_apartment_road'],
-          'coordinates': userData['address'][0]['coordinates'],
-          'description_directions': userData['address'][0]
-              ['description_directions'],
-          'house_flat_data': userData['address'][0]['house_flat_data'],
-        };
+        List<dynamic> addresses = userData['Address'] ?? [];
+
+        if (addresses.isNotEmpty) {
+          // Assuming only one address is stored, fetch the first one
+          Map<String, dynamic> address = addresses[0];
+          return {
+            'area_apartment_road': address['area_apartment_road'],
+            'coordinates': address['coordinates'],
+            'description_directions': address['description_directions'],
+            'house_flat_data':
+                address['main'], // Adjust based on your data structure
+            'city': address['city'],
+            'state': address['state'],
+            'pincode': address['pincode'],
+          };
+        } else {
+          print('No address found for user with ID: $userId');
+          return null;
+        }
       } else {
+        print('User document not found for ID: $userId');
         return null;
       }
     } catch (e) {
-      print("Error getting address details $e");
+      print("Error getting address details: $e");
       return null;
     }
   }
@@ -204,17 +217,15 @@ class FirestoreServiceOwner {
     });
   }
 
-
-  Future<void> saveAddress({
-    required String userId,
-    required String main,
-    required String areaApartmentRoad,
-    required String coordinates,
-    required String descriptionDirections,
-    required String city,
-    required String state,
-    required String pincode
-  }) async {
+  Future<void> saveAddress(
+      {required String userId,
+      required String main,
+      required String areaApartmentRoad,
+      required String coordinates,
+      required String descriptionDirections,
+      required String city,
+      required String state,
+      required String pincode}) async {
     try {
       await _firestore
           .collection('users')

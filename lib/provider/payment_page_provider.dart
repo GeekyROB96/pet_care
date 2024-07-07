@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pet_care/constants/snackbar.dart';
-import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:pet_care/services/firestore_service/booking_firestore.dart';
 import 'package:pet_care/services/firestore_service/payment_firestore.dart';
 import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';

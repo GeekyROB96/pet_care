@@ -2,14 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
-import 'package:pet_care/constants/theme/light_colors.dart';
-import 'package:pet_care/pages/owner&pet/owner_editprofile.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/bookind_details_provider.dart';
 import '../../services/firestore_service/owner_firestore.dart';
-import '../../services/firestore_service/volunteer_firestore.dart';
 import '../../widgets/components/textfield.dart';
+import '../owner&pet/owner_editprofile.dart';
 
 class BookingDetailsPage extends StatefulWidget {
   @override
@@ -21,12 +19,13 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   final TextEditingController petTextController = TextEditingController();
   final TextEditingController dateTimeRangeController = TextEditingController();
   String selectedService = '';
-  List<String> selectedPets = []; // Changed to List<String>
-  String selectedServicePrice = ''; // Added for displaying service price
+  List<String> selectedPets = [];
+  String selectedServicePrice = '';
   DateTime? startDate;
   DateTime? endDate;
   double totalHours = 0.0;
   double totalPrice = 0.0;
+  double? additionalPetPrice;
   late final bookingDetailsProvider;
   late final FirestoreServiceOwner firestoreServiceOwner;
 
@@ -34,6 +33,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   void initState() {
     super.initState();
     _loadDetailsAndPetData();
+    // Provider.of<BookingDetailsProvider>(context, listen: false)
+    //     .getVaddress(context);
   }
 
   void _loadDetailsAndPetData() async {
@@ -49,75 +50,6 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     petTextController.dispose();
     dateTimeRangeController.dispose();
     super.dispose();
-  }
-
-  void _fetchAddressAndShowDialogVol(String userId) async {
-    try {
-      print("UserId : $userId");
-      if (userId.isEmpty) {
-        print("Error: userId is empty");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to fetch volunteer address')),
-        );
-        return;
-      }
-      final firestoreServiceVol = FireStoreServiceVolunteer();
-
-      Map<String, dynamic>? addressDetails =
-          await firestoreServiceVol.getVolAddressDetails(userId);
-
-      if (addressDetails != null) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Volunteer Address Details'),
-              content: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Area, Apartment, Road: ${addressDetails['area_apartment_road']}',
-                    style: TextStyle(
-                      color: LightColors.textColor,
-                    ),
-                  ),
-                  Text(
-                    'House/Flat Details: ${addressDetails['house_flat_data']}',
-                    style: TextStyle(
-                      color: LightColors.textColor,
-                    ),
-                  ),
-                  Text(
-                    'Directions: ${addressDetails['description_directions']}',
-                    style: TextStyle(
-                      color: LightColors.textColor,
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Close'),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to fetch volunteer address')),
-        );
-      }
-    } catch (e) {
-      print('Error fetching volunteer address: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to fetch volunteer address')),
-      );
-    }
   }
 
   void _showServicesBottomSheet(BuildContext context) {
@@ -179,7 +111,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                   icon: Icons.pets,
                   pet: pet['petName'] ?? 'N/A',
                   isSelected: isSelected,
-                  onTap: () {
+                  onChanged: (bool value) {
                     setState(() {
                       if (isSelected) {
                         selectedPets.remove(pet['petName']);
@@ -187,8 +119,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                         selectedPets.add(pet['petName']);
                       }
                       petTextController.text = selectedPets.join(', ');
-                      bookingDetailsProvider
-                          .setPet(selectedPets); // Update here
+                      bookingDetailsProvider.setPet(selectedPets);
                     });
                   },
                 );
@@ -261,90 +192,104 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     double price = 0.0;
 
     if (service == 'Home Visit') {
+      price = (bookingDetailsProvider.homeVisitPrice ?? 0) * hours;
     } else if (service == 'House Sitting') {
       price = (bookingDetailsProvider.houseSittingPrice ?? 0) * hours;
     }
+    price *= selectedPets.length;
     return price;
   }
 
   void _fetchAddressAndShowDialog() async {
-    final firestoreService = FirestoreServiceOwner();
-    String userId = FirebaseAuth.instance.currentUser!.uid;
-    Map<String, dynamic>? addressDetails =
-        await firestoreService.getAddressDetails(userId);
+    try {
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      FirestoreServiceOwner firestoreServiceOwner = FirestoreServiceOwner();
+      Map<String, dynamic>? addressDetails =
+          await firestoreServiceOwner.getAddressDetails(userId);
 
-    if (addressDetails != null) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Owner Address', textAlign: TextAlign.center),
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Area, Apartment, Road: ${addressDetails['area_apartment_road']}',
-                  style: TextStyle(
-                    color: LightColors.textColor,
+      if (addressDetails != null) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Owner Address'),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Area, Apartment, Road: ${addressDetails['area_apartment_road']}',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
                   ),
+                  SizedBox(height: 8),
+                  Text(
+                    'House/Flat Details: ${addressDetails['house_flat_data']}',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Directions: ${addressDetails['description_directions']}',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => OwnerEditProfilePage()));
+                  },
+                  child: Text('Edit'),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF8398EC),
+                      fixedSize: Size(120, 40),
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      )),
                 ),
-                SizedBox(height: 4),
-                Text(
-                  'House/Flat Details: ${addressDetails['house_flat_data']}',
-                  style: TextStyle(
-                    color: LightColors.textColor,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Directions: ${addressDetails['description_directions']}',
-                  style: TextStyle(
-                    color: LightColors.textColor,
-                  ),
+                SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Continue'),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF8398EC),
+                      fixedSize: Size(120, 40),
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      )),
                 ),
               ],
-            ),
-            actions: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => OwnerEditProfilePage()));
-                },
-                child: Text('Edit'),
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF8398EC),
-                    fixedSize: Size(120, 40),
-                    textStyle: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    )),
-              ),
-              SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Continue'),
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF8398EC),
-                    fixedSize: Size(120, 40),
-                    textStyle: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    )),
-              ),
-            ],
-          );
-        },
-      );
-    } else {
+            );
+          },
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to fetch owner address')),
+        );
+      }
+    } catch (e) {
+      print("Error fetching owner address: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to fetch owner address')),
       );
     }
+  }
+
+  void _fetchAddressAndShowVDialog() {
+    Provider.of<BookingDetailsProvider>(context, listen: false)
+        .getVaddress(context);
   }
 
   Widget _buildServiceItem({
@@ -361,7 +306,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           leading: Icon(icon),
           title: Text(title),
           subtitle: description.isNotEmpty ? Text(description) : null,
-          onTap: () {
+          onTap: () async {
             setState(() {
               selectedService = title;
               serviceTextController.text = selectedService;
@@ -372,9 +317,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
 
             if (title == 'Home Visit') {
               _fetchAddressAndShowDialog(); // Fetch and show address details
-            }
-            if (title == 'House Sitting') {
-              bookingDetailsProvider.getVaddress();
+            } else if (title == 'House Sitting') {
+              _fetchAddressAndShowVDialog();
             }
 
             Navigator.pop(context);
@@ -403,14 +347,29 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     required IconData icon,
     required String pet,
     required bool isSelected,
-    required VoidCallback onTap,
+    required ValueChanged<bool> onChanged,
   }) {
-    return ListTile(
-      contentPadding: EdgeInsets.all(0),
-      leading: Icon(icon),
-      title: Text(pet),
-      onTap: onTap,
-      trailing: isSelected ? Icon(Icons.check, color: Colors.green) : null,
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return ListTile(
+          contentPadding: EdgeInsets.all(0),
+          leading: Icon(icon),
+          title: Text(pet),
+          onTap: () {
+            setState(() {
+              isSelected = !isSelected;
+              if (isSelected) {
+                selectedPets.add(pet);
+              } else {
+                selectedPets.remove(pet);
+              }
+              petTextController.text = selectedPets.join(', ');
+              bookingDetailsProvider.setPet(selectedPets);
+            });
+          },
+          trailing: isSelected ? Icon(Icons.check, color: Colors.green) : null,
+        );
+      },
     );
   }
 

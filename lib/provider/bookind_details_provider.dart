@@ -26,11 +26,10 @@ class BookingDetailsProvider extends ChangeNotifier {
   String? _status;
   String? _service;
   String _servicePrice = '';
-
   String _volEmail = '';
   List<String>? _pet;
-  //String? _ownerAddress;
   Map<String, dynamic> vData = {};
+  Map<String, dynamic>? vDataAddress;
 
   bool? get homeVisit => _homeVisit;
   bool? get houseSitting => _houseSitting;
@@ -52,7 +51,6 @@ class BookingDetailsProvider extends ChangeNotifier {
   String? get service => _service;
   List<String>? get pet => _pet;
 
-  var vDataAddress;
   FireStoreServiceVolunteer _fireStoreServiceVolunteer =
       FireStoreServiceVolunteer();
   BookingFirestore _bookingFirestore = BookingFirestore();
@@ -63,14 +61,61 @@ class BookingDetailsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getVaddress() async {
+  Future<void> getVaddress(BuildContext context) async {
     vDataAddress =
         await _fireStoreServiceVolunteer.getVolunteerAddressByEmail(volEmail);
-    print(" Volunteer Address : $vDataAddress");
+    print("Volunteer Address: $vDataAddress");
+
     if (vDataAddress != null) {
-      print("Volunteer Address: $vDataAddress");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Volunteer Address'),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Area, Apartment, Road: ${vDataAddress!['area_apartment_road']}',
+                  style: TextStyle(color: Colors.black87),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'House/Flat Details: ${vDataAddress!['house_flat_data']}',
+                  style: TextStyle(color: Colors.black87),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Directions: ${vDataAddress!['description_directions']}',
+                  style: TextStyle(color: Colors.black87),
+                ),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF8398EC),
+                  fixedSize: Size(120, 40),
+                  textStyle: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
     } else {
       print("No address found for the volunteer with email $volEmail");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No address found for the volunteer')),
+      );
     }
   }
 
