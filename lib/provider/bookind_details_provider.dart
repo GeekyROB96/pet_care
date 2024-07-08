@@ -56,6 +56,7 @@ class BookingDetailsProvider extends ChangeNotifier {
     Map<String, dynamic>?  get vDataAddress   => _vDataAddress;
   Map<String, dynamic>?  get oaddressDetails => _oaddressDetails;
 
+
   FireStoreServiceVolunteer _fireStoreServiceVolunteer =
       FireStoreServiceVolunteer();
   BookingFirestore _bookingFirestore = BookingFirestore();

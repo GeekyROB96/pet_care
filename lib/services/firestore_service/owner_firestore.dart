@@ -177,6 +177,8 @@ class FirestoreServiceOwner {
 
   Future<void> sendMessage(String receiverID, String message,
       {String? imageUrl}) async {
+  Future<void> sendMessage(String receiverID, String message,
+      {String? imageUrl}) async {
     final String currentUserId = _firebaseAuth.currentUser!.uid;
     final String currentUserEmail = _firebaseAuth.currentUser!.email!;
     final Timestamp timeStamp = Timestamp.now();

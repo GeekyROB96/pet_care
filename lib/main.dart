@@ -5,18 +5,22 @@ import 'package:pet_care/firebase_options.dart';
 import 'package:pet_care/initial_screen.dart';
 import 'package:pet_care/pages/booking/booking_page.dart';
 import 'package:pet_care/pages/owner&pet/owner_editprofile.dart';
+import 'package:pet_care/pages/owner&pet/owner_homescreen.dart';
 import 'package:pet_care/pages/owner&pet/owner_login.dart';
 import 'package:pet_care/pages/owner&pet/owner_signup.dart';
 import 'package:pet_care/pages/owner&pet/pet_profile.dart';
 import 'package:pet_care/pages/owner&pet/pet_register.dart';
 import 'package:pet_care/pages/owner&pet/pet_register2.dart';
 import 'package:pet_care/pages/pets_page/pets.dart';
+import 'package:pet_care/pages/screens/pet_lost_page.dart';
+
+import 'package:pet_care/pages/screens/call_page.dart';
 import 'package:pet_care/pages/owner&pet/owner_homescreen.dart';
 import 'package:pet_care/pages/screens/pet_sitters.dart';
 import 'package:pet_care/pages/volunteer/booking_details_show.dart';
 import 'package:pet_care/pages/volunteer/volSide_pet_profile.dart';
-import 'package:pet_care/pages/volunteer/volunteer_homescreen.dart';
 import 'package:pet_care/pages/volunteer/volunteer_editProfile.dart';
+import 'package:pet_care/pages/volunteer/volunteer_homescreen.dart';
 import 'package:pet_care/pages/volunteer/volunteer_login_page.dart';
 import 'package:pet_care/pages/volunteer/volunteer_reg.dart';
 import 'package:pet_care/pages/volunteer/volunter_reg2.dart';
@@ -133,6 +137,7 @@ class MyApp extends StatelessWidget {
         '/bookingPage': (context) => BookingDetailsPage(),
         '/bookingDetailsShow': (context) => BookingDetailsShow(),
         '/petProfile2' : (context) => PetProfile2()
+        '/lostPet': (context) => PetLost(),
       },
     );
   }
