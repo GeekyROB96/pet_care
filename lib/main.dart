@@ -136,7 +136,7 @@ class MyApp extends StatelessWidget {
         '/petProfile': (context) => PetProfile(),
         '/bookingPage': (context) => BookingDetailsPage(),
         '/bookingDetailsShow': (context) => BookingDetailsShow(),
-        '/petProfile2' : (context) => PetProfile2()
+        '/petProfile2' : (context) => PetProfile2(),
         '/lostPet': (context) => PetLost(),
       },
     );

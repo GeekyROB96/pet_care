@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pet_care/model/message_model.dart';
@@ -177,8 +176,6 @@ class FirestoreServiceOwner {
 
   Future<void> sendMessage(String receiverID, String message,
       {String? imageUrl}) async {
-  Future<void> sendMessage(String receiverID, String message,
-      {String? imageUrl}) async {
     final String currentUserId = _firebaseAuth.currentUser!.uid;
     final String currentUserEmail = _firebaseAuth.currentUser!.email!;
     final Timestamp timeStamp = Timestamp.now();
@@ -284,7 +281,3 @@ class FirestoreServiceOwner {
     }
   }
 }
-
-
-
-

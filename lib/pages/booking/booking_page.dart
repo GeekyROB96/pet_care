@@ -614,10 +614,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       bookingDetailsProvider.setTotalHours(totalHours);
                       bookingDetailsProvider.setTotalPrice(totalPrice);
                       bookingDetailsProvider.setPet(selectedPets);
-                      if (selectedService == 'Home Visit')
-                        bookingDetailsProvider.vDataAddress = null;
-                      else if (selectedService == 'House Sitting')
-                        bookingDetailsProvider.oaddressDetails = null;
+                    
 
                       bookingDetailsProvider.saveBooking(context);
                     },
