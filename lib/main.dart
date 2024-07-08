@@ -11,15 +11,17 @@ import 'package:pet_care/pages/owner&pet/pet_profile.dart';
 import 'package:pet_care/pages/owner&pet/pet_register.dart';
 import 'package:pet_care/pages/owner&pet/pet_register2.dart';
 import 'package:pet_care/pages/pets_page/pets.dart';
-import 'package:pet_care/pages/screens/call_page.dart';
 import 'package:pet_care/pages/owner&pet/owner_homescreen.dart';
 import 'package:pet_care/pages/screens/pet_sitters.dart';
+import 'package:pet_care/pages/volunteer/booking_details_show.dart';
+import 'package:pet_care/pages/volunteer/volSide_pet_profile.dart';
 import 'package:pet_care/pages/volunteer/volunteer_homescreen.dart';
 import 'package:pet_care/pages/volunteer/volunteer_editProfile.dart';
 import 'package:pet_care/pages/volunteer/volunteer_login_page.dart';
 import 'package:pet_care/pages/volunteer/volunteer_reg.dart';
 import 'package:pet_care/pages/volunteer/volunter_reg2.dart';
 import 'package:pet_care/provider/bookind_details_provider.dart';
+import 'package:pet_care/provider/booking_details_getter.dart';
 import 'package:pet_care/provider/forgot_password_provider.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
@@ -87,9 +89,10 @@ void main() async {
             ChangeNotifierProvider(create: (context) => ReminderProvider()),
             ChangeNotifierProvider(
                 create: (context) => BookingDetailsProvider()),
-
-            ChangeNotifierProvider(create: (context) => PaymentPageProvider())
-          ],
+            ChangeNotifierProvider(create: (context) => PaymentPageProvider()),
+            ChangeNotifierProvider(
+                create: (context) => BookingDetailsGetterProvider()),
+                    ],
           child: MyApp(),
         ),
       );
@@ -128,6 +131,8 @@ class MyApp extends StatelessWidget {
         '/petSitters': (context) => PetSitters(),
         '/petProfile': (context) => PetProfile(),
         '/bookingPage': (context) => BookingDetailsPage(),
+        '/bookingDetailsShow': (context) => BookingDetailsShow(),
+        '/petProfile2' : (context) => PetProfile2()
       },
     );
   }

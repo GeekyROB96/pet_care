@@ -5,7 +5,7 @@ import 'package:pet_care/pages/volunteer/volunteer_payment_page.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/booking_status.dart';
+import 'booking_tiles.dart';
 
 final images = [
   'assets/sliding_images/sliding1.jpg',

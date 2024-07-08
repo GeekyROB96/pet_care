@@ -4,9 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_care/constants/custom_toast.dart';
+import 'package:pet_care/pages/owner&pet/owner_editprofile.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_volunteer_details_provider.dart';
 import 'package:pet_care/services/firestore_service/booking_firestore.dart';
+import 'package:pet_care/services/firestore_service/owner_firestore.dart';
 import 'package:pet_care/services/firestore_service/pet_register.dart';
 import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +31,8 @@ class BookingDetailsProvider extends ChangeNotifier {
   String _volEmail = '';
   List<String>? _pet;
   Map<String, dynamic> vData = {};
-  Map<String, dynamic>? vDataAddress;
+  Map<String, dynamic>? _vDataAddress;
+  Map<String, dynamic>? _oaddressDetails;
 
   bool? get homeVisit => _homeVisit;
   bool? get houseSitting => _houseSitting;
@@ -50,6 +53,8 @@ class BookingDetailsProvider extends ChangeNotifier {
   String get volEmail => _volEmail;
   String? get service => _service;
   List<String>? get pet => _pet;
+    Map<String, dynamic>?  get vDataAddress   => _vDataAddress;
+  Map<String, dynamic>?  get oaddressDetails => _oaddressDetails;
 
   FireStoreServiceVolunteer _fireStoreServiceVolunteer =
       FireStoreServiceVolunteer();
@@ -62,7 +67,7 @@ class BookingDetailsProvider extends ChangeNotifier {
   }
 
   Future<void> getVaddress(BuildContext context) async {
-    vDataAddress =
+    _vDataAddress =
         await _fireStoreServiceVolunteer.getVolunteerAddressByEmail(volEmail);
     print("Volunteer Address: $vDataAddress");
 
@@ -80,9 +85,13 @@ class BookingDetailsProvider extends ChangeNotifier {
                   'Area, Apartment, Road: ${vDataAddress!['area_apartment_road']}',
                   style: TextStyle(color: Colors.black87),
                 ),
+                Text(
+                  'Description ${vDataAddress!['main']}',
+                  style: TextStyle(color: Colors.black87),
+                ),
                 SizedBox(height: 8),
                 Text(
-                  'House/Flat Details: ${vDataAddress!['house_flat_data']}',
+                  'Pincode ${vDataAddress!['pincode']}',
                   style: TextStyle(color: Colors.black87),
                 ),
                 SizedBox(height: 8),
@@ -115,6 +124,92 @@ class BookingDetailsProvider extends ChangeNotifier {
       print("No address found for the volunteer with email $volEmail");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('No address found for the volunteer')),
+      );
+    }
+  }
+
+  void fetchOAddressAndShowDialog(BuildContext context) async {
+    try {
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      FirestoreServiceOwner firestoreServiceOwner = FirestoreServiceOwner();
+      _oaddressDetails = await firestoreServiceOwner.getAddressDetails(userId);
+
+      if (oaddressDetails != null) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Owner Address'),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Area, Apartment, Road: ${oaddressDetails?['area_apartment_road']}',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'House/Flat Details: ${oaddressDetails?['house_flat_data']}',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Directions: ${oaddressDetails?['description_directions']}',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => OwnerEditProfilePage()));
+                  },
+                  child: Text('Edit'),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF8398EC),
+                      fixedSize: Size(120, 40),
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      )),
+                ),
+                SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Continue'),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF8398EC),
+                      fixedSize: Size(120, 40),
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      )),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to fetch owner address')),
+        );
+      }
+    } catch (e) {
+      print("Error fetching owner address: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch owner address')),
       );
     }
   }
@@ -208,21 +303,23 @@ class BookingDetailsProvider extends ChangeNotifier {
     print("pet : $_pet");
 
     String bookingId = await _bookingFirestore.saveBooking(
-      ownerEmail: _ownerEmail!,
-      volEmail: _volEmail,
-      service: _service!,
-      servicePrice: _servicePrice,
-      pet: _pet!,
-      startDate: _startDate!,
-      endDate: _endDate!,
-      totalHours: _totalHours!,
-      totalPrice: _totalPrice!,
-    );
+        ownerEmail: _ownerEmail!,
+        volEmail: _volEmail,
+        service: _service!,
+        servicePrice: _servicePrice,
+        pet: _pet!,
+        startDate: _startDate!,
+        endDate: _endDate!,
+        totalHours: _totalHours!,
+        totalPrice: _totalPrice!,
+        vDataAddress: vDataAddress,
+        oaddressDetails: oaddressDetails);
 
     showBookingSuccessDialog(context, bookingId);
   }
 
   void showBookingSuccessDialog(BuildContext context, String bookingId) {
+    clearData();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -264,5 +361,11 @@ class BookingDetailsProvider extends ChangeNotifier {
         );
       },
     );
+  }
+
+  void clearData() {
+    _oaddressDetails = null;
+    _vDataAddress = null;
+    notifyListeners();
   }
 }

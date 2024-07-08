@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:pet_care/constants/custom_toast.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../provider/bookind_details_provider.dart';
 import '../../services/firestore_service/owner_firestore.dart';
@@ -200,93 +202,6 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     return price;
   }
 
-  void _fetchAddressAndShowDialog() async {
-    try {
-      String userId = FirebaseAuth.instance.currentUser!.uid;
-      FirestoreServiceOwner firestoreServiceOwner = FirestoreServiceOwner();
-      Map<String, dynamic>? addressDetails =
-          await firestoreServiceOwner.getAddressDetails(userId);
-
-      if (addressDetails != null) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Owner Address'),
-              content: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Area, Apartment, Road: ${addressDetails['area_apartment_road']}',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'House/Flat Details: ${addressDetails['house_flat_data']}',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Directions: ${addressDetails['description_directions']}',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => OwnerEditProfilePage()));
-                  },
-                  child: Text('Edit'),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF8398EC),
-                      fixedSize: Size(120, 40),
-                      textStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      )),
-                ),
-                SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Continue'),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF8398EC),
-                      fixedSize: Size(120, 40),
-                      textStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      )),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to fetch owner address')),
-        );
-      }
-    } catch (e) {
-      print("Error fetching owner address: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to fetch owner address')),
-      );
-    }
-  }
-
   void _fetchAddressAndShowVDialog() {
     Provider.of<BookingDetailsProvider>(context, listen: false)
         .getVaddress(context);
@@ -316,8 +231,23 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             });
 
             if (title == 'Home Visit') {
-              _fetchAddressAndShowDialog(); // Fetch and show address details
+               if (bookingDetailsProvider.homeVisit == false) {
+                ToastNotification.showToast(context,
+                    message:
+                        "Volunteer does not provide Home Visit. Please choose different option",
+                    type: ToastType.error);
+                return;
+              }
+              bookingDetailsProvider.fetchOAddressAndShowDialog(
+                  context); // Fetch and show address details
             } else if (title == 'House Sitting') {
+              if (bookingDetailsProvider.houseSitting == false) {
+                ToastNotification.showToast(context,
+                    message:
+                        "Volunteer does not provide house Sitting. Please choose different option",
+                    type: ToastType.error);
+                return;
+              }
               _fetchAddressAndShowVDialog();
             }
 
@@ -683,21 +613,24 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                           .setServicePrice(selectedServicePrice);
                       bookingDetailsProvider.setTotalHours(totalHours);
                       bookingDetailsProvider.setTotalPrice(totalPrice);
-                      bookingDetailsProvider
-                          .setPet(selectedPets); // Update here
+                      bookingDetailsProvider.setPet(selectedPets);
+                      if (selectedService == 'Home Visit')
+                        bookingDetailsProvider.vDataAddress = null;
+                      else if (selectedService == 'House Sitting')
+                        bookingDetailsProvider.oaddressDetails = null;
 
                       bookingDetailsProvider.saveBooking(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
-                          Color(0xFF94A5E8), // Background color of the button
+                          Color(0xFF94A5E8), 
                       minimumSize: Size(double.infinity,
-                          50), // Width and height of the button
+                          50), 
                     ),
                     child: Text(
                       'Book Now',
                       style: TextStyle(
-                        color: Colors.white, // Text color
+                        color: Colors.white, 
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),

@@ -13,6 +13,8 @@ class BookingFirestore {
     required String endDate,
     required double totalHours,
     required double totalPrice,
+      Map<String, dynamic>? vDataAddress,
+    Map<String, dynamic>?  oaddressDetails
   }) async {
     try {
       DocumentReference bookingRef = _firestore.collection('bookings').doc();
@@ -28,7 +30,9 @@ class BookingFirestore {
         'endDate': endDate,
         'totalHours': totalHours,
         'totalPrice': totalPrice,
-        'status': 'booked'
+        'status': 'booked',
+        'vDataAddress': vDataAddress,
+        'oaddressDetails':oaddressDetails
       });
       return bookingId;
     } catch (e) {
@@ -65,4 +69,34 @@ class BookingFirestore {
       throw e;
     }
   }
+
+
+  
+   Future<List<Map<String, dynamic>>> getBookings(String volEmail, String status) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('bookings')
+          .where('volEmail', isEqualTo: volEmail)
+          .where('status', isEqualTo: status)
+          .get();
+
+      return querySnapshot.docs
+          .map((DocumentSnapshot doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      print("Error getting bookings: $e");
+      throw e;
+    }
+  }
+  Future<void> updateBookingStatus(String bookingId, String newStatus) async {
+  try {
+    DocumentReference bookingRef = _firestore.collection('bookings').doc(bookingId);
+    await bookingRef.update({'status': newStatus});
+    print('Booking status updated successfully');
+  } catch (e) {
+    print('Error updating booking status: $e');
+    throw e;
+  }
+}
+
 }
