@@ -280,4 +280,59 @@ class FirestoreServiceOwner {
       print("Error saving Address Details $e");
     }
   }
+
+  Future<void> saveLostAddress(
+      {required String userId,
+      required String main,
+      required String areaApartmentRoad,
+      required String coordinates,
+      required String descriptionDirections,
+      required String city,
+      required String state,
+      required String pincode}) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc('pet_owners')
+          .collection('pet_owners')
+          .doc(userId)
+          .update({
+        'LostPetAddress': {
+          'main': main,
+          'area_apartment_road': areaApartmentRoad,
+          'coordinates': coordinates,
+          'description_directions': descriptionDirections,
+          'city': city,
+          'state': state,
+          'pincode': pincode
+        }
+      });
+    } catch (e) {
+      print("Error saving Address Details $e");
+    }
+  }
+
+ Future<Map<String, dynamic>?> getLostAddressByEmail(String email) async {
+  try {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('users')
+        .doc('pet_owners')
+        .collection('pet_owners')
+        .where('email', isEqualTo: email)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      DocumentSnapshot userDoc = querySnapshot.docs.first;
+      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+      return userData['LostPetAddress'] as Map<String, dynamic>?;
+    } else {
+      print('No user found with email: $email');
+      return null;
+    }
+  } catch (e) {
+    print("Error getting lost address details by email: $e");
+    return null;
+  }
+}
+
 }

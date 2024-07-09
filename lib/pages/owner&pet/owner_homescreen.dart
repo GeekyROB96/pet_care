@@ -4,6 +4,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_care/pages/owner&pet/payments_page.dart';
+import 'package:pet_care/pages/screens/lost_pet_address_screen.dart';
 import 'package:pet_care/pages/screens/reminder_screen.dart';
 import 'package:pet_care/provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
@@ -342,7 +343,14 @@ class OwnerDashboard extends StatelessWidget {
                       icon: Image.asset('assets/icons/sa.gif',
                           width: 30, height: 30),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/lostPet');
+                        Navigator.pushNamed(
+      context,
+      '/lostPet',
+    );
+  //   Navigator.push(
+  //   context,
+  //   MaterialPageRoute(builder: (context) => PetLostAddressPage()),
+  // );
                       },
                     ),
                     SizedBox(height: 5),

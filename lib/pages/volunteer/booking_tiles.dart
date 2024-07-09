@@ -102,135 +102,140 @@ class StatusPage extends StatelessWidget {
               String formattedStartDate = DateFormat('MMMM dd, yyyy')
                   .format(DateTime.parse(booking['startDate']));
 
-              return Card(
-                elevation: 3,
-                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color(0xFFCED8F5).withOpacity(0.8),
-                        Color(0xFFD7E2EE),
-                        Color(0xFFDCE2F6)
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+              return GestureDetector(
+                onTap: ()  async{
+                 await  bookingProvider.fetchBookingDetailsAndNavigate(context,booking['bookingId']);
+                },
+                child: Card(
+                  elevation: 3,
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xFFCED8F5).withOpacity(0.8),
+                          Color(0xFFD7E2EE),
+                          Color(0xFFDCE2F6)
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(18),
-                    child: Stack(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(profileImageUrl),
-                                  radius: 30,
-                                ),
-                                SizedBox(width: 10),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                    child: Padding(
+                      padding: EdgeInsets.all(18),
+                      child: Stack(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CircleAvatar(
+                                    backgroundImage:
+                                        NetworkImage(profileImageUrl),
+                                    radius: 30,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Owner: $ownerName',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          'Service: ${booking['service']}',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          'Location: $locationCity',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          'Start Date: $formattedStartDate',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          'Total Hours: ${booking['totalHours']}',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Pets:',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                            SizedBox(width: 5),
+                                            Row(
+                                              children: petDetails.map((pet) {
+                                                String petType =
+                                                    pet['selectedPetType'];
+                                                String petIconPath =
+                                                    _getPetIcon(petType);
+                                                return petIconPath.isNotEmpty
+                                                    ? Padding(
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                                horizontal: 2),
+                                                        child: Image.asset(
+                                                          petIconPath,
+                                                          height: 24,
+                                                          width: 24,
+                                                        ),
+                                                      )
+                                                    : SizedBox.shrink();
+                                              }).toList(),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        'Owner: $ownerName',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                      SizedBox(height: 5),
-                                      Text(
-                                        'Service: ${booking['service']}',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                      SizedBox(height: 5),
-                                      Text(
-                                        'Location: $locationCity',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                      SizedBox(height: 5),
-                                      Text(
-                                        'Start Date: $formattedStartDate',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                      SizedBox(height: 5),
-                                      Text(
-                                        'Total Hours: ${booking['totalHours']}',
+                                        totalPrice,
                                         style: TextStyle(
-                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: Color(0xFF062483),
                                         ),
-                                      ),
-                                      SizedBox(height: 5),
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Pets:',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                          SizedBox(width: 5),
-                                          Row(
-                                            children: petDetails.map((pet) {
-                                              String petType =
-                                                  pet['selectedPetType'];
-                                              String petIconPath =
-                                                  _getPetIcon(petType);
-                                              return petIconPath.isNotEmpty
-                                                  ? Padding(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: 2),
-                                                      child: Image.asset(
-                                                        petIconPath,
-                                                        height: 24,
-                                                        width: 24,
-                                                      ),
-                                                    )
-                                                  : SizedBox.shrink();
-                                            }).toList(),
-                                          ),
-                                        ],
                                       ),
                                     ],
                                   ),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      totalPrice,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color: Color(0xFF062483),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Text(
-                            '$status',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: Colors.green,
+                                ],
+                              ),
+                            ],
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Text(
+                              '$status',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Colors.green,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
