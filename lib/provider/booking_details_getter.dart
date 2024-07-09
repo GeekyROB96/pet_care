@@ -144,8 +144,9 @@ class BookingDetailsGetterProvider with ChangeNotifier {
     try {
       await _bookingFirestore.updateBookingStatus(bookingId, newStatus);
 
-       ToastNotification.showToast(context,
-          message: "Booking Status updated Successfully", type: ToastType.positive);
+      ToastNotification.showToast(context,
+          message: "Booking Status updated Successfully",
+          type: ToastType.positive);
     } catch (e) {
       ToastNotification.showToast(context,
           message: "Error updating Booking Status", type: ToastType.error);

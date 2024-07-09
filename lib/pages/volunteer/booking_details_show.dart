@@ -1,11 +1,7 @@
-import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
-import 'package:pet_care/provider/booking_details_getter.dart';
 import 'package:intl/intl.dart';
+import 'package:pet_care/provider/booking_details_getter.dart';
+import 'package:provider/provider.dart';
 
 class BookingDetailsShow extends StatelessWidget {
   @override
@@ -319,14 +315,14 @@ class BookingDetailsShow extends StatelessWidget {
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () async{
+                            onPressed: () async {
                               // Handle accept action
-                             await bookingProvider.updateBooking(
+                              await bookingProvider.updateBooking(
                                   booking['bookingId'], 'accepted', context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
-                              overlayColor: Colors.black,
+                              //overlayColor: Colors.black,
                             ),
                             child: Text('Accept'),
                           ),
@@ -335,14 +331,14 @@ class BookingDetailsShow extends StatelessWidget {
                             width: 16), // Add some spacing between the buttons
                         Expanded(
                           child: ElevatedButton(
-                              onPressed: () async{
+                            onPressed: () async {
                               // Handle accept action
-                             await bookingProvider.updateBooking(
+                              await bookingProvider.updateBooking(
                                   booking['bookingId'], 'rejected', context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,
-                              overlayColor: Colors.black,
+                              //overlayColor: Colors.black,
                             ),
                             child: Text('Reject'),
                           ),

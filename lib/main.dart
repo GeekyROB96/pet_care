@@ -13,9 +13,6 @@ import 'package:pet_care/pages/owner&pet/pet_register.dart';
 import 'package:pet_care/pages/owner&pet/pet_register2.dart';
 import 'package:pet_care/pages/pets_page/pets.dart';
 import 'package:pet_care/pages/screens/pet_lost_page.dart';
-
-import 'package:pet_care/pages/screens/call_page.dart';
-import 'package:pet_care/pages/owner&pet/owner_homescreen.dart';
 import 'package:pet_care/pages/screens/pet_sitters.dart';
 import 'package:pet_care/pages/volunteer/booking_details_show.dart';
 import 'package:pet_care/pages/volunteer/volSide_pet_profile.dart';
@@ -96,7 +93,7 @@ void main() async {
             ChangeNotifierProvider(create: (context) => PaymentPageProvider()),
             ChangeNotifierProvider(
                 create: (context) => BookingDetailsGetterProvider()),
-                    ],
+          ],
           child: MyApp(),
         ),
       );
@@ -136,7 +133,7 @@ class MyApp extends StatelessWidget {
         '/petProfile': (context) => PetProfile(),
         '/bookingPage': (context) => BookingDetailsPage(),
         '/bookingDetailsShow': (context) => BookingDetailsShow(),
-        '/petProfile2' : (context) => PetProfile2()
+        '/petProfile2': (context) => PetProfile2(),
         '/lostPet': (context) => PetLost(),
       },
     );

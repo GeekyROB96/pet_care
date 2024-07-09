@@ -1,15 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:pet_care/constants/custom_toast.dart';
 import 'package:provider/provider.dart';
-import 'package:toastification/toastification.dart';
 
 import '../../provider/bookind_details_provider.dart';
 import '../../services/firestore_service/owner_firestore.dart';
 import '../../widgets/components/textfield.dart';
-import '../owner&pet/owner_editprofile.dart';
 
 class BookingDetailsPage extends StatefulWidget {
   @override
@@ -231,7 +228,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             });
 
             if (title == 'Home Visit') {
-               if (bookingDetailsProvider.homeVisit == false) {
+              if (bookingDetailsProvider.homeVisit == false) {
                 ToastNotification.showToast(context,
                     message:
                         "Volunteer does not provide Home Visit. Please choose different option",
@@ -614,23 +611,17 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       bookingDetailsProvider.setTotalHours(totalHours);
                       bookingDetailsProvider.setTotalPrice(totalPrice);
                       bookingDetailsProvider.setPet(selectedPets);
-                      if (selectedService == 'Home Visit')
-                        bookingDetailsProvider.vDataAddress = null;
-                      else if (selectedService == 'House Sitting')
-                        bookingDetailsProvider.oaddressDetails = null;
 
                       bookingDetailsProvider.saveBooking(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Color(0xFF94A5E8), 
-                      minimumSize: Size(double.infinity,
-                          50), 
+                      backgroundColor: Color(0xFF94A5E8),
+                      minimumSize: Size(double.infinity, 50),
                     ),
                     child: Text(
                       'Book Now',
                       style: TextStyle(
-                        color: Colors.white, 
+                        color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),

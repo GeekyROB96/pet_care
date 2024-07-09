@@ -53,13 +53,14 @@ class BookingDetailsProvider extends ChangeNotifier {
   String get volEmail => _volEmail;
   String? get service => _service;
   List<String>? get pet => _pet;
-    Map<String, dynamic>?  get vDataAddress   => _vDataAddress;
-  Map<String, dynamic>?  get oaddressDetails => _oaddressDetails;
-
+  Map<String, dynamic>? get vDataAddress => _vDataAddress;
+  Map<String, dynamic>? get oaddressDetails => _oaddressDetails;
 
   FireStoreServiceVolunteer _fireStoreServiceVolunteer =
       FireStoreServiceVolunteer();
   BookingFirestore _bookingFirestore = BookingFirestore();
+  FirestoreServiceOwner firestoreServiceOwner = FirestoreServiceOwner();
+
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   Future<void> initializeOwnerEmail() async {
@@ -67,9 +68,20 @@ class BookingDetailsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setVDataAddress(Map<String, dynamic>? vDataAddress) {
+    _vDataAddress = vDataAddress;
+    notifyListeners();
+  }
+
+  void setODataAddress(Map<String, dynamic>? oAddress) {
+    _oaddressDetails = oAddress;
+    notifyListeners();
+  }
+
   Future<void> getVaddress(BuildContext context) async {
-    _vDataAddress =
+    var vData =
         await _fireStoreServiceVolunteer.getVolunteerAddressByEmail(volEmail);
+    setVDataAddress(vData!);
     print("Volunteer Address: $vDataAddress");
 
     if (vDataAddress != null) {
@@ -132,10 +144,11 @@ class BookingDetailsProvider extends ChangeNotifier {
   void fetchOAddressAndShowDialog(BuildContext context) async {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
-      FirestoreServiceOwner firestoreServiceOwner = FirestoreServiceOwner();
-      _oaddressDetails = await firestoreServiceOwner.getAddressDetails(userId);
+      var oData = await firestoreServiceOwner.getAddressDetails(userId);
 
-      if (oaddressDetails != null) {
+      setODataAddress(oData!);
+
+      if (oData != null) {
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -228,9 +241,7 @@ class BookingDetailsProvider extends ChangeNotifier {
       _homeVisit = vData['providesHomeVisits'];
       _homeVisitPrice = vData['providesHomeVisitsPrice'];
       notifyListeners();
-    } else {
-      // Handle case when vData is null
-    }
+    } else {}
   }
 
   Future<void> loadPetData(BuildContext context) async {
@@ -303,20 +314,25 @@ class BookingDetailsProvider extends ChangeNotifier {
     print("start and end date : $_startDate   : $_endDate");
     print("pet : $_pet");
 
-    String bookingId = await _bookingFirestore.saveBooking(
-        ownerEmail: _ownerEmail!,
-        volEmail: _volEmail,
-        service: _service!,
-        servicePrice: _servicePrice,
-        pet: _pet!,
-        startDate: _startDate!,
-        endDate: _endDate!,
-        totalHours: _totalHours!,
-        totalPrice: _totalPrice!,
-        vDataAddress: vDataAddress,
-        oaddressDetails: oaddressDetails);
+    try {
+      String bookingId = await _bookingFirestore.saveBooking(
+          ownerEmail: _ownerEmail!,
+          volEmail: _volEmail,
+          service: _service!,
+          servicePrice: _servicePrice,
+          pet: _pet!,
+          startDate: _startDate!,
+          endDate: _endDate!,
+          totalHours: _totalHours!,
+          totalPrice: _totalPrice!,
+          vDataAddress: service == 'House Sitting' ? _vDataAddress : null,
+          oaddressDetails: service == 'Home Visit' ? _oaddressDetails : null);
 
-    showBookingSuccessDialog(context, bookingId);
+      showBookingSuccessDialog(context, bookingId);
+    } catch (e) {
+      ToastNotification.showToast(context,
+          message: 'Error! $e', type: ToastType.error);
+    }
   }
 
   void showBookingSuccessDialog(BuildContext context, String bookingId) {
