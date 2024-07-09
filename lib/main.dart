@@ -14,9 +14,6 @@ import 'package:pet_care/pages/owner&pet/pet_register2.dart';
 import 'package:pet_care/pages/pets_page/pets.dart';
 import 'package:pet_care/pages/screens/lost_pet_address_screen.dart';
 import 'package:pet_care/pages/screens/pet_lost_page.dart';
-
-import 'package:pet_care/pages/screens/call_page.dart';
-import 'package:pet_care/pages/owner&pet/owner_homescreen.dart';
 import 'package:pet_care/pages/screens/pet_sitters.dart';
 import 'package:pet_care/pages/volunteer/booking_details_show.dart';
 import 'package:pet_care/pages/volunteer/volSide_pet_profile.dart';

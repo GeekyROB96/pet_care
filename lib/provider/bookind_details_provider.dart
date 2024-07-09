@@ -59,7 +59,7 @@ class BookingDetailsProvider extends ChangeNotifier {
   FireStoreServiceVolunteer _fireStoreServiceVolunteer =
       FireStoreServiceVolunteer();
   BookingFirestore _bookingFirestore = BookingFirestore();
-        FirestoreServiceOwner firestoreServiceOwner = FirestoreServiceOwner();
+  FirestoreServiceOwner firestoreServiceOwner = FirestoreServiceOwner();
 
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
@@ -68,11 +68,12 @@ class BookingDetailsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-   void setVDataAddress(Map<String, dynamic>? vDataAddress) {
+  void setVDataAddress(Map<String, dynamic>? vDataAddress) {
     _vDataAddress = vDataAddress;
     notifyListeners();
   }
-   void setODataAddress(Map<String, dynamic>? oAddress) {
+
+  void setODataAddress(Map<String, dynamic>? oAddress) {
     _oaddressDetails = oAddress;
     notifyListeners();
   }
@@ -240,8 +241,7 @@ class BookingDetailsProvider extends ChangeNotifier {
       _homeVisit = vData['providesHomeVisits'];
       _homeVisitPrice = vData['providesHomeVisitsPrice'];
       notifyListeners();
-    } else {
-     }
+    } else {}
   }
 
   Future<void> loadPetData(BuildContext context) async {
@@ -258,7 +258,6 @@ class BookingDetailsProvider extends ChangeNotifier {
     _startDate = startDate;
     notifyListeners();
   }
-
 
   void setEndDate(String endDate) {
     _endDate = endDate;
@@ -326,8 +325,8 @@ class BookingDetailsProvider extends ChangeNotifier {
           endDate: _endDate!,
           totalHours: _totalHours!,
           totalPrice: _totalPrice!,
-          vDataAddress: service =='House Sitting' ?_vDataAddress: null ,
-          oaddressDetails: service == 'Home Visit' ?_oaddressDetails : null);
+          vDataAddress: service == 'House Sitting' ? _vDataAddress : null,
+          oaddressDetails: service == 'Home Visit' ? _oaddressDetails : null);
 
       showBookingSuccessDialog(context, bookingId);
     } catch (e) {
