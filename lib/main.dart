@@ -4,6 +4,8 @@ import 'package:pet_care/constants/theme/theme_provider.dart';
 import 'package:pet_care/firebase_options.dart';
 import 'package:pet_care/initial_screen.dart';
 import 'package:pet_care/pages/booking/booking_page.dart';
+import 'package:pet_care/pages/owner&pet/owner_booking_show/booking_tiles_owner,.dart';
+import 'package:pet_care/pages/owner&pet/owner_booking_show/owner_booking_show.dart';
 import 'package:pet_care/pages/owner&pet/owner_editprofile.dart';
 import 'package:pet_care/pages/owner&pet/owner_homescreen.dart';
 import 'package:pet_care/pages/owner&pet/owner_login.dart';
@@ -25,22 +27,23 @@ import 'package:pet_care/pages/volunteer/volunter_reg2.dart';
 import 'package:pet_care/provider/bookind_details_provider.dart';
 import 'package:pet_care/provider/booking_details_getter.dart';
 import 'package:pet_care/provider/forgot_password_provider.dart';
-import 'package:pet_care/provider/get_ownerData_provider.dart';
+import 'package:pet_care/provider/owner_provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
-import 'package:pet_care/provider/get_volunteer_details_provider.dart';
+import 'package:pet_care/provider/owner_provider/owner_booking_show_provider.dart';
+import 'package:pet_care/provider/volunteer_provider/get_volunteer_details_provider.dart';
 import 'package:pet_care/provider/lost_pet_provider.dart';
-import 'package:pet_care/provider/owner_dashboard_provider.dart';
-import 'package:pet_care/provider/owner_editprofile_provider.dart';
-import 'package:pet_care/provider/owner_login_provider.dart';
-import 'package:pet_care/provider/owner_reg_provider.dart';
+import 'package:pet_care/provider/owner_provider/owner_dashboard_provider.dart';
+import 'package:pet_care/provider/owner_provider/owner_editprofile_provider.dart';
+import 'package:pet_care/provider/owner_provider/owner_login_provider.dart';
+import 'package:pet_care/provider/owner_provider/owner_reg_provider.dart';
 import 'package:pet_care/provider/payment_page_provider.dart';
 import 'package:pet_care/provider/pet_reg_provider.dart';
 import 'package:pet_care/provider/pet_sitter_provider.dart';
 import 'package:pet_care/provider/pets_provider.dart';
 import 'package:pet_care/provider/register_provider.dart';
 import 'package:pet_care/provider/reminder_provider.dart';
-import 'package:pet_care/provider/volunteer_login_provider.dart';
-import 'package:pet_care/provider/volunteer_reg_provider.dart';
+import 'package:pet_care/provider/volunteer_provider/volunteer_login_provider.dart';
+import 'package:pet_care/provider/volunteer_provider/volunteer_reg_provider.dart';
 import 'package:pet_care/shared_pref_service.dart';
 import 'package:pet_care/widgets/forgot_screen.dart';
 import 'package:provider/provider.dart';
@@ -95,7 +98,8 @@ void main() async {
             ChangeNotifierProvider(create: (context) => PaymentPageProvider()),
             ChangeNotifierProvider(
                 create: (context) => BookingDetailsGetterProvider()),
-            ChangeNotifierProvider(create: (context) => LostPetProvider())
+            ChangeNotifierProvider(create: (context) => LostPetProvider()),
+            ChangeNotifierProvider(create: (context) => BookingDetailsGetterOwnerProvider(),)
           ],
           child: MyApp(),
         ),
@@ -139,6 +143,8 @@ class MyApp extends StatelessWidget {
         '/petProfile2': (context) => PetProfile2(),
         '/lostPetAddress': (context) => PetLostAddress(),
          '/lostPet': (context) => PetLost(),
+         '/ownerBookingTile' :(context) => StatusOwnerPage(),
+         '/bookingDetailsShowOwner':(context) => BookingDetailsOwnerShow()
       },
     );
   }

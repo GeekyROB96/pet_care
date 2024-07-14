@@ -89,4 +89,27 @@ class PaymentFirestoreService {
       // Handle error as needed
     }
   }
+
+  Future<List<Map<String, dynamic>>?> getPaymentDetailsByBookingId(String bookingId) async {
+  try {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('payments')
+        .where('bookingId', isEqualTo: bookingId)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      return querySnapshot.docs
+        .map((DocumentSnapshot doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+    } else {
+      print('No payment details found for the given booking ID');
+      return null;
+    }
+  } catch (e) {
+    print('Failed to get payment details: $e');
+    throw e;
+  }
+}
+
 }

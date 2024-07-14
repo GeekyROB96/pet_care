@@ -16,7 +16,7 @@ import 'package:pet_care/services/firestore_service/lost_pet_firestore.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/lost_pet_provider.dart';
-import '../../provider/get_ownerData_provider.dart';
+import '../../provider/owner_provider/get_ownerData_provider.dart';
 
 class PetLost extends StatefulWidget {
   const PetLost({Key? key}) : super(key: key);

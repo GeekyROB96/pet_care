@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_care/constants/theme/light_colors.dart';
-import 'package:pet_care/provider/get_ownerData_provider.dart';
+import 'package:pet_care/provider/owner_provider/get_ownerData_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 

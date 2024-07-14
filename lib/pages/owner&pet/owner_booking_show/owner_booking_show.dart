@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pet_care/pages/owner&pet/payments_page.dart';
-import 'package:pet_care/pages/volunteer/volunteer_payment_page.dart';
-import 'package:pet_care/provider/booking_details_getter.dart';
+import 'package:pet_care/provider/owner_provider/owner_booking_show_provider.dart';
 import 'package:provider/provider.dart';
 
-class BookingDetailsShow extends StatelessWidget {
+class BookingDetailsOwnerShow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final bookingProvider = Provider.of<BookingDetailsGetterProvider>(context);
+    final bookingProvider =
+        Provider.of<BookingDetailsGetterOwnerProvider>(context);
     final booking = bookingProvider.selectedBooking;
     final ownerDetails = bookingProvider.ownerDetails;
 
@@ -310,29 +310,6 @@ class BookingDetailsShow extends StatelessWidget {
                                 ),
                               ],
                             ),
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          Row(
-                            children: [
-                              TextButton(
-                                  onPressed: () {
-
-                                      Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return PaymentPageVolunteer(bookingId: booking['bookingId']);
-                                  },
-                                ),
-                              );
-
-                                  },
-                                  child: Text('Check Payment Status', style: TextStyle(
-                                    color: Colors.black
-                                  ),))
-                            ],
                           )
                         ]),
                     SizedBox(height: 16),
@@ -342,30 +319,35 @@ class BookingDetailsShow extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: () async {
                               // Handle accept action
-                              await bookingProvider.updateBooking(
-                                  booking['bookingId'], 'accepted', context);
+                             Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return PaymentPage(bookingId: booking['bookingId']);
+                                  },
+                                ),
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                               //overlayColor: Colors.black,
                             ),
-                            child: Text('Accept'),
+                            child: Text('Pay Now'),
                           ),
                         ),
                         SizedBox(
-                            width: 16), // Add some spacing between the buttons
+                            width: 16), 
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () async {
-                              // Handle accept action
-                              await bookingProvider.updateBooking(
-                                  booking['bookingId'], 'rejected', context);
+                               await bookingProvider.deleteBooking(
+                                  booking['bookingId'], context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,
                               //overlayColor: Colors.black,
                             ),
-                            child: Text('Reject'),
+                            child: Text('Cancel'),
                           ),
                         ),
                       ],

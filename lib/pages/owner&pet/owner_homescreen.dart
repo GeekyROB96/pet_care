@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:pet_care/pages/owner&pet/payments_page.dart';
 import 'package:pet_care/pages/screens/lost_pet_address_screen.dart';
 import 'package:pet_care/pages/screens/reminder_screen.dart';
-import 'package:pet_care/provider/get_ownerData_provider.dart';
+import 'package:pet_care/provider/owner_provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
-import 'package:pet_care/provider/owner_dashboard_provider.dart';
+import 'package:pet_care/provider/owner_provider/owner_dashboard_provider.dart';
 import 'package:pet_care/provider/reminder_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -344,13 +344,13 @@ class OwnerDashboard extends StatelessWidget {
                           width: 30, height: 30),
                       onPressed: () {
                         Navigator.pushNamed(
-      context,
-      '/lostPet',
-    );
-  //   Navigator.push(
-  //   context,
-  //   MaterialPageRoute(builder: (context) => PetLostAddressPage()),
-  // );
+                          context,
+                          '/lostPet',
+                        );
+                        //   Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => PetLostAddressPage()),
+                        // );
                       },
                     ),
                     SizedBox(height: 5),
@@ -417,14 +417,9 @@ class OwnerDashboard extends StatelessWidget {
                 Navigator.pushNamed(context, '/');
               } else if (index == 1) {
                 // Navigate to Favorites page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return PaymentPage(bookingId: "9VLTRRMDQOvP44YkOWca");
-                    },
-                  ),
-                );
+                
+
+                Navigator.pushNamed(context, '/ownerBookingTile');
               } else if (index == 2) {
                 // Navigate to Notifications page
                 Navigator.pushNamed(context, '/notifications');

@@ -5,8 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_care/constants/custom_toast.dart';
 import 'package:pet_care/pages/owner&pet/owner_editprofile.dart';
-import 'package:pet_care/provider/get_ownerData_provider.dart';
-import 'package:pet_care/provider/get_volunteer_details_provider.dart';
+import 'package:pet_care/provider/owner_provider/get_ownerData_provider.dart';
+import 'package:pet_care/provider/volunteer_provider/get_volunteer_details_provider.dart';
 import 'package:pet_care/services/firestore_service/booking_firestore.dart';
 import 'package:pet_care/services/firestore_service/owner_firestore.dart';
 import 'package:pet_care/services/firestore_service/pet_register.dart';
@@ -33,6 +33,7 @@ class BookingDetailsProvider extends ChangeNotifier {
   Map<String, dynamic> vData = {};
   Map<String, dynamic>? _vDataAddress;
   Map<String, dynamic>? _oaddressDetails;
+  String _vpa = '';
 
   bool? get homeVisit => _homeVisit;
   bool? get houseSitting => _houseSitting;
@@ -240,6 +241,7 @@ class BookingDetailsProvider extends ChangeNotifier {
       _houseSittingPrice = vData['providesHouseSittingPrice'];
       _homeVisit = vData['providesHomeVisits'];
       _homeVisitPrice = vData['providesHomeVisitsPrice'];
+      _vpa = vData['vpa'];
       notifyListeners();
     } else {}
   }
@@ -326,7 +328,8 @@ class BookingDetailsProvider extends ChangeNotifier {
           totalHours: _totalHours!,
           totalPrice: _totalPrice!,
           vDataAddress: service == 'House Sitting' ? _vDataAddress : null,
-          oaddressDetails: service == 'Home Visit' ? _oaddressDetails : null);
+          oaddressDetails: service == 'Home Visit' ? _oaddressDetails : null,
+          vpa: _vpa);
 
       showBookingSuccessDialog(context, bookingId);
     } catch (e) {

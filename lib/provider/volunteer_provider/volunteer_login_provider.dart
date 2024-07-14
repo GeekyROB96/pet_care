@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_care/constants/custom_toast.dart';
-import 'package:pet_care/provider/get_volunteer_details_provider.dart';
+import 'package:pet_care/provider/volunteer_provider/get_volunteer_details_provider.dart';
 import 'package:pet_care/services/auth_service/owner_authservice.dart';
 import 'package:pet_care/shared_pref_service.dart';
 import 'package:provider/provider.dart';

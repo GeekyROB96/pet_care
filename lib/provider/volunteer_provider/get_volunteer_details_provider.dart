@@ -5,7 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pet_care/constants/custom_toast.dart';
-import 'package:pet_care/provider/volunteer_login_provider.dart';
+import 'package:pet_care/provider/volunteer_provider/volunteer_login_provider.dart';
 import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
 import 'package:provider/provider.dart';
 

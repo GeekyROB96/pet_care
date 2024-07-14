@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_care/provider/volunteer_reg_provider.dart';
+import 'package:pet_care/provider/volunteer_provider/volunteer_reg_provider.dart';
 import 'package:pet_care/widgets/components/text_button.dart';
 import 'package:pet_care/widgets/components/textfield.dart';
 import 'package:provider/provider.dart';

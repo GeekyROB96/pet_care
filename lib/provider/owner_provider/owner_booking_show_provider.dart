@@ -2,21 +2,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_care/constants/custom_toast.dart';
 import 'package:pet_care/services/firestore_service/booking_firestore.dart';
+import 'package:pet_care/services/firestore_service/owner_firestore.dart';
 import 'package:pet_care/services/firestore_service/pet_register.dart';
 
-import '../services/firestore_service/owner_firestore.dart';
-
-class BookingDetailsGetterProvider with ChangeNotifier {
+class BookingDetailsGetterOwnerProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final BookingFirestore _bookingFirestore = BookingFirestore();
   final PetFireStoreService _petFireStoreService = PetFireStoreService();
   final FirestoreServiceOwner _firestoreServiceOwner = FirestoreServiceOwner();
 
   var petData;
-  String ownerEmail = '';
+  String _ownerEmail = '';
   bool _isSinglePetLoaded = false;
   bool _isDataLoaded = false;
 
+  String get ownerEmail => _ownerEmail;
   bool get isDataLoaded => _isDataLoaded;
   bool get isSinglePetLoaded => _isSinglePetLoaded;
 
@@ -38,20 +38,19 @@ class BookingDetailsGetterProvider with ChangeNotifier {
   Map<String, dynamic>? get vDataAddress => _vDataAddress;
   Map<String, dynamic>? get oaddressDetails => _oaddressDetails;
 
-  BookingDetailsGetterProvider() {
+  BookingDetailsGetterOwnerProvider() {
     _fetchCurrentUserEmail();
   }
 
   Future<void> _fetchCurrentUserEmail() async {
     User? user = _auth.currentUser;
     if (user != null) {
-      _volunteerEmail = user.email;
-      print("Current Vol is : ${volunteerEmail}");
+      _ownerEmail = user.email!;
+      print("Current Owner is : ${ownerEmail}");
       notifyListeners();
     }
   }
 
-  void setVolEmail(String volEmail) {}
   void setOwnerAddress(Map<String, dynamic> ownerAddress) {
     _oaddressDetails = ownerAddress;
     notifyListeners();
@@ -63,9 +62,9 @@ class BookingDetailsGetterProvider with ChangeNotifier {
   }
 
   Future<List<Map<String, dynamic>>> getBookings(String status) async {
-    if (_volunteerEmail == null) return [];
+    if (_ownerEmail == null) return [];
     List<Map<String, dynamic>> bookings =
-        await _bookingFirestore.getBookings(_volunteerEmail!, status);
+        await _bookingFirestore.getBookingDetailsByOwnerEmail(_ownerEmail, status);
     // Fetch pet details for each booking
     for (var booking in bookings) {
       List<dynamic> petNames = booking['pet'];
@@ -78,7 +77,7 @@ class BookingDetailsGetterProvider with ChangeNotifier {
         }
       }
       booking['petDetails'] = petDetails;
-      ownerEmail = booking['ownerEmail'];
+      _ownerEmail = booking['ownerEmail'];
     }
     return bookings;
   }
@@ -87,7 +86,7 @@ class BookingDetailsGetterProvider with ChangeNotifier {
       BuildContext context, String bookingId) async {
     _selectedBooking = await _bookingFirestore.getBookingById(bookingId);
     notifyListeners();
-    Navigator.pushNamed(context, '/bookingDetailsShow');
+    Navigator.pushNamed(context, '/bookingDetailsShowOwner');
   }
 
   Future<void> fetchOwnerDetailsByEmail(String ownerEmail) async {
@@ -153,5 +152,16 @@ class BookingDetailsGetterProvider with ChangeNotifier {
     }
   }
 
- 
+   Future<void> deleteBooking(String bookingId, BuildContext context) async {
+    try {
+      await _bookingFirestore.deleteBookingById(bookingId);
+      ToastNotification.showToast(context,
+          message: "Booking deleted successfully", type: ToastType.positive);
+      Navigator.pop(context);
+    } catch (e) {
+      ToastNotification.showToast(context,
+          message: "Error $e", type: ToastType.error);
+      print("Error : $e");
+    }
+  }
 }

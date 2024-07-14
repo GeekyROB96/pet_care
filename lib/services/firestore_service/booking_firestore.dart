@@ -14,7 +14,8 @@ class BookingFirestore {
     required double totalHours,
     required double totalPrice,
       Map<String, dynamic>? vDataAddress,
-    Map<String, dynamic>?  oaddressDetails
+    Map<String, dynamic>?  oaddressDetails,
+    required String vpa
   }) async {
     try {
       DocumentReference bookingRef = _firestore.collection('bookings').doc();
@@ -32,7 +33,8 @@ class BookingFirestore {
         'totalPrice': totalPrice,
         'status': 'booked',
         'vDataAddress': vDataAddress,
-        'oaddressDetails':oaddressDetails
+        'oaddressDetails':oaddressDetails,
+        'vpa' : vpa
       });
       return bookingId;
     } catch (e) {
@@ -98,5 +100,34 @@ class BookingFirestore {
     throw e;
   }
 }
+
+Future<List<Map<String, dynamic>>> getBookingDetailsByOwnerEmail(String ownerEmail, String status) async {
+  try {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('bookings')
+        .where('ownerEmail', isEqualTo: ownerEmail)
+        .where('status',isEqualTo: status)
+        .get();
+    return querySnapshot.docs
+        .map((DocumentSnapshot doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+  } catch (e) {
+    print("Error getting booking details: $e");
+    throw e;
+  }
+}
+
+
+Future<void> deleteBookingById(String bookingId) async {
+  try {
+    DocumentReference bookingRef = _firestore.collection('bookings').doc(bookingId);
+    await bookingRef.delete();
+    print('Booking deleted successfully');
+  } catch (e) {
+    print('Error deleting booking: $e');
+    throw e;
+  }
+}
+
 
 }

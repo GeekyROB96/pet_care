@@ -5,7 +5,7 @@ import 'package:pet_care/widgets/components/textfield.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants/theme/light_colors.dart';
-import '../../provider/owner_reg_provider.dart';
+import '../../provider/owner_provider/owner_reg_provider.dart';
 
 class OwnerReg extends StatelessWidget {
   final _nameController = TextEditingController();

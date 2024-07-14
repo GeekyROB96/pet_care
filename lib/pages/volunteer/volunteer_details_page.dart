@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_care/pages/screens/chat_screen.dart';
-import 'package:pet_care/provider/get_volunteer_details_provider.dart';
+import 'package:pet_care/provider/volunteer_provider/get_volunteer_details_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants/theme/light_colors.dart';

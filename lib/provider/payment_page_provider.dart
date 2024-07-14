@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_care/constants/custom_toast.dart';
 import 'package:pet_care/services/firestore_service/booking_firestore.dart';
 import 'package:pet_care/services/firestore_service/payment_firestore.dart';
 import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
@@ -12,7 +13,16 @@ class PaymentPageProvider extends ChangeNotifier {
   String? _description;
   String? _vEmail;
 
+  String? _paymentStatus;
+
   String? _orderStatus;
+
+  var paymentData;
+  bool _isLoading = true; // Add this property
+  bool get isLoading => _isLoading;
+
+
+  
 
   // Setter methods
   void setBookingId(String bookingId) {
@@ -55,6 +65,11 @@ class PaymentPageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setPaymentStatus(String paymentStatus) {
+    _paymentStatus = paymentStatus;
+    notifyListeners();
+  }
+
   // Getters
   String? get bookingId => _bookingId;
   double? get amount => _amount;
@@ -64,6 +79,7 @@ class PaymentPageProvider extends ChangeNotifier {
   String? get description => _description;
   String? get vEmail => _vEmail;
   String? get orderStatus => _orderStatus;
+  String? get paymentStatus => _paymentStatus;
 
   BookingFirestore _bookingFirestore = BookingFirestore();
   FireStoreServiceVolunteer _fireStoreServiceVolunteer =
@@ -72,7 +88,9 @@ class PaymentPageProvider extends ChangeNotifier {
   PaymentFirestoreService _paymentFirestoreService = PaymentFirestoreService();
 
   Future<void> loadData(String bookingId, BuildContext context) async {
-    setBookingId(bookingId); // Use the setter method
+    setBookingId(bookingId);
+    _isLoading = true; // Set loading state to true
+    notifyListeners();
 
     try {
       Map<String, dynamic>? bookingDetails =
@@ -81,12 +99,14 @@ class PaymentPageProvider extends ChangeNotifier {
         setAmount(bookingDetails['totalPrice']?.toDouble() ?? 0.0);
         setVpa(bookingDetails['vpa'] ?? '');
         setVEmail(bookingDetails['volEmail'] ?? '');
+        setOrderStatus(bookingDetails['status'] ?? '');
         print("vemail : $_vEmail");
 
         _orderStatus = await _paymentFirestoreService
             .getPaymentStatusByBookingId(bookingId);
 
         await loadVNameandImage(context);
+        await getPaymentStatus();
         notifyListeners();
       } else {
         print('No booking details found for bookingId: $bookingId');
@@ -94,6 +114,9 @@ class PaymentPageProvider extends ChangeNotifier {
     } catch (e) {
       print('Error loading booking details: $e');
     }
+
+     _isLoading = false;  // Set loading state to false after data is loaded
+    notifyListeners();
   }
 
   Future<void> loadVNameandImage(BuildContext context) async {
@@ -125,8 +148,10 @@ class PaymentPageProvider extends ChangeNotifier {
           amount: _amount!,
           status: 'Payment Done ! Reciever Confirmation Pending',
           volEmail: _vEmail!);
-      setOrderStatus('Payment Done ! Reciever Confirmation Pending');
-      print("Payment Done");
+      setPaymentStatus('Payment Done ! Reciever Confirmation Pending');
+
+      notifyListeners();
+      //print("Payment Done");
     } catch (e) {
       print("Error: $e");
     }
@@ -139,6 +164,18 @@ class PaymentPageProvider extends ChangeNotifier {
       setOrderStatus('Payment Completed');
     } catch (e) {
       print("Error: $e");
+    }
+  }
+
+  Future<void> getPaymentStatus() async {
+    try {
+      _paymentStatus = await _paymentFirestoreService
+          .getPaymentStatusByBookingId(bookingId!);
+      setPaymentStatus(_paymentStatus!);
+      notifyListeners();
+      print("Payment Status is : $_paymentStatus");
+    } catch (e) {
+      print("Error fetching payment status! $e");
     }
   }
 }

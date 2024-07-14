@@ -5,7 +5,7 @@ import 'package:pet_care/widgets/components/textfield.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants/theme/light_colors.dart';
-import '../../provider/volunteer_login_provider.dart';
+import '../../provider/volunteer_provider/volunteer_login_provider.dart';
 
 class VolunteerLogin extends StatelessWidget {
   final _volunteerEmailController = TextEditingController();

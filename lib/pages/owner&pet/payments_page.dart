@@ -10,6 +10,7 @@ class PaymentPage extends StatelessWidget {
 
   Future<void> _showConfirmationDialog(BuildContext context) async {
     var provider = Provider.of<PaymentPageProvider>(context, listen: false);
+
     await provider.loadData(bookingId, context);
 
     return showDialog(
@@ -25,16 +26,16 @@ class PaymentPage extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 provider.setBookingId(this.bookingId);
-                provider.setOrderStatus('Payment Completed');
+                  await provider.confirmPayment();
 
-                await provider.confirmPayment();
-                Navigator.of(context).pop(); // Close the dialog
+ 
+                Navigator.of(context).pop();  
               },
               child: Text('OK'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();  
               },
               child: Text('Cancel'),
             ),
@@ -55,26 +56,41 @@ class PaymentPage extends StatelessWidget {
         ),
         body: Consumer<PaymentPageProvider>(
           builder: (context, provider, child) {
+
+               if (provider.isLoading) {
+              return Center(child: CircularProgressIndicator());
+            }
             if (provider.bookingId == null) {
               return Center(child: CircularProgressIndicator());
             } else {
-              String vpa =
-                  provider.vpa ?? 'VPA'; // Assuming provider.vpa is a String
 
-              // Determine the icon and color based on payment status
-              Icon paymentIcon;
+              String vpa =
+                  provider.vpa ?? 'VPA'; 
+
+               Icon paymentIcon;
               Color paymentColor;
               String paymentStatusText;
 
-              if (provider.orderStatus == 'Payment Completed') {
-                paymentIcon =
-                    Icon(Icons.check_circle, color: Colors.green, size: 36);
+           if (provider.paymentStatus == 'Payment Completed!') {
+                paymentIcon = Icon(Icons.check_circle, color: Colors.green, size: 36);
                 paymentColor = Colors.green;
                 paymentStatusText = 'Payment Completed';
-              } else {
+                  print("Payment Status screen: ${provider.paymentStatus}"); // Log the status
+
+              } else if (provider.paymentStatus == 'Payment Done! Reciever Confirmation Pending') {
+                paymentIcon = Icon(Icons.warning, color: const Color.fromARGB(255, 244, 222, 54), size: 36); // Added size parameter
+                paymentColor = const Color.fromARGB(255, 244, 222, 54);
+                paymentStatusText = 'Confirmation Pending';
+                  print("Payment Status screen: ${provider.paymentStatus}"); // Log the status
+
+              }
+
+              else {
                 paymentIcon = Icon(Icons.warning, color: Colors.red, size: 36);
                 paymentColor = Colors.red;
                 paymentStatusText = 'Payment Pending';
+                  print("Payment Status screen: ${provider.paymentStatus}"); // Log the status
+
               }
 
               return SingleChildScrollView(
@@ -259,10 +275,12 @@ class PaymentPage extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         height: 50,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            _showConfirmationDialog(context);
-                          },
+                       child: ElevatedButton(
+                          onPressed: provider.orderStatus == 'Payment Done ! Reciever Confirmation Pending' 
+                              ? null 
+                              : () {
+                                  _showConfirmationDialog(context);
+                                },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF7492F5),
                             shape: RoundedRectangleBorder(
@@ -270,10 +288,13 @@ class PaymentPage extends StatelessWidget {
                             ),
                           ),
                           child: Text(
-                            'Confirm Payment',
+                            provider.orderStatus == 'Payment Done ! Reciever Confirmation Pending' 
+                                ? 'Payment Done' 
+                                : 'Confirm Payment',
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                         ),
+
                       ),
                     ],
                   ),
