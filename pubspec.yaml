@@ -61,6 +61,10 @@ dependencies:
   flutter_chat_ui: ^1.6.14
 
   flutter_spinkit: ^5.2.1
+  
+  flutter_dotenv: ^5.1.0
+  maps_toolkit: ^3.0.0
+
 
 dev_dependencies:
   flutter_test:

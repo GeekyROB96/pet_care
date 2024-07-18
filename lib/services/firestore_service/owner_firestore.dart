@@ -234,15 +234,17 @@ class FirestoreServiceOwner {
         String profileImageUrl = userData['profileImageUrl'] ?? '';
         String name = userData['name'] ?? '';
         String location = userData['locationCity'] ?? '';
+        var address = userData['Address'];
 
         return {
           'name': name,
           'profileImageUrl': profileImageUrl,
           'locationCity': location,
+          'address': address,
         };
       } else {
         print('No user found with email: $email');
-        return null;
+        return {};
       }
     } catch (e) {
       print("Error getting user details by email $e");
@@ -312,27 +314,26 @@ class FirestoreServiceOwner {
     }
   }
 
- Future<Map<String, dynamic>?> getLostAddressByEmail(String email) async {
-  try {
-    QuerySnapshot querySnapshot = await _firestore
-        .collection('users')
-        .doc('pet_owners')
-        .collection('pet_owners')
-        .where('email', isEqualTo: email)
-        .get();
+  Future<Map<String, dynamic>?> getLostAddressByEmail(String email) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .doc('pet_owners')
+          .collection('pet_owners')
+          .where('email', isEqualTo: email)
+          .get();
 
-    if (querySnapshot.docs.isNotEmpty) {
-      DocumentSnapshot userDoc = querySnapshot.docs.first;
-      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-      return userData['LostPetAddress'] as Map<String, dynamic>?;
-    } else {
-      print('No user found with email: $email');
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot userDoc = querySnapshot.docs.first;
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        return userData['LostPetAddress'] as Map<String, dynamic>?;
+      } else {
+        print('No user found with email: $email');
+        return null;
+      }
+    } catch (e) {
+      print("Error getting lost address details by email: $e");
       return null;
     }
-  } catch (e) {
-    print("Error getting lost address details by email: $e");
-    return null;
   }
-}
-
 }

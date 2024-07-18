@@ -67,6 +67,16 @@ class VolunteerDashboard extends StatelessWidget {
             ),
             SizedBox(height: 20),
             SlidingImagePage(),
+            Column(
+              children: [
+                IconButton(
+                    color: Colors.black,
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/lostPetShowTileVolunteer');
+                    },
+                    icon: Icon(Icons.help_outline))
+              ],
+            )
           ],
         ),
       ),

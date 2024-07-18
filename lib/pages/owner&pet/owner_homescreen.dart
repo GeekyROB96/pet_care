@@ -410,6 +410,7 @@ class OwnerDashboard extends StatelessWidget {
               Icon(Icons.home, size: 30, color: Colors.black),
               Icon(Icons.favorite, size: 30, color: Colors.black),
               Icon(Icons.notifications, size: 30, color: Colors.black),
+              Icon(Icons.pets_sharp, size: 30, color: Colors.black)
             ],
             onTap: (index) {
               if (index == 0) {
@@ -417,12 +418,13 @@ class OwnerDashboard extends StatelessWidget {
                 Navigator.pushNamed(context, '/');
               } else if (index == 1) {
                 // Navigate to Favorites page
-                
 
                 Navigator.pushNamed(context, '/ownerBookingTile');
               } else if (index == 2) {
                 // Navigate to Notifications page
                 Navigator.pushNamed(context, '/notifications');
+              } else if (index == 3) {
+                Navigator.pushNamed(context, '/lostPetShowTileOwner');
               }
             },
           ),
