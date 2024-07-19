@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:pet_care/pages/owner&pet/payments_page.dart';
 import 'package:pet_care/pages/screens/reminder_screen.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
 import 'package:pet_care/provider/owner_provider/get_ownerData_provider.dart';
@@ -546,7 +547,15 @@ class OwnerDashboard extends StatelessWidget {
                 // Navigate to Home page
                 Navigator.pushNamed(context, '/');
               } else if (index == 1) {
-                // Navigator.pushNamed(context, '/ownerBookingTile');
+                // Navigate to Favorites page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return PaymentPage(bookingId: "9VLTRRMDQOvP44YkOWca");
+                    },
+                  ),
+                );
               } else if (index == 2) {
                 // Navigate to Notifications page
                 Navigator.pushNamed(context, '/notifications');
