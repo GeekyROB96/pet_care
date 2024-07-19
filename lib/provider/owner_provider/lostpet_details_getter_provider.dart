@@ -1,21 +1,13 @@
-import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:maps_toolkit/maps_toolkit.dart';
 import 'package:pet_care/services/firestore_service/lost_pet_firestore.dart';
 import 'package:pet_care/services/firestore_service/owner_firestore.dart';
 import 'package:pet_care/services/firestore_service/pet_register.dart';
-import 'package:pet_care/services/firestore_service/volunteer_firestore.dart';
-import 'package:http/http.dart' as http;
-
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:maps_toolkit/maps_toolkit.dart';
 
 class LostPetDetailsGetterOwner extends ChangeNotifier {
   final LostPetFirestore _lostPetFirestore = LostPetFirestore();
-
-
 
   final FirestoreServiceOwner _firestoreServiceOwner = FirestoreServiceOwner();
 
@@ -96,13 +88,12 @@ class LostPetDetailsGetterOwner extends ChangeNotifier {
         _allLostPets.forEach((pet) async {
           String? petLastSeen = pet['lastSeen'];
           if (petLastSeen != null) {
-             pet['lastSeen'] = _reformatLastSeen(petLastSeen);
-            Map<String, String?> petDetails =
-                await lostPetCompleteDetails(_currentUserEmail!, pet['petName']);
+            pet['lastSeen'] = _reformatLastSeen(petLastSeen);
+            Map<String, String?> petDetails = await lostPetCompleteDetails(
+                _currentUserEmail!, pet['petName']);
             print(pet['petName']);
             pet['breed'] = petDetails['breed'];
             pet['selectedPetType'] = petDetails['selectedPetType'];
-           
           }
           print(pet['address']['coordinates']);
         });
@@ -218,4 +209,6 @@ class LostPetDetailsGetterOwner extends ChangeNotifier {
       throw e;
     }
   }
+
+  void navigateToOwnerLostDetailsShowPage() {}
 }

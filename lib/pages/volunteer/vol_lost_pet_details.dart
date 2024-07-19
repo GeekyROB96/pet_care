@@ -1,8 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pet_care/provider/volunteer_provider/vol_lostpet_show_details_provider.dart';
 import 'package:provider/provider.dart';
-import 'dart:io';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class VolLostPetDetail extends StatefulWidget {
   final String petId;
@@ -357,15 +358,14 @@ class _VolLostPetDetailState extends State<VolLostPetDetail> {
                           Row(
                             children: [
                               OutlinedButton(
-                                  onPressed: () {
-                                    
-                                  },
+                                  onPressed: () {},
                                   child: Text('Chat with Owner')),
                               SizedBox(
                                 width: 5,
                               ),
-                              ElevatedButton(onPressed: () {}, 
-                              child: Text('Update Address'))
+                              ElevatedButton(
+                                  onPressed: () {},
+                                  child: Text('Update Address'))
                             ],
                           )
                         ],

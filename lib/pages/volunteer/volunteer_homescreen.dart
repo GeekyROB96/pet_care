@@ -87,7 +87,7 @@ class VolunteerDashboard extends StatelessWidget {
                 ),
                 ServiceIcon(
                   assetPath: 'assets/icons/lost.gif',
-                  label: 'Lost pet',
+                  label: 'Lost pets',
                   onTap: () {
                     Navigator.pushNamed(context, '/lostPetVol');
                   },
@@ -147,11 +147,11 @@ class VolunteerDashboard extends StatelessWidget {
                       builder: (context) => StatusAndMessagesPage()),
                 );
               } else if (index == 3) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => StatusAndMessagesPage()),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //       builder: (context) => StatusAndMessagesPage()),
+                // );
               }
             },
           ),

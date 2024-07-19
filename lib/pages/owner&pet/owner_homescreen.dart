@@ -133,7 +133,7 @@ class OwnerDashboard extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text(
-              'Pet Details:',
+              'Pet Details',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -376,7 +376,6 @@ class OwnerDashboard extends StatelessWidget {
                               backgroundColor: Colors.white,
                               title: Text('More Services'),
                               content: Container(
-                                //  color: Colors.white,
                                 width: double.maxFinite,
                                 height: 150,
                                 child: Wrap(
@@ -387,6 +386,7 @@ class OwnerDashboard extends StatelessWidget {
                                   children: [
                                     GestureDetector(
                                       onTap: () {
+                                        Navigator.pop(context);
                                         Navigator.pushNamed(
                                             context, '/reminder');
                                       },
@@ -395,9 +395,8 @@ class OwnerDashboard extends StatelessWidget {
                                             MainAxisAlignment.center,
                                         children: [
                                           Image.asset('assets/icons/be.gif',
-                                              width: 40,
-                                              height:
-                                                  40), // Increased icon size
+                                              width: 40, height: 40),
+                                          SizedBox(height: 8),
                                           Text('Reminder',
                                               style: TextStyle(
                                                   fontSize: 14,
@@ -407,6 +406,7 @@ class OwnerDashboard extends StatelessWidget {
                                     ),
                                     GestureDetector(
                                       onTap: () {
+                                        Navigator.pop(context);
                                         Navigator.pushNamed(
                                             context, '/petSitters');
                                       },
@@ -415,9 +415,8 @@ class OwnerDashboard extends StatelessWidget {
                                             MainAxisAlignment.center,
                                         children: [
                                           Image.asset('assets/icons/ho.gif',
-                                              width: 40,
-                                              height:
-                                                  40), // Increased icon size
+                                              width: 40, height: 40),
+                                          SizedBox(height: 8),
                                           Text('Pet Sitting',
                                               style: TextStyle(
                                                   fontSize: 14,
@@ -427,6 +426,7 @@ class OwnerDashboard extends StatelessWidget {
                                     ),
                                     GestureDetector(
                                       onTap: () {
+                                        Navigator.pop(context);
                                         Navigator.pushNamed(
                                             context, '/lostPet');
                                       },
@@ -435,9 +435,10 @@ class OwnerDashboard extends StatelessWidget {
                                             MainAxisAlignment.center,
                                         children: [
                                           Image.asset('assets/icons/sa.gif',
-                                              width: 40,
+                                              width: 40, height: 40),
+                                          SizedBox(
                                               height:
-                                                  40), // Increased icon size
+                                                  8), // Add vertical space between icon and text
                                           Text('Lost your pet',
                                               style: TextStyle(
                                                   fontSize: 14,
@@ -446,10 +447,11 @@ class OwnerDashboard extends StatelessWidget {
                                       ),
                                     ),
                                     SizedBox(
-                                      height: 5,
-                                    ),
+                                        height:
+                                            8), // Add vertical space between icons
                                     GestureDetector(
                                       onTap: () {
+                                        Navigator.pop(context);
                                         Navigator.pushNamed(
                                             context, '/ownerBookingTile');
                                       },
@@ -460,8 +462,8 @@ class OwnerDashboard extends StatelessWidget {
                                           Image.asset(
                                               'assets/icons/history.gif',
                                               width: 40,
-                                              height:
-                                                  40), // Increased icon size
+                                              height: 40),
+                                          SizedBox(height: 8),
                                           Text('History',
                                               style: TextStyle(
                                                   fontSize: 14,
@@ -469,11 +471,10 @@ class OwnerDashboard extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
+                                    SizedBox(height: 8),
                                     GestureDetector(
                                       onTap: () {
+                                        Navigator.pop(context);
                                         Navigator.pushNamed(
                                             context, '/lostPetShowTileOwner');
                                       },
@@ -482,9 +483,8 @@ class OwnerDashboard extends StatelessWidget {
                                             MainAxisAlignment.center,
                                         children: [
                                           Image.asset('assets/icons/lost.gif',
-                                              width: 40,
-                                              height:
-                                                  40), // Increased icon size
+                                              width: 40, height: 40),
+                                          SizedBox(height: 8),
                                           Text('Lost Pets',
                                               style: TextStyle(
                                                   fontSize: 14,

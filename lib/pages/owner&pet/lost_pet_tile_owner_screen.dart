@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pet_care/provider/owner_provider/lostpet_details_getter_provider.dart';
 import 'package:provider/provider.dart';
 
+import 'owner_lost_pet_details.dart';
+
 class LostPetShowOwner extends StatelessWidget {
   const LostPetShowOwner({Key? key}) : super(key: key);
 
@@ -46,7 +48,7 @@ class LostPetShowOwner extends StatelessWidget {
                             width: 25,
                           ),
                           Text(
-                            'Help Lost Pets',
+                            'Your Lost Pets',
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -54,8 +56,7 @@ class LostPetShowOwner extends StatelessWidget {
                           ),
                           SizedBox(width: 45),
                           Tooltip(
-                            message:
-                                'These pets are lost from their owner. If possible please help!',
+                            message: 'Know about your lost pets',
                             child: Image.asset(
                               'assets/icons/question_mark.png',
                               width: 30.0,
@@ -72,7 +73,18 @@ class LostPetShowOwner extends StatelessWidget {
                           itemCount: allLostPets.length,
                           itemBuilder: (context, index) {
                             Map<String, dynamic> pet = allLostPets[index];
-                            return _buildPetCard(pet);
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => OwnerLostPetDetail(
+                                            petId: pet['petId'],
+                                          )),
+                                );
+                              },
+                              child: _buildPetCard(pet),
+                            );
                           },
                         ),
                       ),
@@ -94,6 +106,11 @@ class LostPetShowOwner extends StatelessWidget {
     String? distance = pet['distance'];
     String? breed = pet['breed'];
     String? selectedPetType = pet['selectedPetType'];
+
+    // Debug prints
+    print('Pet Data: $pet');
+    print('Breed: $breed');
+    print('Selected Pet Type: $selectedPetType');
 
     return Card(
       elevation: 4,
