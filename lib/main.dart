@@ -46,6 +46,7 @@ import 'package:pet_care/provider/pets_provider.dart';
 import 'package:pet_care/provider/register_provider.dart';
 import 'package:pet_care/provider/reminder_provider.dart';
 import 'package:pet_care/provider/volunteer_provider/lostpet_details_getter_provider.dart';
+import 'package:pet_care/provider/volunteer_provider/vol_lostpet_show_details_provider.dart';
 import 'package:pet_care/provider/volunteer_provider/volunteer_login_provider.dart';
 import 'package:pet_care/provider/volunteer_provider/volunteer_reg_provider.dart';
 import 'package:pet_care/shared_pref_service.dart';
@@ -105,7 +106,8 @@ void main() async {
             ChangeNotifierProvider(create: (context) => LostPetProvider()),
             ChangeNotifierProvider(create: (context) => BookingDetailsGetterOwnerProvider(),),
             ChangeNotifierProvider(create: (context) => LostPetDetailsGetterOwner()),
-            ChangeNotifierProvider(create: (context) => LostPetDetailsGetterVolunteer())
+            ChangeNotifierProvider(create: (context) => LostPetDetailsGetterVolunteer()),
+            ChangeNotifierProvider(create: (context) => VolLostPetShowDetailsProvider())
 
           ],
           child: MyApp(),

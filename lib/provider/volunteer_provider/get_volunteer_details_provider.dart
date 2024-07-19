@@ -51,6 +51,8 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
   String? _pincode;
   String? _state;
 
+  var _address;
+
 
    String? get area_apartment_road => _area_apartment_road;
   String? get city => _city;
@@ -111,6 +113,7 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
 
         _locationCity = volunteerData?['locationCity'];
         _uid = volunteerData?['uid'];
+        _address = volunteerData?['Address'];
 
 
           if (volunteerData?['Address'] != null && volunteerData?['Address'] is List && volunteerData?['Address'].isNotEmpty) {
@@ -242,6 +245,7 @@ class VolunteerDetailsGetterProvider extends ChangeNotifier {
           providesHomeVisitsPrice: _providesHomeVisitsPrice,
           providesHouseSittingPrice: _providesHouseSittingPrice,
           locationCity: _locationCity,
+          address : _address
         );
 
  ToastNotification.showToast(context,

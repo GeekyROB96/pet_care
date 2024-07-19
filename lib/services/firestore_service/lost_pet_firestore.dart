@@ -31,12 +31,16 @@ class LostPetFirestore {
 
   Future<Map<String, dynamic>?> getLostPetbyId(String petId) async {
     try {
-      DocumentSnapshot documentSnapshot =
-          await _firestore.collection('LostPet').doc('petId').get();
-      if (documentSnapshot.exists) {
-        return documentSnapshot.data() as Map<String, dynamic>;
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('LostPet')
+          .where('petId', isEqualTo: petId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        return documentSnapshot.data() as Map<String, dynamic>?;
       } else {
-        print("No bookings found");
+        print("No lost pet found");
         return null;
       }
     } catch (e) {
@@ -44,7 +48,6 @@ class LostPetFirestore {
       return null;
     }
   }
-
   Future<List<Map<String, dynamic>>> getLostPetbyOwnerEmail(
       String ownerEmail) async {
     try {
