@@ -18,9 +18,7 @@ import 'package:pet_care/pages/pets_page/pets.dart';
 import 'package:pet_care/pages/screens/lost_pet_address_screen.dart';
 import 'package:pet_care/pages/screens/pet_lost_page.dart';
 import 'package:pet_care/pages/screens/pet_sitters.dart';
-import 'package:pet_care/pages/screens/reminder_screen.dart';
 import 'package:pet_care/pages/volunteer/booking_details_show.dart';
-import 'package:pet_care/pages/volunteer/booking_tiles.dart';
 import 'package:pet_care/pages/volunteer/lost_pet_tile_volunteer_screen.dart';
 import 'package:pet_care/pages/volunteer/volSide_pet_profile.dart';
 import 'package:pet_care/pages/volunteer/volunteer_editProfile.dart';
@@ -48,6 +46,7 @@ import 'package:pet_care/provider/register_provider.dart';
 import 'package:pet_care/provider/reminder_provider.dart';
 import 'package:pet_care/provider/volunteer_provider/get_volunteer_details_provider.dart';
 import 'package:pet_care/provider/volunteer_provider/lostpet_details_getter_provider.dart';
+import 'package:pet_care/provider/volunteer_provider/vol_lostpet_show_details_provider.dart';
 import 'package:pet_care/provider/volunteer_provider/volunteer_login_provider.dart';
 import 'package:pet_care/provider/volunteer_provider/volunteer_reg_provider.dart';
 import 'package:pet_care/shared_pref_service.dart';
@@ -111,7 +110,9 @@ void main() async {
             ChangeNotifierProvider(
                 create: (context) => LostPetDetailsGetterOwner()),
             ChangeNotifierProvider(
-                create: (context) => LostPetDetailsGetterVolunteer())
+                create: (context) => LostPetDetailsGetterVolunteer()),
+            ChangeNotifierProvider(
+                create: (context) => VolLostPetShowDetailsProvider())
           ],
           child: MyApp(),
         ),
@@ -158,10 +159,7 @@ class MyApp extends StatelessWidget {
         '/ownerBookingTile': (context) => StatusOwnerPage(),
         '/bookingDetailsShowOwner': (context) => BookingDetailsOwnerShow(),
         '/lostPetShowTileOwner': (context) => LostPetShowOwner(),
-        '/lostPetShowTileVolunteer': (context) => LostPetShowVolunteer(),
-        '/bookingHistoryVol': (context) => StatusPage(),
-        '/lostPetVol': (context) => LostPetShowVolunteer(),
-        '/reminder': (context) => ReminderScreen(),
+        '/lostPetShowTileVolunteer': (context) => LostPetShowVolunteer()
       },
     );
   }

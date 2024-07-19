@@ -252,36 +252,60 @@ class FirestoreServiceOwner {
     }
   }
 
-  Future<void> saveAddress(
-      {required String userId,
-      required String main,
-      required String areaApartmentRoad,
-      required String coordinates,
-      required String descriptionDirections,
-      required String city,
-      required String state,
-      required String pincode}) async {
-    try {
-      await _firestore
-          .collection('users')
-          .doc('pet_owners')
-          .collection('pet_owners')
-          .doc(userId)
-          .update({
-        'Address': {
-          'main': main,
-          'area_apartment_road': areaApartmentRoad,
-          'coordinates': coordinates,
-          'description_directions': descriptionDirections,
-          'city': city,
-          'state': state,
-          'pincode': pincode
-        }
-      });
-    } catch (e) {
-      print("Error saving Address Details $e");
+ Future<void> saveAddress({
+  required String userId,
+  required String main,
+  required String areaApartmentRoad,
+  required String coordinates,
+  required String descriptionDirections,
+  required String city,
+  required String state,
+  required String pincode,
+}) async {
+  try {
+    DocumentSnapshot userDoc = await _firestore
+        .collection('users')
+        .doc('pet_owners')
+        .collection('pet_owners')
+        .doc(userId)
+        .get();
+
+    List<Map<String, dynamic>> addresses = [];
+
+    if (userDoc.exists) {
+      var userData = userDoc.data() as Map<String, dynamic>;
+      if (userData.containsKey('Address')) {
+        addresses = List<Map<String, dynamic>>.from(userData['Address']);
+      }
     }
+
+    Map<String, dynamic> newAddress = {
+      'main': main,
+      'area_apartment_road': areaApartmentRoad,
+      'coordinates': coordinates,
+      'description_directions': descriptionDirections,
+      'city': city,
+      'state': state,
+      'pincode': pincode
+    };
+
+    if (addresses.isEmpty) {
+      addresses.add(newAddress);
+    } else {
+      addresses[0] = newAddress;
+    }
+
+    await _firestore
+        .collection('users')
+        .doc('volunteers')
+        .collection('volunteers')
+        .doc(userId)
+        .update({'Address': addresses});
+  } catch (e) {
+    print("Error saving Address Details $e");
   }
+}
+
 
   Future<void> saveLostAddress(
       {required String userId,

@@ -60,9 +60,8 @@ class LostPetDetailsGetterVolunteer extends ChangeNotifier {
     await fetchAllLostPets();
     getCurrentUserEmail();
     await getVolunteerDetails();
-    //  await testDistanceCalculation();
 
-    await calculateDistances(); // Calculate distances after loading data
+    await calculateDistances(); 
     _setLoading(false);
   }
 
@@ -208,5 +207,10 @@ class LostPetDetailsGetterVolunteer extends ChangeNotifier {
       print("Error getting complete pet details: $e");
       throw e;
     }
+  }
+
+
+  void navigateTolostDetailsShowPage(){
+    
   }
 }

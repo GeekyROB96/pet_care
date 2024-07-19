@@ -47,6 +47,7 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
   bool _isDataLoaded = false;
   File? _profileImageFile;
   String? _locationCity;
+  var _address;
 
   bool get isDataLoaded => _isDataLoaded;
   String get name => _name;
@@ -83,6 +84,7 @@ class OwnerDetailsGetterProvider extends ChangeNotifier {
           _locationCity = userDetails['locationCity'];
           _isDataLoaded = true;
           _uid = userDetails['uid'];
+          _address = userDetails['Address'];
           if (userDetails['Address'] != null &&
               userDetails['Address'] is List &&
               userDetails['Address'].isNotEmpty) {

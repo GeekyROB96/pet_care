@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_care/pages/volunteer/vol_lost_pet_details.dart';
 import 'package:pet_care/provider/volunteer_provider/lostpet_details_getter_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -75,7 +76,18 @@ class LostPetShowVolunteer extends StatelessWidget {
                           itemCount: allLostPets.length,
                           itemBuilder: (context, index) {
                             Map<String, dynamic> pet = allLostPets[index];
-                            return _buildPetCard(pet);
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        VolLostPetDetail(petId: pet['petId']),
+                                  ),
+                                );
+                              },
+                              child: _buildPetCard(pet),
+                            );
                           },
                         ),
                       ),
