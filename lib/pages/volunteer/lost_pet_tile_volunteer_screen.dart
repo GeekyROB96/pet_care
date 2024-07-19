@@ -9,8 +9,9 @@ class LostPetShowVolunteer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: Provider.of<LostPetDetailsGetterVolunteer>(context, listen: false)
-            .loadData(),
+        future:
+            Provider.of<LostPetDetailsGetterVolunteer>(context, listen: false)
+                .loadData(),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -38,19 +39,21 @@ class LostPetShowVolunteer extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           IconButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: Icon(Icons.arrow_back)),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(Icons.arrow_back),
+                          ),
                           SizedBox(
                             width: 25,
                           ),
                           Text(
                             'Help Lost Pets',
                             style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           SizedBox(width: 45),
                           Tooltip(
@@ -106,59 +109,79 @@ class LostPetShowVolunteer extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                petImageUrl,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-              ),
+            CircleAvatar(
+              backgroundImage: NetworkImage(petImageUrl),
+              radius: 40,
             ),
             SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    petName,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18),
-                  ),
-                SizedBox(height: 8),
-                Row(
-                  children: [
-                    Text(
-                      breed ?? '',
-                      style: TextStyle(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        petName,
+                        style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                    SizedBox(
-                      width: 16,
-                    ),
-                    Text(
-                      selectedPetType?? '',
-                      style: TextStyle(
-                          color: const Color.fromARGB(255, 15, 15, 15),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                  ],
-                ),
-
-                  SizedBox(height: 8),
-                  Text(
-                    'Last Seen: $lastSeen',
-                    style: TextStyle(color: Colors.grey[600]),
+                          fontSize: 18,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            color: Colors.grey[600],
+                            size: 16,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            lastSeen ?? '',
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                   SizedBox(height: 4),
-                  Text(
-                    'Distance: $distance', // Display the calculated distance
-                    style: TextStyle(color: Colors.grey[600]),
+                  Row(
+                    children: [
+                      Text(
+                        'Breed: ',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        breed ?? '',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      _getPetIcon(selectedPetType ?? ''),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on,
+                        color: Colors.grey[600],
+                        size: 16,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        distance ?? '',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -166,6 +189,31 @@ class LostPetShowVolunteer extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _getPetIcon(String petType) {
+    String petIconPath = '';
+    switch (petType.toLowerCase()) {
+      case 'dog':
+        petIconPath = 'assets/icons/dog.png';
+        break;
+      case 'cat':
+        petIconPath = 'assets/icons/cat.png';
+        break;
+      case 'bird':
+        petIconPath = 'assets/icons/bird.png';
+        break;
+      case 'rabbit':
+        petIconPath = 'assets/icons/bunny.png';
+        break;
+      default:
+        return SizedBox.shrink();
+    }
+    return Image.asset(
+      petIconPath,
+      height: 24,
+      width: 24,
     );
   }
 }

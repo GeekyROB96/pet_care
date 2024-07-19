@@ -3,11 +3,9 @@ import 'dart:io';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_care/pages/owner&pet/payments_page.dart';
-import 'package:pet_care/pages/screens/lost_pet_address_screen.dart';
 import 'package:pet_care/pages/screens/reminder_screen.dart';
-import 'package:pet_care/provider/owner_provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/get_petData_provider.dart';
+import 'package:pet_care/provider/owner_provider/get_ownerData_provider.dart';
 import 'package:pet_care/provider/owner_provider/owner_dashboard_provider.dart';
 import 'package:pet_care/provider/reminder_provider.dart';
 import 'package:provider/provider.dart';
@@ -156,15 +154,13 @@ class OwnerDashboard extends StatelessWidget {
                   return AnimatedSwitcher(
                     duration: Duration(milliseconds: 500),
                     child: GestureDetector(
-                      key: ValueKey<String>(
-                          pet['petName']), // Unique key for each pet
+                      key: ValueKey<String>(pet['petName']),
                       onTap: () async {
                         await petsDetailsProvider.navigateAndgetPetByName(
                             pet['petName'], pet['ownerEmail'], context);
                       },
                       child: Container(
-                        key: ValueKey<String>(
-                            pet['petName']), // Unique key for each pet
+                        key: ValueKey<String>(pet['petName']),
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -347,10 +343,6 @@ class OwnerDashboard extends StatelessWidget {
                           context,
                           '/lostPet',
                         );
-                        //   Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => PetLostAddressPage()),
-                        // );
                       },
                     ),
                     SizedBox(height: 5),
@@ -376,7 +368,144 @@ class OwnerDashboard extends StatelessWidget {
                       icon: Image.asset('assets/icons/mo.gif',
                           width: 30, height: 30),
                       onPressed: () {
-                        // Add your onPressed logic here
+                        // Dialog Box
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              backgroundColor: Colors.white,
+                              title: Text('More Services'),
+                              content: Container(
+                                //  color: Colors.white,
+                                width: double.maxFinite,
+                                height: 150,
+                                child: Wrap(
+                                  spacing: 12,
+                                  runSpacing: 12,
+                                  alignment: WrapAlignment
+                                      .center, // Center align items
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, '/reminder');
+                                      },
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Image.asset('assets/icons/be.gif',
+                                              width: 40,
+                                              height:
+                                                  40), // Increased icon size
+                                          Text('Reminder',
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.black)),
+                                        ],
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, '/petSitters');
+                                      },
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Image.asset('assets/icons/ho.gif',
+                                              width: 40,
+                                              height:
+                                                  40), // Increased icon size
+                                          Text('Pet Sitting',
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.black)),
+                                        ],
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, '/lostPet');
+                                      },
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Image.asset('assets/icons/sa.gif',
+                                              width: 40,
+                                              height:
+                                                  40), // Increased icon size
+                                          Text('Lost your pet',
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.black)),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, '/ownerBookingTile');
+                                      },
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Image.asset(
+                                              'assets/icons/history.gif',
+                                              width: 40,
+                                              height:
+                                                  40), // Increased icon size
+                                          Text('History',
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.black)),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, '/lostPetShowTileOwner');
+                                      },
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Image.asset('assets/icons/lost.gif',
+                                              width: 40,
+                                              height:
+                                                  40), // Increased icon size
+                                          Text('Lost Pets',
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.black)),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  child: Text('Close'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       },
                     ),
                     SizedBox(height: 5),
@@ -410,21 +539,19 @@ class OwnerDashboard extends StatelessWidget {
               Icon(Icons.home, size: 30, color: Colors.black),
               Icon(Icons.favorite, size: 30, color: Colors.black),
               Icon(Icons.notifications, size: 30, color: Colors.black),
-              Icon(Icons.pets_sharp, size: 30, color: Colors.black)
+              Icon(Icons.more_horiz_outlined, size: 30, color: Colors.black)
             ],
             onTap: (index) {
               if (index == 0) {
                 // Navigate to Home page
                 Navigator.pushNamed(context, '/');
               } else if (index == 1) {
-                // Navigate to Favorites page
-
-                Navigator.pushNamed(context, '/ownerBookingTile');
+                // Navigator.pushNamed(context, '/ownerBookingTile');
               } else if (index == 2) {
                 // Navigate to Notifications page
                 Navigator.pushNamed(context, '/notifications');
               } else if (index == 3) {
-                Navigator.pushNamed(context, '/lostPetShowTileOwner');
+                //Navigator.pushNamed(context, '/lostPetShowTileOwner');
               }
             },
           ),

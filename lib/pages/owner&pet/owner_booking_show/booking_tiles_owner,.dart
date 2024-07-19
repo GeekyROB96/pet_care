@@ -13,7 +13,8 @@ class StatusOwnerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bookingProvider = Provider.of<BookingDetailsGetterOwnerProvider>(context);
+    final bookingProvider =
+        Provider.of<BookingDetailsGetterOwnerProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -39,12 +40,13 @@ class StatusOwnerPage extends StatelessWidget {
                                   child: Tab(text: title),
                                 ))
                             .toList(),
-                        labelColor: Colors.white,
+                        labelColor: Colors.black,
                         unselectedLabelColor: Colors.black,
-                        indicator: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
+                        indicator: UnderlineTabIndicator(
+                            borderSide: BorderSide(
+                          width: 1,
                           color: Colors.deepPurple,
-                        ),
+                        )),
                       ),
                     ),
                   ),
@@ -69,22 +71,16 @@ class StatusOwnerPage extends StatelessWidget {
         Provider.of<BookingDetailsGetterOwnerProvider>(context, listen: false);
 
     return FutureBuilder<List<Map<String, dynamic>>>(
-
       future: bookingProvider.getBookings(status),
-
       builder: (BuildContext context,
           AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
-        } 
-        else if (snapshot.hasError) {
+        } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
-        }
-         else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Center(child: Text('No bookings found.'));
-        }
-         else {
+        } else {
           List<Map<String, dynamic>> bookings = snapshot.data!;
           return ListView.builder(
             itemCount: bookings.length,
@@ -110,8 +106,9 @@ class StatusOwnerPage extends StatelessWidget {
                   .format(DateTime.parse(booking['startDate']));
 
               return GestureDetector(
-                onTap: ()  async{
-                 await  bookingProvider.fetchBookingDetailsAndNavigate(context,booking['bookingId']);
+                onTap: () async {
+                  await bookingProvider.fetchBookingDetailsAndNavigate(
+                      context, booking['bookingId']);
                 },
                 child: Card(
                   elevation: 3,

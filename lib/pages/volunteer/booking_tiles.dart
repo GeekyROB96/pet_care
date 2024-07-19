@@ -39,11 +39,14 @@ class StatusPage extends StatelessWidget {
                                   child: Tab(text: title),
                                 ))
                             .toList(),
-                        labelColor: Colors.white,
+                        labelColor: Colors.black,
                         unselectedLabelColor: Colors.black,
-                        indicator: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: Colors.deepPurple,
+                        indicator: UnderlineTabIndicator(
+                          borderSide: BorderSide(
+                            width: 1,
+                            color: Colors.deepPurple,
+                          ),
+                          // borderRadius: BorderRadius.circular(50),
                         ),
                       ),
                     ),
@@ -103,8 +106,9 @@ class StatusPage extends StatelessWidget {
                   .format(DateTime.parse(booking['startDate']));
 
               return GestureDetector(
-                onTap: ()  async{
-                 await  bookingProvider.fetchBookingDetailsAndNavigate(context,booking['bookingId']);
+                onTap: () async {
+                  await bookingProvider.fetchBookingDetailsAndNavigate(
+                      context, booking['bookingId']);
                 },
                 child: Card(
                   elevation: 3,

@@ -5,8 +5,6 @@ import 'package:pet_care/pages/volunteer/volunteer_payment_page.dart';
 import 'package:pet_care/provider/volunteer_provider/get_volunteer_details_provider.dart';
 import 'package:provider/provider.dart';
 
-import 'booking_tiles.dart';
-
 final images = [
   'assets/sliding_images/sliding1.jpg',
   'assets/sliding_images/sliding6.jpg',
@@ -67,16 +65,49 @@ class VolunteerDashboard extends StatelessWidget {
             ),
             SizedBox(height: 20),
             SlidingImagePage(),
-            Column(
+            SizedBox(height: 20),
+            Text(
+              'Services',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                IconButton(
-                    color: Colors.black,
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/lostPetShowTileVolunteer');
-                    },
-                    icon: Icon(Icons.help_outline))
+                ServiceIcon(
+                  assetPath: 'assets/icons/history.gif',
+                  label: 'History',
+                  onTap: () {
+                    Navigator.pushNamed(context, '/bookingHistoryVol');
+                  },
+                ),
+                ServiceIcon(
+                  assetPath: 'assets/icons/lost.gif',
+                  label: 'Lost pet',
+                  onTap: () {
+                    Navigator.pushNamed(context, '/lostPetVol');
+                  },
+                ),
+                ServiceIcon(
+                  assetPath: 'assets/icons/be.gif',
+                  label: 'Reminder',
+                  onTap: () {
+                    Navigator.pushNamed(context, '/reminder');
+                  },
+                ),
+                ServiceIcon(
+                  assetPath: 'assets/icons/facts.gif',
+                  label: 'Facts',
+                  onTap: () {
+                    Navigator.pushNamed(context, '/factsPage');
+                  },
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -94,8 +125,8 @@ class VolunteerDashboard extends StatelessWidget {
             items: <Widget>[
               Icon(Icons.home, size: 30, color: Colors.black),
               Icon(Icons.add_a_photo, size: 30, color: Colors.black),
-              Icon(Icons.notifications, size: 30, color: Colors.black),
               Icon(Icons.email_sharp, size: 30, color: Colors.black),
+              Icon(Icons.more_horiz, size: 30, color: Colors.black),
             ],
             onTap: (index) {
               if (index == 0) {
@@ -112,7 +143,8 @@ class VolunteerDashboard extends StatelessWidget {
               } else if (index == 2) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => StatusPage()),
+                  MaterialPageRoute(
+                      builder: (context) => StatusAndMessagesPage()),
                 );
               } else if (index == 3) {
                 Navigator.push(
@@ -219,12 +251,46 @@ class ImageCard extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15),
         child: AspectRatio(
-          aspectRatio: 16 / 9, // Maintain the aspect ratio to avoid slicing
+          aspectRatio: 16 / 9,
           child: Image.asset(
             imgList,
             fit: BoxFit.cover,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ServiceIcon extends StatelessWidget {
+  final String assetPath;
+  final String label;
+  final VoidCallback onTap;
+
+  const ServiceIcon({
+    Key? key,
+    required this.assetPath,
+    required this.label,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Image.asset(
+            assetPath,
+            width: 30,
+            height: 30,
+          ),
+          SizedBox(height: 5),
+          Text(
+            label,
+            style: TextStyle(fontSize: 16, color: Colors.black),
+          ),
+        ],
       ),
     );
   }
