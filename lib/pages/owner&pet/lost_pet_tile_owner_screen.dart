@@ -107,11 +107,6 @@ class LostPetShowOwner extends StatelessWidget {
     String? breed = pet['breed'];
     String? selectedPetType = pet['selectedPetType'];
 
-    // Debug prints
-    print('Pet Data: $pet');
-    print('Breed: $breed');
-    print('Selected Pet Type: $selectedPetType');
-
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(

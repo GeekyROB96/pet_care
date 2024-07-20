@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:pet_care/services/firestore_service/lost_pet_firestore.dart';
+import 'package:pet_care/services/firestore_service/owner_firestore.dart';
 import 'package:pet_care/services/firestore_service/pet_register.dart';
 
 class VolLostPetShowDetailsProvider extends ChangeNotifier {
   final LostPetFirestore _lostPetFirestore = LostPetFirestore();
   final PetFireStoreService _petFireStoreService = PetFireStoreService();
+  final FirestoreServiceOwner _fireStoreServiceOwner = FirestoreServiceOwner();
+
+  var ownerData;
 
   Map<String, dynamic>? lostPetData;
   Map<String, dynamic>? _pet;
@@ -39,6 +43,16 @@ class VolLostPetShowDetailsProvider extends ChangeNotifier {
     } catch (e) {
       print('Error fetching pet data: $e');
       throw e; // Rethrow the exception to maintain the Future<void> return type
+    }
+  }
+
+  Future<void> getOwnerDataForNavigate() async {
+    try {
+      ownerData =
+          await _fireStoreServiceOwner.getOwnerDetailsByEmail(_ownerEmail!);
+      notifyListeners();
+    } catch (e) {
+      print("Error getting owner data: $e");
     }
   }
 }

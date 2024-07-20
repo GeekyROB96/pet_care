@@ -29,6 +29,36 @@ class LostPetFirestore {
     }
   }
 
+  Future<void> updateLostPetAddress({
+    required String petId,
+    required String main,
+    required String areaApartmentRoad,
+    required String coordinates,
+    required String descriptionDirections,
+    required String city,
+    required String state,
+    required String pincode,
+  }) async {
+    try {
+      DocumentReference petRef = _firestore.collection('LostPet').doc(petId);
+
+      await petRef.update({
+        'updatedaddress': {
+          'main': main,
+          'areaApartmentRoad': areaApartmentRoad,
+          'coordinates': coordinates,
+          'descriptionDirections': descriptionDirections,
+          'city': city,
+          'state': state,
+          'pincode': pincode,
+        },
+      });
+    } catch (e) {
+      print('Error updating lost pet  updated address: $e');
+      throw e;
+    }
+  }
+
   Future<Map<String, dynamic>?> getLostPetbyId(String petId) async {
     try {
       QuerySnapshot querySnapshot = await _firestore
@@ -48,6 +78,7 @@ class LostPetFirestore {
       return null;
     }
   }
+
   Future<List<Map<String, dynamic>>> getLostPetbyOwnerEmail(
       String ownerEmail) async {
     try {

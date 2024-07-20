@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:pet_care/pages/volunteer/vol_lostpet_address_update.dart';
 import 'package:pet_care/provider/volunteer_provider/vol_lostpet_show_details_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -364,7 +365,16 @@ class _VolLostPetDetailState extends State<VolLostPetDetail> {
                                 width: 5,
                               ),
                               ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              VolLostPetAddressUpdate(
+                                                petId: petData['petId'],
+                                              )),
+                                    );
+                                  },
                                   child: Text('Update Address'))
                             ],
                           )
